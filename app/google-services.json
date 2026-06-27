@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "939014493527",
+    "firebase_url": "https://hoa-management-system-db762-default-rtdb.firebaseio.com",
+    "project_id": "hoa-management-system-db762",
+    "storage_bucket": "hoa-management-system-db762.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:939014493527:android:e4bb93a2b4cc0d73355a12",
+        "android_client_info": {
+          "package_name": "com.example.hoamanagementsystem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8SqtI6ifubkxvqtUMYexVISLJXvUK4l4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
