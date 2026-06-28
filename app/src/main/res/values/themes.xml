@@ -3,6 +3,9 @@
     <style name="Base.Theme.HOAManagementSystem" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+
     </style>
 
     <style name="Theme.HOAManagementSystem" parent="Base.Theme.HOAManagementSystem" />

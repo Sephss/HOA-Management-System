@@ -5,5 +5,7 @@
     <color name="superwhite">#FFFFFFFF</color>
     <color name="lightBlue">#EEF0FF</color>
     <color name="blue">#0053DB</color>
+    <color name="lightestblue">#CFE1FF</color>
     <color name="grey">#5C5F61</color>
+    <color name="darkgreyish">#EAF1FF</color>
 </resources>
