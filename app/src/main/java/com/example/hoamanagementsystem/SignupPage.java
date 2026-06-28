@@ -2,6 +2,7 @@ package com.example.hoamanagementsystem;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -14,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 public class SignupPage extends AppCompatActivity {
     private TextView loginLink;
     private EditText firstNameET, lastNameET, middleNameET, phoneNumberET, emailAddressET, passwordET;
-
+    private Button nextBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +31,8 @@ public class SignupPage extends AppCompatActivity {
         emailAddressET = findViewById(R.id.emailAddressET);
         passwordET = findViewById(R.id.passwordET);
 
+        nextBtn = findViewById(R.id.nextBtn);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -37,6 +40,10 @@ public class SignupPage extends AppCompatActivity {
         });
         loginLink.setOnClickListener(f -> {
             finish();
+        });
+
+        nextBtn.setOnClickListener(s -> {
+            homeOwnerRenterGetData();
         });
     }
     private void navigateTo(Class<?> destination) {
@@ -57,17 +64,18 @@ public class SignupPage extends AppCompatActivity {
             return;
         }
 
+        if(lastname.isEmpty()) {
+            lastNameET.setError("Lastname is required");
+            lastNameET.requestFocus();
+            return;
+        }
+
         if(middlename.isEmpty()) {
             middleNameET.setError("Middlename is required");
             middleNameET.requestFocus();
             return;
         }
 
-        if(lastname.isEmpty()) {
-            lastNameET.setError("Lastname is required");
-            lastNameET.requestFocus();
-            return;
-        }
 
         if(phonenumber.isEmpty()) {
             phoneNumberET.setError("Phone number is required");

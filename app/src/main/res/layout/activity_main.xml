@@ -67,6 +67,7 @@
             android:layout_height="wrap_content"
             >
            <EditText
+               android:id="@+id/emailET"
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
                android:hint="Email Address"
@@ -75,6 +76,7 @@
                android:background="@drawable/edit_text_bg"/>
 
             <EditText
+                android:id="@+id/passwordET"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Password"
@@ -83,6 +85,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@drawable/edit_text_bg"/>
             <Button
+                android:id="@+id/loginBtn"
                 android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
                 android:background="@drawable/rounded_background"

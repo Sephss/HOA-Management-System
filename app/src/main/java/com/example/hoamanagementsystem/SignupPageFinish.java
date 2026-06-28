@@ -3,6 +3,7 @@ package com.example.hoamanagementsystem;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -14,11 +15,17 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.hoamanagementsystem.FirebaseServices.FirebaseAuthManager;
+import com.example.hoamanagementsystem.FirebaseServices.callback.RegisterHomeownerRenterCallback;
+import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
+import com.example.hoamanagementsystem.Modules.HomePage;
+
 public class SignupPageFinish extends AppCompatActivity {
     private TextView backLink;
     private EditText blockET, lotET, steetET;
     private Spinner residentTypeSpinner, lavanyaPhaseTypeSpinner;
     private String firstname, middlename, lastname, phonenumber, email, password;
+    private Button signupBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +37,8 @@ public class SignupPageFinish extends AppCompatActivity {
         blockET = findViewById(R.id.blockET);
         lotET = findViewById(R.id.lotET);
         steetET = findViewById(R.id.streetET);
+
+        signupBtn = findViewById(R.id.signupBtn);
 
         residentTypeSpinner = findViewById(R.id.residentTypeSpinner);
         lavanyaPhaseTypeSpinner = findViewById(R.id.lavanyaPhaseTypeSpinner);
@@ -51,6 +60,9 @@ public class SignupPageFinish extends AppCompatActivity {
         setUpSpinners();
         backLink.setOnClickListener(s -> {
             finish();
+        });
+        signupBtn.setOnClickListener(g -> {
+            signUpUser();
         });
     }
     private void navigateTo(Class<?> destination) {
@@ -89,6 +101,27 @@ public class SignupPageFinish extends AppCompatActivity {
             lavanyaPhaseTypeSpinner.requestFocus();
             return;
         }
+
+        setLoadingState();
+
+        HomeOwnerRentersModel details = new HomeOwnerRentersModel(firstname, middlename, lastname, phonenumber, email, block, lot, street, residentType, lavanyaPhaseType, "", "");
+
+        FirebaseAuthManager.signupUser(email, password, details, new RegisterHomeownerRenterCallback() {
+            @Override
+            public void onSuccess(String success) {
+                Toast.makeText(SignupPageFinish.this, success, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(SignupPageFinish.this, HomePage.class);
+                startActivity(intent);
+                setNormalState();
+                finish();
+            }
+
+            @Override
+            public void onFailure(String failed) {
+                setNormalState();
+                Toast.makeText(SignupPageFinish.this, failed, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
     private void setUpSpinners() {
         String[] residentTypes = {
@@ -123,5 +156,16 @@ public class SignupPageFinish extends AppCompatActivity {
 
         lavanyaPhaseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         lavanyaPhaseTypeSpinner.setAdapter(lavanyaPhaseAdapter);
+    }
+    private void setLoadingState() {
+        signupBtn.setEnabled(false);
+        signupBtn.setAlpha(0.5f);
+        signupBtn.setText("Signing in...");
+    }
+
+    private void setNormalState() {
+        signupBtn.setEnabled(true);
+        signupBtn.setAlpha(1f);
+        signupBtn.setText("Signin");
     }
 }

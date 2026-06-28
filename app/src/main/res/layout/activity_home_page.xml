@@ -346,9 +346,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:lineSpacingExtra="2dp"
                     android:text="All homeowners are invited to the general assembly on July 12, 9AM at the Clubhouse"
-                    android:textColor="@color/grey"
-                    android:lineSpacingExtra="2dp" />
+                    android:textColor="@color/grey" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -511,6 +511,7 @@
                 android:textSize="11sp" />
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/sampleLogout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
