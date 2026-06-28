@@ -15,7 +15,7 @@ import com.example.hoamanagementsystem.MainActivity;
 import com.example.hoamanagementsystem.R;
 
 public class HomePage extends AppCompatActivity {
-    private LinearLayout sampleLogout;
+    private LinearLayout sampleLogout, announcementLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +23,7 @@ public class HomePage extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home_page);
         sampleLogout= findViewById(R.id.sampleLogout);
+        announcementLink = findViewById(R.id.announcementLink);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -36,5 +37,12 @@ public class HomePage extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         });
+        announcementLink.setOnClickListener(l -> {
+            navigateTo(CreateAnnouncementPage.class);
+        });
+    }
+    private void navigateTo(Class<?> destination) {
+        Intent intent = new Intent(this, destination);
+        startActivity(intent);
     }
 }

@@ -53,8 +53,9 @@
                     android:textColor="@color/grey"
                     android:textSize="15sp" />
                 <EditText
+
                     android:layout_marginBottom="20dp"
-                    android:id="@+id/lastNameET"
+                    android:id="@+id/titleET"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/edit_text_bg"
@@ -101,7 +102,7 @@
 
 
                 <Spinner
-                    android:id="@+id/residentTypeSpinner"
+                    android:id="@+id/categorySpinner"
                     android:layout_width="match_parent"
                     android:padding="10dp"
                     android:layout_marginBottom="20dp"
@@ -169,7 +170,7 @@
                     android:textColor="@color/grey"
                     android:textSize="15sp" />
                 <EditText
-
+                    android:id="@+id/linkET"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/edit_text_bg"
@@ -183,7 +184,7 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/publishAnnouncementBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
