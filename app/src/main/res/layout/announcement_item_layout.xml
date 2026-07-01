@@ -23,7 +23,7 @@
             android:paddingBottom="4dp"
             android:background="@drawable/rounded_bg_announcement_tag"
             android:textStyle="bold"
-            android:textColor="@color/blue" />
+            android:textColor="@color/green" />
 
     </LinearLayout>
 
@@ -80,7 +80,7 @@
             android:layout_marginStart="6dp"
             android:text="attachment"
             android:textStyle="bold"
-            android:textColor="@color/blue" />
+            android:textColor="@color/green" />
 
     </LinearLayout>
 

@@ -11,7 +11,7 @@
         android:color="@color/grey" />
 
     <!-- Rounded corners -->
-    <corners android:radius="12dp" />
+    <corners android:radius="10dp" />
 
 
 </shape>
