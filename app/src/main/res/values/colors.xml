@@ -11,5 +11,18 @@
     <color name="lightestgreen">#C9FFDF</color>
     <color name="lightestblue">#CFE1FF</color>
     <color name="grey">#5C5F61</color>
+    <color name="darkergrey">#545657</color>
     <color name="darkgreyish">#EAF1FF</color>
+
+
+    <color name="greentxt">#599F81</color>
+    <color name="approvedandreadycolor">#C9FFDF</color>
+    <color name="greenminicard">#154729</color>
+    <color name="underreviewcolor">#FDF5E0</color>
+    <color name="rejectedbg">#FFC1C1</color>
+    <color name="rejectedtext">#E03F3F</color>
+    <color name="canceledtext">#E03F3F</color>
+    <color name="canceledbg">#D5D5D5</color>
+
+    <color name="approvedgreen">#159B4C</color>
 </resources>

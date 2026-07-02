@@ -1,7 +1,7 @@
 package com.example.hoamanagementsystem.Model;
 
 public class DocumentRequestModel {
-    String requestCategory, documentType, purpose, remarks, requestID, requesterID, requesterName, requesterImage, requesterEmail, requesterBlock, requesterLot, requesterStreet, requesterResidentType, requesterLavanyaPhaseType, requestStatus, requestTicket, requestDate, requestTime, requstTimestamp, adminNote, adminLinkResponse, adminName, adminRole;
+    String requestCategory, documentType, purpose, remarks, requestID, requesterID, requesterName, requesterImage, requesterEmail, requesterBlock, requesterLot, requesterStreet, requesterResidentType, requesterLavanyaPhaseType, requestStatus, requestTicket, requestDate, requestTime, requstTimestamp, adminNote, adminLinkResponse, adminName, adminRole, underReviewDateTime, approvedDateTime, rejectedDateTime;
     public DocumentRequestModel() {
 
     }
@@ -190,7 +190,31 @@ public class DocumentRequestModel {
         this.adminRole = adminRole;
     }
 
-    public DocumentRequestModel(String requestCategory, String documentType, String purpose, String remarks, String requestID, String requesterID, String requesterName, String requesterImage, String requesterEmail, String requesterBlock, String requesterLot, String requesterStreet, String requesterResidentType, String requesterLavanyaPhaseType, String requestStatus, String requestTicket, String requestDate, String requestTime, String requstTimestamp, String adminNote, String adminLinkResponse, String adminName, String adminRole) {
+    public String getUnderReviewDateTime() {
+        return underReviewDateTime;
+    }
+
+    public void setUnderReviewDateTime(String underReviewDateTime) {
+        this.underReviewDateTime = underReviewDateTime;
+    }
+
+    public String getApprovedDateTime() {
+        return approvedDateTime;
+    }
+
+    public void setApprovedDateTime(String approvedDateTime) {
+        this.approvedDateTime = approvedDateTime;
+    }
+
+    public String getRejectedDateTime() {
+        return rejectedDateTime;
+    }
+
+    public void setRejectedDateTime(String rejectedDateTime) {
+        this.rejectedDateTime = rejectedDateTime;
+    }
+
+    public DocumentRequestModel(String requestCategory, String documentType, String purpose, String remarks, String requestID, String requesterID, String requesterName, String requesterImage, String requesterEmail, String requesterBlock, String requesterLot, String requesterStreet, String requesterResidentType, String requesterLavanyaPhaseType, String requestStatus, String requestTicket, String requestDate, String requestTime, String requstTimestamp, String adminNote, String adminLinkResponse, String adminName, String adminRole, String underReviewDateTime, String approvedDateTime, String rejectedDateTime) {
         this.requestCategory = requestCategory;
         this.documentType = documentType;
         this.purpose = purpose;
@@ -214,5 +238,8 @@ public class DocumentRequestModel {
         this.adminLinkResponse = adminLinkResponse;
         this.adminName = adminName;
         this.adminRole = adminRole;
+        this.underReviewDateTime = underReviewDateTime;
+        this.approvedDateTime = approvedDateTime;
+        this.rejectedDateTime = rejectedDateTime;
     }
 }

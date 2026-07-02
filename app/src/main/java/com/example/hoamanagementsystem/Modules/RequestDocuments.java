@@ -1,5 +1,6 @@
 package com.example.hoamanagementsystem.Modules;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -101,12 +102,12 @@ public class RequestDocuments extends AppCompatActivity {
 
         setLoadingState();
 
-        DocumentRequestModel details = new DocumentRequestModel(requestCategory, documentType, purpose, remarks, "", uid, "", "", "", "", "", "", "","", "pending", "", currentDate, currentTime, theTimeStamp, "", "", "", "");
+        DocumentRequestModel details = new DocumentRequestModel(requestCategory, documentType, purpose, remarks, "", uid, "", "", "", "", "", "", "","", "pending", "", currentDate, currentTime, theTimeStamp, "", "", "", "","", "","");
 
         FirebaseDocumentsManager.createDocumentRequest(details, new CreateDocumentCallback() {
             @Override
             public void onSuccess(String success) {
-                Toast.makeText(RequestDocuments.this, success, Toast.LENGTH_SHORT).show();
+                navigateTo(SuccessDocumentRequestSubmitted.class);
                 setNormalState();
                 finish();
             }
@@ -212,5 +213,9 @@ public class RequestDocuments extends AppCompatActivity {
         submitRequestButton.setEnabled(true);
         submitRequestButton.setAlpha(1f);
         submitRequestButton.setText("Submit Request");
+    }
+    private void navigateTo(Class<?> destination) {
+        Intent intent = new Intent(this, destination);
+        startActivity(intent);
     }
 }
