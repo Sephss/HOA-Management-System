@@ -7,7 +7,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.hoamanagementsystem.FirebaseServices.callback.RegisterHomeownerRenterCallback;
-import com.example.hoamanagementsystem.FirebaseServices.callback.RoleCallback;
+import com.example.hoamanagementsystem.FirebaseServices.callback.UserDatasCallback;
 import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,23 +30,33 @@ public class FirebaseDatabaseManager {
             callback.onFailure("User failed to save");
         });
     }
-    public static void getUserRole(String uid, RoleCallback roleCallback) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(uid).child("role");
+    public static void getUserDatas(String uid, UserDatasCallback callback) {
+        DatabaseReference ref = FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(uid);
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-              if(snapshot.exists()) {
-                  String role = snapshot.getValue(String.class);
-                  roleCallback.onSuccess(role);
-              } else {
-                  roleCallback.onFailure("Role not found");
-              }
+                if (snapshot.exists()) {
+
+                    HomeOwnerRentersModel user =
+                            snapshot.getValue(HomeOwnerRentersModel.class);
+
+                    if (user != null) {
+                        callback.onSuccess(user);
+                    } else {
+                        callback.onFailure("Failed to parse user data");
+                    }
+
+                } else {
+                    callback.onFailure("User not found");
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                roleCallback.onFailure(error.getMessage());
+                callback.onFailure(error.getMessage());
             }
         });
     }

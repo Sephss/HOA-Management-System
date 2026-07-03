@@ -1,7 +1,7 @@
 package com.example.hoamanagementsystem.Model;
 
 public class DocumentRequestModel {
-    String requestCategory, documentType, purpose, remarks, requestID, requesterID, requesterName, requesterImage, requesterEmail, requesterBlock, requesterLot, requesterStreet, requesterResidentType, requesterLavanyaPhaseType, requestStatus, requestTicket, requestDate, requestTime, requstTimestamp, adminNote, adminLinkResponse, adminName, adminRole, underReviewDateTime, approvedDateTime, rejectedDateTime;
+    String requestCategory, documentType, purpose, remarks, link, requestID, requesterID, requesterName, requesterImage, requesterEmail, requesterBlock, requesterLot, requesterStreet, requesterResidentType, requesterLavanyaPhaseType, requestStatus, requestTicket, requestDate, requestTime, requstTimestamp, adminNote, adminLinkResponse, adminName, adminRole, underReviewDateTime, approvedDateTime, rejectedDateTime;
     public DocumentRequestModel() {
 
     }
@@ -214,11 +214,20 @@ public class DocumentRequestModel {
         this.rejectedDateTime = rejectedDateTime;
     }
 
-    public DocumentRequestModel(String requestCategory, String documentType, String purpose, String remarks, String requestID, String requesterID, String requesterName, String requesterImage, String requesterEmail, String requesterBlock, String requesterLot, String requesterStreet, String requesterResidentType, String requesterLavanyaPhaseType, String requestStatus, String requestTicket, String requestDate, String requestTime, String requstTimestamp, String adminNote, String adminLinkResponse, String adminName, String adminRole, String underReviewDateTime, String approvedDateTime, String rejectedDateTime) {
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    public DocumentRequestModel(String requestCategory, String documentType, String purpose, String remarks, String link, String requestID, String requesterID, String requesterName, String requesterImage, String requesterEmail, String requesterBlock, String requesterLot, String requesterStreet, String requesterResidentType, String requesterLavanyaPhaseType, String requestStatus, String requestTicket, String requestDate, String requestTime, String requstTimestamp, String adminNote, String adminLinkResponse, String adminName, String adminRole, String underReviewDateTime, String approvedDateTime, String rejectedDateTime) {
         this.requestCategory = requestCategory;
         this.documentType = documentType;
         this.purpose = purpose;
         this.remarks = remarks;
+        this.link = link;
         this.requestID = requestID;
         this.requesterID = requesterID;
         this.requesterName = requesterName;

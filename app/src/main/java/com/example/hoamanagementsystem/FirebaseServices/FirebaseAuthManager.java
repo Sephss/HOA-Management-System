@@ -2,7 +2,7 @@ package com.example.hoamanagementsystem.FirebaseServices;
 
 import com.example.hoamanagementsystem.FirebaseServices.callback.LoginUserCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.RegisterHomeownerRenterCallback;
-import com.example.hoamanagementsystem.FirebaseServices.callback.RoleCallback;
+import com.example.hoamanagementsystem.FirebaseServices.callback.UserDatasCallback;
 import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,10 +21,10 @@ public class FirebaseAuthManager {
             if(task.isSuccessful()) {
                 String uid = getCurrentUserUid();
                 if(uid != null) {
-                    FirebaseDatabaseManager.getUserRole(uid, new RoleCallback() {
+                    FirebaseDatabaseManager.getUserDatas(uid, new UserDatasCallback() {
                         @Override
-                        public void onSuccess(String role) {
-                            callback.onSuccess(getCurrentUser(), role);
+                        public void onSuccess(HomeOwnerRentersModel user) {
+                            callback.onSuccess(getCurrentUser(), user);
                         }
 
                         @Override

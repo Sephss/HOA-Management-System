@@ -104,7 +104,7 @@ public class SignupPageFinish extends AppCompatActivity {
 
         setLoadingState();
 
-        HomeOwnerRentersModel details = new HomeOwnerRentersModel(firstname, middlename, lastname, phonenumber, email, block, lot, street, residentType, lavanyaPhaseType, "", "");
+        HomeOwnerRentersModel details = new HomeOwnerRentersModel(firstname, middlename, lastname, phonenumber, email, block, lot, street, residentType, lavanyaPhaseType, "", "none");
 
         FirebaseAuthManager.signupUser(email, password, details, new RegisterHomeownerRenterCallback() {
             @Override

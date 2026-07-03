@@ -36,6 +36,9 @@ public class RequestDocuments extends AppCompatActivity {
     private LinearLayout documentTypeLayout;
     private Button submitRequestButton;
     private String uid;
+
+    private String theRole, theUid, theFullName, theEmail, theBlock, theLot, theStreet, theLavanyaPhaseType, theImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +53,17 @@ public class RequestDocuments extends AppCompatActivity {
         submitRequestButton = findViewById(R.id.submitRequestButton);
 
         uid = FirebaseAuthManager.getCurrentUserUid();
+
+        Intent datas = getIntent();
+        theRole = datas.getStringExtra("role");
+        theUid = datas.getStringExtra("uid");
+        theFullName = datas.getStringExtra("name");
+        theEmail = datas.getStringExtra("email");
+        theBlock = datas.getStringExtra("block");
+        theLot = datas.getStringExtra("lot");
+        theStreet = datas.getStringExtra("street");
+        theLavanyaPhaseType = datas.getStringExtra("lavanyaPhaseType");
+        theImage = datas.getStringExtra("image");
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -102,7 +116,7 @@ public class RequestDocuments extends AppCompatActivity {
 
         setLoadingState();
 
-        DocumentRequestModel details = new DocumentRequestModel(requestCategory, documentType, purpose, remarks, "", uid, "", "", "", "", "", "", "","", "pending", "", currentDate, currentTime, theTimeStamp, "", "", "", "","", "","");
+        DocumentRequestModel details = new DocumentRequestModel(requestCategory, documentType, purpose, remarks, "", "", uid, theFullName, theImage, theEmail, theBlock, theLot, theStreet, theRole,theLavanyaPhaseType, "pending", "", currentDate, currentTime, theTimeStamp, "", "", "", "","", "","");
 
         FirebaseDocumentsManager.createDocumentRequest(details, new CreateDocumentCallback() {
             @Override

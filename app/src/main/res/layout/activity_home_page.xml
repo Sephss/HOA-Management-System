@@ -179,6 +179,7 @@
                 android:textSize="13sp" />
 
             <TextView
+                android:id="@+id/fullName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="JC Rausa"
@@ -187,9 +188,17 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/userRole"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Home Owner - Blk 3 Lot 14"
+                android:text="Home Owner"
+                android:textColor="@color/darkgreyish"
+                android:textSize="13sp" />
+            <TextView
+                android:id="@+id/userLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Blk 3 Lot 14"
                 android:textColor="@color/darkgreyish"
                 android:textSize="13sp" />
         </LinearLayout>

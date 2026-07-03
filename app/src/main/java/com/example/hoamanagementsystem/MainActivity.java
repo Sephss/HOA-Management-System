@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseAuthManager;
 import com.example.hoamanagementsystem.FirebaseServices.callback.LoginUserCallback;
+import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.example.hoamanagementsystem.Modules.HomePage;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -71,11 +72,28 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseAuthManager.loginUser(email, password, new LoginUserCallback() {
             @Override
-            public void onSuccess(FirebaseUser user, String role) {
-                Intent intent = new Intent(MainActivity.this, HomePage.class);
-                startActivity(intent);
-                setNormalState();
-                finish();
+            public void onSuccess(FirebaseUser user, HomeOwnerRentersModel userDetails) {
+
+                if(userDetails.getRole().equals("Admin")) {
+                    Toast.makeText(MainActivity.this, "you are an admin", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent = new Intent(MainActivity.this, HomePage.class);
+                    intent.putExtra("role", userDetails.getRole());
+                    intent.putExtra("uid", userDetails.getUid());
+                    intent.putExtra("name", userDetails.getFirstName() + " " + userDetails.getLastName());
+                    intent.putExtra("email", userDetails.getEmail());
+                    intent.putExtra("block", userDetails.getBlock());
+                    intent.putExtra("lot", userDetails.getLot());
+                    intent.putExtra("street", userDetails.getStreet());
+                    intent.putExtra("lavanyaPhaseType", userDetails.getLavanyaPhaseType());
+                    intent.putExtra("image", userDetails.getImageUrl());
+
+                    startActivity(intent);
+                    setNormalState();
+                    finish();
+                }
+
+
             }
 
             @Override
