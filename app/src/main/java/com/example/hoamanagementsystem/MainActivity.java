@@ -76,6 +76,20 @@ public class MainActivity extends AppCompatActivity {
 
                 if(userDetails.getRole().equals("Admin")) {
                     Toast.makeText(MainActivity.this, "you are an admin", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, HomePage.class);
+                    intent.putExtra("role", userDetails.getRole());
+                    intent.putExtra("uid", userDetails.getUid());
+                    intent.putExtra("name", userDetails.getFirstName() + " " + userDetails.getLastName());
+                    intent.putExtra("email", userDetails.getEmail());
+                    intent.putExtra("block", userDetails.getBlock());
+                    intent.putExtra("lot", userDetails.getLot());
+                    intent.putExtra("street", userDetails.getStreet());
+                    intent.putExtra("lavanyaPhaseType", userDetails.getLavanyaPhaseType());
+                    intent.putExtra("image", userDetails.getImageUrl());
+
+                    startActivity(intent);
+                    setNormalState();
+                    finish();
                 } else {
                     Intent intent = new Intent(MainActivity.this, HomePage.class);
                     intent.putExtra("role", userDetails.getRole());

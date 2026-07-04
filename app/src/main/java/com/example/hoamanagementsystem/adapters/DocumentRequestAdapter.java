@@ -86,6 +86,7 @@ public class DocumentRequestAdapter
             Intent intent = new Intent(context, RequestDocumensClicked.class);
             intent.putExtra("role", request.getRequesterResidentType());
             intent.putExtra("uid", request.getRequesterID());
+            intent.putExtra("requestID", request.getRequestID());
             intent.putExtra("name", request.getRequesterName());
             intent.putExtra("email", request.getRequesterEmail());
             intent.putExtra("block", request.getRequesterBlock());

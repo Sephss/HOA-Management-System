@@ -8,28 +8,39 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.hoamanagementsystem.FirebaseServices.FirebaseAuthManager;
+import com.example.hoamanagementsystem.FirebaseServices.FirebaseDocumentsManager;
+import com.example.hoamanagementsystem.FirebaseServices.callback.UpdateDocumentStatusCallback;
 import com.example.hoamanagementsystem.R;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class RequestDocumensClicked extends AppCompatActivity {
     private String theRole, theUid, theFullName, theEmail, theBlock, theLot, theStreet, theLavanyaPhaseType, theImage, theDocumentType, theDocumentPurpose, theDateSubmitted, theDocumentCategory, theDocumentStatus, documentUnderReviewDate, documentApprovedDate, documentRejectedDate, documentPendingDate;
     private TextView documentType, documentPurpose, dateSubmitted, documentCategory, documentStatus, documentRequestor, documentRequestorLocation;
-
+    private String requestID;
     private LinearLayout requestSubmittedLayout, requestUnderReviewLayout, requestApprovedLayout, requestRejectedLayout, requestCancelledLayout, adminRemarksLayout;
     private ScrollView adminLayout, homeOwnersRentersLayout;
     private TextView requestTimeline;
     private TextView submittedDT, underReviewDT, approvedDT, rejectedDT, cancelledDT;
-
+    private String theCurrentLoggedInUserID;
     // Admin
     private LinearLayout underReviewBtn, approveBtn, rejectBtn;
     private Button saveUpdateBtn;
     private EditText remarksET, linkET;
+    private String setTheStatus = "none";
+    private TextView underReviewTV, approveTV, rejectedTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +73,8 @@ public class RequestDocumensClicked extends AppCompatActivity {
         requestCancelledLayout = findViewById(R.id.requestCancelledLayout);
         adminRemarksLayout = findViewById(R.id.adminRemarksLayout);
 
+        theCurrentLoggedInUserID = FirebaseAuthManager.getCurrentUserUid();
+
         // admin
         underReviewBtn = findViewById(R.id.underReviewBtn);
         approveBtn = findViewById(R.id.approveBtn);
@@ -69,6 +82,10 @@ public class RequestDocumensClicked extends AppCompatActivity {
         saveUpdateBtn = findViewById(R.id.saveUpdateBtn);
         remarksET = findViewById(R.id.remarksET);
         linkET = findViewById(R.id.linkET);
+        underReviewTV = findViewById(R.id.underReviewTV);
+        approveTV = findViewById(R.id.approveTV);
+        rejectedTV = findViewById(R.id.rejectedTV);
+
 
         Intent data = getIntent();
         theRole = data.getStringExtra("role");
@@ -92,6 +109,8 @@ public class RequestDocumensClicked extends AppCompatActivity {
         documentRejectedDate = data.getStringExtra("documentRejectedDate");
         documentPendingDate = data.getStringExtra("documentPendingDate");
 
+        requestID = data.getStringExtra("requestID");
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -102,6 +121,90 @@ public class RequestDocumensClicked extends AppCompatActivity {
         setupUIPerRole();
         setupTimeline();
         setupDateTexts();
+
+        saveUpdateBtn.setOnClickListener(s -> {
+            setUpStatusUpdate();
+        });
+
+        underReviewBtn.setOnClickListener(v -> {
+            setTheStatus = "under_review";
+            underReviewBtn.setBackgroundResource(R.drawable.rounded_background);
+            approveBtn.setBackgroundResource(R.drawable.document_request_bg);
+            rejectBtn.setBackgroundResource(R.drawable.document_request_bg);
+
+            underReviewTV.setTextColor(ContextCompat.getColor(this, R.color.white));
+            approveTV.setTextColor(ContextCompat.getColor(this, R.color.darkergrey));
+            rejectedTV.setTextColor(ContextCompat.getColor(this, R.color.darkergrey));
+        });
+        approveBtn.setOnClickListener(v -> {
+            setTheStatus = "approved";
+            underReviewBtn.setBackgroundResource(R.drawable.document_request_bg);
+            approveBtn.setBackgroundResource(R.drawable.rounded_background);
+            rejectBtn.setBackgroundResource(R.drawable.document_request_bg);
+
+            underReviewTV.setTextColor(ContextCompat.getColor(this, R.color.darkergrey));
+            approveTV.setTextColor(ContextCompat.getColor(this, R.color.white));
+            rejectedTV.setTextColor(ContextCompat.getColor(this, R.color.darkergrey));
+        });
+        rejectBtn.setOnClickListener(v -> {
+            setTheStatus = "rejected";
+            underReviewBtn.setBackgroundResource(R.drawable.document_request_bg);
+            approveBtn.setBackgroundResource(R.drawable.document_request_bg);
+            rejectBtn.setBackgroundResource(R.drawable.rounded_background);
+
+            underReviewTV.setTextColor(ContextCompat.getColor(this, R.color.darkergrey));
+            approveTV.setTextColor(ContextCompat.getColor(this, R.color.darkergrey));
+            rejectedTV.setTextColor(ContextCompat.getColor(this, R.color.white));
+        });
+    }
+    private void setUpStatusUpdate() {
+        if(setTheStatus.equals("none")) {
+            Toast.makeText(this, "Please select a status to update", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String remarks =
+                remarksET.getText().toString().trim();
+
+        String link =
+                linkET.getText().toString().trim();
+
+        String dateTime =
+                new SimpleDateFormat(
+                        "MMMM dd, yyyy • hh:mm a",
+                        Locale.getDefault()
+                ).format(new Date());
+
+        FirebaseDocumentsManager.updateDocumentRequest(
+                requestID,
+                setTheStatus,
+                remarks,
+                link,
+                dateTime,
+                new UpdateDocumentStatusCallback() {
+                    @Override
+                    public void onSuccess(String message) {
+
+                        Toast.makeText(
+                                RequestDocumensClicked.this,
+                                message,
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        finish();
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+
+                        Toast.makeText(
+                                RequestDocumensClicked.this,
+                                error,
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                }
+        );
     }
     private void setupDateTexts() {
         submittedDT.setText(documentPendingDate);
@@ -170,7 +273,21 @@ public class RequestDocumensClicked extends AppCompatActivity {
         }
     }
     private void setupUIPerRole() {
-        if(theRole.equals("Home Owners") || theRole.equals("Renters")) {
+        // Determine which UI to display based on request ownership.
+//
+// Home Owners and Renters can only access their own requests,
+// so their UID will always match the requesterID.
+//
+// HOA Officials (Admin, President, Secretary, Treasurer, etc.)
+// can view requests submitted by other users, so their UID will
+// not match the requesterID.
+//
+// If currentUserUid == requesterID:
+//      Show Homeowner/Renter UI
+//
+// If currentUserUid != requesterID:
+//      Show HOA Official UI
+        if(theCurrentLoggedInUserID.equals(theUid)) {
             requestTimeline.setVisibility(View.VISIBLE);
             homeOwnersRentersLayout.setVisibility(View.VISIBLE);
             adminLayout.setVisibility(View.GONE);

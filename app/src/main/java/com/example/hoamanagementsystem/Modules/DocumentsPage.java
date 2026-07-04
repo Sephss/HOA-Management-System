@@ -72,13 +72,37 @@ public class DocumentsPage extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        loadRequests();
-
+        loadDataBasedOnRole();
         newRequestBtn.setOnClickListener(g -> {
             navigateToCreateDocumentRequestPage();
         });
     }
-    private void loadRequests() {
+    private void loadDataBasedOnRole() {
+        if(theRole.equals("Home Owners") || theRole.equals("Renters")) {
+            loadDocumentRequestCurrentUser();
+        } else {
+            loadDocumentRequestsAdmin();
+        }
+    }
+    private void loadDocumentRequestsAdmin() {
+        FirebaseDocumentsManager.getAllDocumentRequests(
+                new GetDocumentRequestsCallback() {
+                    @Override
+                    public void onSuccess(List<DocumentRequestModel> requests) {
+
+                        requestList.clear();
+                        requestList.addAll(requests);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+
+                    }
+                }
+        );
+    }
+    private void loadDocumentRequestCurrentUser() {
 
         String currentUserId = FirebaseAuthManager.getCurrentUserUid();
 

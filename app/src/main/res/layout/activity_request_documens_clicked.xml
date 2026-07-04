@@ -169,7 +169,7 @@
         android:id="@+id/adminLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:visibility=""
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -251,6 +251,7 @@
 
 
                         <TextView
+                            android:id="@+id/underReviewTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Under Review"
@@ -272,6 +273,7 @@
 
 
                         <TextView
+                            android:id="@+id/approveTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Approve"
@@ -292,6 +294,7 @@
 
 
                         <TextView
+                            android:id="@+id/rejectedTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Rejected"
