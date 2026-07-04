@@ -106,6 +106,8 @@ public class DocumentRequestAdapter
             intent.putExtra("documentRejectedDate", request.getRejectedDateTime());
             intent.putExtra("documentPendingDate", request.getRequestDate() + ", " + request.getRequestTime());
 
+            intent.putExtra("adminLink", request.getAdminLinkResponse());
+            intent.putExtra("adminRemarks", request.getAdminNote());
 
             context.startActivity(intent);
         });

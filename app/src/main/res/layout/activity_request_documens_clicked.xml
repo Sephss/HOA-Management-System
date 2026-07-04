@@ -754,6 +754,7 @@
                          android:layout_height="wrap_content"
                          android:orientation="vertical">
                          <TextView
+                             android:id="@+id/remarksTV"
                              android:layout_width="wrap_content"
                              android:layout_height="wrap_content"
                              android:text="Verification completed successfully. The requested document has been approved and processed by the HOA administration."
@@ -762,6 +763,7 @@
                              android:textStyle="bold" />
 
                          <TextView
+                             android:id="@+id/linkTV"
                              android:layout_marginTop="5dp"
                              android:layout_width="wrap_content"
                              android:layout_height="wrap_content"

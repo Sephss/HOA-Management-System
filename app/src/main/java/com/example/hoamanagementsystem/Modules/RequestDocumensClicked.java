@@ -1,6 +1,7 @@
 package com.example.hoamanagementsystem.Modules;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -41,6 +42,8 @@ public class RequestDocumensClicked extends AppCompatActivity {
     private EditText remarksET, linkET;
     private String setTheStatus = "none";
     private TextView underReviewTV, approveTV, rejectedTV;
+    private String adminLink, adminRemarks;
+    private TextView linkTV, remarksTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +88,8 @@ public class RequestDocumensClicked extends AppCompatActivity {
         underReviewTV = findViewById(R.id.underReviewTV);
         approveTV = findViewById(R.id.approveTV);
         rejectedTV = findViewById(R.id.rejectedTV);
+        linkTV = findViewById(R.id.linkTV);
+        remarksTV = findViewById(R.id.remarksTV);
 
 
         Intent data = getIntent();
@@ -109,6 +114,9 @@ public class RequestDocumensClicked extends AppCompatActivity {
         documentRejectedDate = data.getStringExtra("documentRejectedDate");
         documentPendingDate = data.getStringExtra("documentPendingDate");
 
+        adminLink = data.getStringExtra("adminLink");
+        adminRemarks = data.getStringExtra("adminRemarks");
+
         requestID = data.getStringExtra("requestID");
 
 
@@ -121,9 +129,15 @@ public class RequestDocumensClicked extends AppCompatActivity {
         setupUIPerRole();
         setupTimeline();
         setupDateTexts();
+        setUpUIStateAdmin();
 
         saveUpdateBtn.setOnClickListener(s -> {
             setUpStatusUpdate();
+        });
+
+        linkTV.setOnClickListener(d -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(adminLink));
+            startActivity(intent);
         });
 
         underReviewBtn.setOnClickListener(v -> {
@@ -175,6 +189,12 @@ public class RequestDocumensClicked extends AppCompatActivity {
                         Locale.getDefault()
                 ).format(new Date());
 
+        if(remarks.isEmpty()) {
+            remarksET.setError("Please enter a remarks");
+            remarksET.requestFocus();
+            return;
+        }
+
         FirebaseDocumentsManager.updateDocumentRequest(
                 requestID,
                 setTheStatus,
@@ -206,6 +226,37 @@ public class RequestDocumensClicked extends AppCompatActivity {
                 }
         );
     }
+    private void setUpUIStateAdmin() {
+
+
+        if(theDocumentStatus.equals("under_review")) {
+            underReviewBtn.setEnabled(false);
+            underReviewBtn.setAlpha(0.5f);
+
+            underReviewBtn.setBackgroundResource(R.drawable.rounded_background);
+            underReviewTV.setTextColor(ContextCompat.getColor(this, R.color.white));
+        } else if(theDocumentStatus.equals("approved")) {
+            approveBtn.setEnabled(false);
+            approveBtn.setAlpha(0.5f);
+            underReviewBtn.setEnabled(false);
+            underReviewBtn.setAlpha(0.5f);
+            rejectBtn.setEnabled(false);
+            rejectBtn.setAlpha(0.5f);
+
+            approveBtn.setBackgroundResource(R.drawable.rounded_background);
+            approveTV.setTextColor(ContextCompat.getColor(this, R.color.white));
+        } else if(theDocumentStatus.equals("rejected")) {
+            approveBtn.setEnabled(false);
+            approveBtn.setAlpha(0.5f);
+            underReviewBtn.setEnabled(false);
+            underReviewBtn.setAlpha(0.5f);
+            rejectBtn.setEnabled(false);
+            rejectBtn.setAlpha(0.5f);
+
+            rejectBtn.setBackgroundResource(R.drawable.rounded_background);
+            rejectedTV.setTextColor(ContextCompat.getColor(this, R.color.white));
+        }
+    }
     private void setupDateTexts() {
         submittedDT.setText(documentPendingDate);
         underReviewDT.setText(documentUnderReviewDate);
@@ -224,6 +275,15 @@ public class RequestDocumensClicked extends AppCompatActivity {
         requestRejectedLayout.setVisibility(View.GONE);
         requestCancelledLayout.setVisibility(View.GONE);
         adminRemarksLayout.setVisibility(View.GONE);
+
+        remarksTV.setText(adminRemarks);
+
+        if(adminLink == null || adminLink.trim().isEmpty()) {
+            linkTV.setVisibility(View.GONE);
+        } else {
+            linkTV.setText(adminLink);
+            linkTV.setVisibility(View.VISIBLE);
+        }
 
         if (isNotEmpty(documentPendingDate)) {
             requestSubmittedLayout.setVisibility(View.VISIBLE);
@@ -271,6 +331,7 @@ public class RequestDocumensClicked extends AppCompatActivity {
 
             requestCancelledLayout.setVisibility(View.VISIBLE);
         }
+
     }
     private void setupUIPerRole() {
         // Determine which UI to display based on request ownership.
