@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Modules.SuccessDocumentRequestSubmitted">
+    tools:context=".Modules.SuccessGrievanceReport">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,7 +36,7 @@
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:text="Request submitted"/>
+                android:text="Report submitted"/>
 
             <TextView
                 android:gravity="center"
@@ -45,7 +45,7 @@
                 android:textColor="@color/grey"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                android:text="Your document request has been submitted. Go to Documents Module to check status"/>
+                android:text="Your Report has been submitted. Go to Grievance Module to check status"/>
         </LinearLayout>
 
         <LinearLayout
@@ -54,13 +54,13 @@
             android:gravity="center"
             android:orientation="vertical">
             <Button
-                android:id="@+id/homeBtn"
+                android:id="@+id/backBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-               android:layout_marginStart="20dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/rounded_background"
+                android:background="@drawable/grievance_btn_bg"
                 android:text="Back"
                 android:textColor="@color/white"
                 android:textSize="15sp"

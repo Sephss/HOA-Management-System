@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Modules.SubmitGrievanceReport">
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/grievanceblack"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/back_white" />
+
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="vertical">
+         <TextView
+             android:id="@+id/textView"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:baselineAligned="false"
+             android:text="Report an Incident"
+             android:textColor="@color/white"
+             android:textSize="15sp"
+             android:textStyle="bold"
+             app:layout_constraintStart_toStartOf="parent"
+             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+         <TextView
+
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:baselineAligned="false"
+             android:text="Grievance and incident management"
+             android:textColor="@color/greentxt"
+             android:textSize="12sp"
+             android:textStyle="bold"
+             app:layout_constraintStart_toStartOf="parent"
+             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+     </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/submitRequestButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="10dp"
+                android:text="Incident Type"
+                android:textColor="@color/grey"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView4">
+                <Spinner
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/incidentTypeSpinner"
+                    android:layout_width="match_parent"
+                    android:padding="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/incident_type_bg"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout7">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="Incident Title"
+                    android:textColor="@color/grey"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+
+                <EditText
+                    android:id="@+id/incidentTitleET"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/edit_text_bg"
+                    android:hint="Title of the incident..."
+                    android:padding="10dp"
+                    android:textColorHint="@color/grey" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:id="@+id/linearLayout10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout8">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="Full description"
+                    android:textColor="@color/grey"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/incidentDescriptionET"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/edit_text_bg"
+                    android:gravity="top|start"
+                    android:hint="Full description of the incident..."
+                    android:inputType="textMultiLine"
+                    android:maxLines="8"
+                    android:minLines="4"
+                    android:padding="10dp"
+                    android:scrollbars="vertical"
+                    android:textColorHint="@color/grey" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout10">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="Exact Location"
+                    android:textColor="@color/grey"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+
+                <EditText
+                    android:id="@+id/incidentLocationET"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/edit_text_bg"
+                    android:hint="Exact location of incident..."
+                    android:padding="10dp"
+                    android:textColorHint="@color/grey" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout11">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="Photo evidence"
+                    android:textColor="@color/grey"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+                <ImageView
+                    android:visibility="gone"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:id="@+id/imageDisplay"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:layout_marginBottom="20dp"
+                    android:scaleType="centerCrop"/>
+                <LinearLayout
+                    android:layout_marginBottom="20dp"
+                    android:id="@+id/selectImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:gravity="center"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/add_photo_bg"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/camera_icon"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tap to add photo evidence"
+                        android:textColor="@color/darkyellow"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/submitReportBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:background="@drawable/grievance_btn_bg"
+        android:text="Submit Report"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

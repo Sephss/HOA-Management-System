@@ -298,6 +298,7 @@ public class RequestDocumensClicked extends AppCompatActivity {
             if (isNotEmpty(documentUnderReviewDate)) {
                 requestUnderReviewLayout.setVisibility(View.VISIBLE);
             }
+            adminRemarksLayout.setVisibility(View.VISIBLE);
 
         } else if ("approved".equalsIgnoreCase(theDocumentStatus)) {
 

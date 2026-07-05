@@ -17,6 +17,7 @@ import com.example.hoamanagementsystem.FirebaseServices.FirebaseAuthManager;
 import com.example.hoamanagementsystem.FirebaseServices.callback.LoginUserCallback;
 import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.example.hoamanagementsystem.Modules.HomePage;
+import com.example.hoamanagementsystem.Session.UserSession;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseAuthManager.loginUser(email, password, new LoginUserCallback() {
             @Override
             public void onSuccess(FirebaseUser user, HomeOwnerRentersModel userDetails) {
-
+                UserSession.getInstance().setCurrentUser(userDetails);
                 if(userDetails.getRole().equals("Admin")) {
                     Toast.makeText(MainActivity.this, "you are an admin", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, HomePage.class);
