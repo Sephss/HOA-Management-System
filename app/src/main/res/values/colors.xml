@@ -29,4 +29,6 @@
 
 
     <color name="grievanceblack">#191C1E</color>
+    <color name="ticketbg">#312E21</color>
+    <color name="tickettxt">#EDDE9E</color>
 </resources>
