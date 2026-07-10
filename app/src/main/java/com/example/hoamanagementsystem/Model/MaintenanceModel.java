@@ -6,7 +6,7 @@ public class MaintenanceModel {
             exactLocation, photoEvidence, submitterName, submitterID,
             maintenanceStatus, maintenanceID, maintenanceTicket,
             dateSubmitted, timeSubmitted, adminRemarks,
-            underInvestigationDate, resolvedDate;
+            underInvestigationDate, resolvedDate, timestamp;
 
     public String getMaintenanceType() {
         return maintenanceType;
@@ -152,7 +152,7 @@ public class MaintenanceModel {
             String timeSubmitted,
             String adminRemarks,
             String underInvestigationDate,
-            String resolvedDate) {
+            String resolvedDate, String timestamp) {
 
         this.maintenanceType = maintenanceType;
         this.maintenanceTitle = maintenanceTitle;
@@ -170,6 +170,15 @@ public class MaintenanceModel {
         this.adminRemarks = adminRemarks;
         this.underInvestigationDate = underInvestigationDate;
         this.resolvedDate = resolvedDate;
+        this.timestamp = timestamp;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 
     public MaintenanceModel() {

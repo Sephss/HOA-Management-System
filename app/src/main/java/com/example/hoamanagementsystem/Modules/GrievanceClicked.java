@@ -99,28 +99,50 @@ public class GrievanceClicked extends AppCompatActivity {
             updateStatus();
         });
     }
+    private boolean isNotEmpty(String value) {
+        return value != null && !value.trim().isEmpty();
+    }
     private void setupProgressHomeowners() {
-        if(theStatus.equals("pending")) {
-            reportFiledLayout.setVisibility(View.VISIBLE);
-            dateFiled.setText(theDate);
-        } else if (theStatus.equals("under_investigation")) {
-            reportFiledLayout.setVisibility(View.VISIBLE);
-            underInvestigationLayout.setVisibility(View.VISIBLE);
-            dateFiled.setText(theDate);
-            underInvestigationTV.setText(theUnderInvestigationDate);
-        } else if (theStatus.equals("resolved")) {
-            reportFiledLayout.setVisibility(View.VISIBLE);
-            underInvestigationLayout.setVisibility(View.VISIBLE);
-            resolvedLayout.setVisibility(View.VISIBLE);
-            dateFiled.setText(theDate);
-            underInvestigationTV.setText(theUnderInvestigationDate);
-            resolvedTV.setText(theResolvedDate);
 
-            if(theAdminRemarks == null || theAdminRemarks.isEmpty() || theAdminRemarks.equals("")) {
-                adminRemarksLayout.setVisibility(View.GONE);
-            } else {
+        // Hide everything first
+        reportFiledLayout.setVisibility(View.GONE);
+        underInvestigationLayout.setVisibility(View.GONE);
+        resolvedLayout.setVisibility(View.GONE);
+        adminRemarksLayout.setVisibility(View.GONE);
+
+        remarksTV.setText(theAdminRemarks);
+
+        // Report Filed
+        if (isNotEmpty(theDate)) {
+            reportFiledLayout.setVisibility(View.VISIBLE);
+            dateFiled.setText(theDate);
+        }
+
+        if ("pending".equalsIgnoreCase(theStatus)) {
+
+            // Only Report Filed
+
+        } else if ("under_investigation".equalsIgnoreCase(theStatus)) {
+
+            if (isNotEmpty(theUnderInvestigationDate)) {
+                underInvestigationLayout.setVisibility(View.VISIBLE);
+                underInvestigationTV.setText(theUnderInvestigationDate);
+            }
+
+        } else if ("resolved".equalsIgnoreCase(theStatus)) {
+
+            if (isNotEmpty(theUnderInvestigationDate)) {
+                underInvestigationLayout.setVisibility(View.VISIBLE);
+                underInvestigationTV.setText(theUnderInvestigationDate);
+            }
+
+            if (isNotEmpty(theResolvedDate)) {
+                resolvedLayout.setVisibility(View.VISIBLE);
+                resolvedTV.setText(theResolvedDate);
+            }
+
+            if (isNotEmpty(theAdminRemarks)) {
                 adminRemarksLayout.setVisibility(View.VISIBLE);
-                remarksTV.setText(theAdminRemarks);
             }
         }
     }

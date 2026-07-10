@@ -77,7 +77,7 @@ public class HomePage extends AppCompatActivity {
         });
 
         maintenanceLink.setOnClickListener(s -> {
-            Intent intents = new Intent(HomePage.this, SubmitMaintenanceRequest.class);
+            Intent intents = new Intent(HomePage.this, MaintenancePage.class);
             startActivity(intents);
         });
 

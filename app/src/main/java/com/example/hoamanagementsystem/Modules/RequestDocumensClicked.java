@@ -228,7 +228,6 @@ public class RequestDocumensClicked extends AppCompatActivity {
     }
     private void setUpUIStateAdmin() {
 
-
         if(theDocumentStatus.equals("under_review")) {
             underReviewBtn.setEnabled(false);
             underReviewBtn.setAlpha(0.5f);

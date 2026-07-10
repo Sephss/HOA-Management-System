@@ -183,22 +183,26 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
         long timestamp = System.currentTimeMillis();
         String theTimeStamp = String.valueOf(timestamp);
 
+        setLoadingState();
+
         addImage.uploadImage(this, imageUri, new addImage.UploadCallback() {
             @Override
             public void onSuccess(String imageUrl) {
                 FirebaseTicketMaintenanceManager.generateTicketNumber(new TicketMaintenanceCallback() {
                     @Override
                     public void onSuccess(String ticketNumber) {
-                        MaintenanceModel data = new MaintenanceModel(maintenanceType, maintenanceTitle, theUrgencyLevel, maintenanceDescription, maintenanceLocation, imageUrl, currentUser.getFirstName() + " " + currentUser.getLastName(), currentUser.getUid(), "pending", "", ticketNumber, currentDate, currentTime, "", "", "");
+                        MaintenanceModel data = new MaintenanceModel(maintenanceType, maintenanceTitle, theUrgencyLevel, maintenanceDescription, maintenanceLocation, imageUrl, currentUser.getFirstName() + " " + currentUser.getLastName(), currentUser.getUid(), "pending", "", ticketNumber, currentDate, currentTime, "", "", "", theTimeStamp);
 
                         FirebaseMaintenanceManager.submitMaintenanceRequest(data, new SubmitMaintenanceCallback() {
                             @Override
                             public void onSuccess(String Success) {
                                 Toast.makeText(SubmitMaintenanceRequest.this, Success, Toast.LENGTH_SHORT).show();
+                                setNormalState();
                             }
 
                             @Override
                             public void onFailure(String error) {
+                                setNormalState();
                                 Toast.makeText(SubmitMaintenanceRequest.this, error, Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -206,6 +210,7 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
 
                     @Override
                     public void onFailure(String error) {
+                        setNormalState();
                         Toast.makeText(SubmitMaintenanceRequest.this, error, Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -213,6 +218,7 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
 
             @Override
             public void onFailure(Exception e) {
+                setNormalState();
                 Toast.makeText(SubmitMaintenanceRequest.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -234,5 +240,16 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
             selectImage.setVisibility(View.GONE);
             imageDisplay.setImageURI(imageUri);  // Load the image into the ImageView
         }
+    }
+    private void setLoadingState() {
+        submitRequestBtn.setEnabled(false);
+        submitRequestBtn.setAlpha(0.5f);
+        submitRequestBtn.setText("SUBMITTING...");
+    }
+
+    private void setNormalState() {
+        submitRequestBtn.setEnabled(true);
+        submitRequestBtn.setAlpha(1f);
+        submitRequestBtn.setText("SUBMIT REQUEST");
     }
 }
