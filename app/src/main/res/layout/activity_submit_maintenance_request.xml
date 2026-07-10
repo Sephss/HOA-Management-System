@@ -5,13 +5,13 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Modules.SubmitGrievanceReport">
+    tools:context=".Modules.SubmitMaintenanceRequest">
 
     <LinearLayout
         android:id="@+id/linearLayout4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/grievanceblack"
+        android:background="@color/green"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="20dp"
@@ -25,33 +25,33 @@
             android:layout_marginEnd="10dp"
             android:src="@drawable/back_white" />
 
-     <LinearLayout
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:orientation="vertical">
-         <TextView
-             android:id="@+id/textView"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:baselineAligned="false"
-             android:text="Report an Incident"
-             android:textColor="@color/white"
-             android:textSize="15sp"
-             android:textStyle="bold"
-             app:layout_constraintStart_toStartOf="parent"
-             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-         <TextView
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:text="Maintenance request"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+            <TextView
 
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:baselineAligned="false"
-             android:text="Grievance and incident management"
-             android:textColor="@color/greentxt"
-             android:textSize="12sp"
-             android:textStyle="bold"
-             app:layout_constraintStart_toStartOf="parent"
-             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
-     </LinearLayout>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:text="Submit your maintenance request"
+                android:textColor="@color/greentxt"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        </LinearLayout>
     </LinearLayout>
 
     <ScrollView
@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
                 android:layout_marginTop="10dp"
-                android:text="Incident Type"
+                android:text="Maintenance Type"
                 android:textColor="@color/grey"
                 android:textSize="15sp"
                 android:textStyle="bold"
@@ -90,16 +90,105 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView4">
 
                 <Spinner
-                    android:id="@+id/incidentTypeSpinner"
+                    android:id="@+id/maintenanceTypeSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="20dp"
-                    android:background="@drawable/incident_type_bg"
+                    android:background="@drawable/maintenance_type_bg"
                     android:padding="10dp" />
 
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:text="Urgency Level"
+                    android:textColor="@color/grey"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
+
+                <LinearLayout
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/routineBtn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/document_request_bg"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+
+                        <TextView
+                            android:id="@+id/underReviewTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Routine"
+                            android:textColor="@color/darkergrey"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/moderateBtn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/document_request_bg"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+
+
+                        <TextView
+                            android:id="@+id/approveTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Moderate"
+                            android:textColor="@color/darkergrey"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/urgentBtn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/document_request_bg"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+
+
+                        <TextView
+                            android:id="@+id/rejectedTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Urgent"
+                            android:textColor="@color/darkergrey"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -116,23 +205,25 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginBottom="5dp"
-                    android:text="Incident Title"
+                    android:text="Maintenance Title"
                     android:textColor="@color/grey"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
 
                 <EditText
-                    android:id="@+id/incidentTitleET"
+                    android:id="@+id/maintenanceTitleET"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/edit_text_bg"
-                    android:hint="Title of the incident..."
+                    android:hint="Title of the maintenance..."
                     android:padding="10dp"
                     android:textColorHint="@color/grey" />
             </LinearLayout>
+
+
 
             <LinearLayout
                 android:id="@+id/linearLayout10"
@@ -155,14 +246,14 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/incidentDescriptionET"
+                    android:id="@+id/maintenanceDescriptionET"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/edit_text_bg"
                     android:gravity="top|start"
-                    android:hint="Full description of the incident..."
+                    android:hint="Full description of the request..."
                     android:inputType="textMultiLine"
                     android:maxLines="8"
                     android:minLines="4"
@@ -193,13 +284,13 @@
 
 
                 <EditText
-                    android:id="@+id/incidentLocationET"
+                    android:id="@+id/maintenanceLocationET"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/edit_text_bg"
-                    android:hint="Exact location of incident..."
+                    android:hint="Exact location..."
                     android:padding="10dp"
                     android:textColorHint="@color/grey" />
             </LinearLayout>
@@ -266,8 +357,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:background="@drawable/grievance_btn_bg"
-        android:text="Submit Report"
+        android:background="@drawable/rounded_background"
+        android:text="Submit Request"
         android:textColor="@color/white"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"

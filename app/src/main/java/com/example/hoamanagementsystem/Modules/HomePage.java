@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomePage extends AppCompatActivity {
-    private LinearLayout sampleLogout, announcementLink, documentsLink, grievanceLink;
+    private LinearLayout sampleLogout, announcementLink, documentsLink, grievanceLink, maintenanceLink;
     private RecyclerView announcementRV;
     private com.example.hoamanagementsystem.Adapter.AnnouncementAdapter announcementAdapter;
     private ArrayList<AnnouncementModel> announcementList;
@@ -40,6 +40,7 @@ public class HomePage extends AppCompatActivity {
         announcementLink = findViewById(R.id.announcementLink);
         documentsLink = findViewById(R.id.documentsLink);
         grievanceLink = findViewById(R.id.grievanceLink);
+        maintenanceLink = findViewById(R.id.maintenanceLink);
 
         announcementRV  = findViewById(R.id.announcementRV);
         announcementList = new ArrayList<>();
@@ -73,6 +74,11 @@ public class HomePage extends AppCompatActivity {
 
         documentsLink.setOnClickListener(f -> {
             navigateToDocumentsPageWithData();
+        });
+
+        maintenanceLink.setOnClickListener(s -> {
+            Intent intents = new Intent(HomePage.this, SubmitMaintenanceRequest.class);
+            startActivity(intents);
         });
 
         grievanceLink.setOnClickListener(f -> {

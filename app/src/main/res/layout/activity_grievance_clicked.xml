@@ -320,9 +320,10 @@
 
                 <!-- REQUEST SUBMITTED -->
                 <LinearLayout
-                    android:id="@+id/requestSubmittedLayout"
+                    android:id="@+id/reportFiledLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:layout_marginBottom="16dp"
                     android:orientation="horizontal">
 
@@ -360,7 +361,7 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/submittedDT"
+                            android:id="@+id/dateFiled"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
@@ -371,10 +372,11 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- UNDER REVIEW -->
+                <!-- UNDER INVESTIGATION -->
                 <LinearLayout
-                    android:id="@+id/requestUnderReviewLayout"
+                    android:id="@+id/underInvestigationLayout"
                     android:layout_width="match_parent"
+                    android:visibility="gone"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:orientation="horizontal">
@@ -413,7 +415,7 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/underReviewDT"
+                            android:id="@+id/underInvestigationTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
@@ -428,7 +430,7 @@
                             android:background="@drawable/under_review_color"
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="8dp"
-                            android:text="We have received your request and it is now under review. Please wait while we verify the details."
+                            android:text="Your report is currently under investigation. Our team is reviewing the reported incident and will provide update as they become available."
                             android:textColor="@color/darkyellow"
                             android:textSize="12sp"
                             android:textStyle="bold" />
@@ -436,10 +438,11 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- APPROVED -->
+                <!-- resolved -->
                 <LinearLayout
-                    android:id="@+id/requestApprovedLayout"
+                    android:id="@+id/resolvedLayout"
                     android:layout_width="match_parent"
+                    android:visibility="gone"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:orientation="horizontal">
@@ -478,7 +481,7 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/approvedDT"
+                            android:id="@+id/resolvedTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
@@ -493,7 +496,7 @@
                             android:background="@drawable/approved_and_ready_color"
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="8dp"
-                            android:text="Processing of your request has been completed. Please check the request details for any updates or remarks."
+                            android:text="The investigation has been completed, and your reported incident has been marked as resolved. Please review any remarks or updates provided by the HOA management."
                             android:textColor="@color/green"
                             android:textSize="12sp"
                             android:textStyle="bold" />
@@ -505,6 +508,7 @@
 
                 <LinearLayout
                     android:id="@+id/adminRemarksLayout"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">

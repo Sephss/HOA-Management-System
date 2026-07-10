@@ -1,11 +1,14 @@
 package com.example.hoamanagementsystem.Modules;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -27,13 +30,16 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GrievanceClicked extends AppCompatActivity {
-    private String theTitle, theDescription, theType, theLocation, theStatus, theDate, theTicket,incidentReportID;
+    private String theTitle, theDescription, theType, theLocation, theStatus, theDate, theTicket,incidentReportID, theUnderInvestigationDate, theResolvedDate, theAdminRemarks;
     private TextView tvType, tvLocation, tvTicket, tvStatus, tvDate, tvTitle, tvDescription;
     private HomeOwnerRentersModel currentUser;
     private ScrollView homeOwnersRentersLayout, adminLayout;
     private Spinner updateStatusSpinner;
     private EditText remarksET;
     private Button saveUpdateBtn;
+
+    private LinearLayout adminRemarksLayout, resolvedLayout, underInvestigationLayout, reportFiledLayout;
+    private TextView dateFiled, underInvestigationTV, resolvedTV, remarksTV;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +56,11 @@ public class GrievanceClicked extends AppCompatActivity {
         theTicket = data.getStringExtra("ticket");
         incidentReportID = data.getStringExtra("incidentReportID");
 
+        theUnderInvestigationDate = data.getStringExtra("dateUnderInvestigation");
+        theResolvedDate = data.getStringExtra("dateResolved");
+        theAdminRemarks = data.getStringExtra("adminRemarks");
+
+
         tvType = findViewById(R.id.tvType);
         tvLocation = findViewById(R.id.tvLocation);
         tvTicket = findViewById(R.id.tvTicket);
@@ -60,6 +71,15 @@ public class GrievanceClicked extends AppCompatActivity {
         updateStatusSpinner = findViewById(R.id.updateStatusSpinner);
         remarksET = findViewById(R.id.remarksET);
         saveUpdateBtn = findViewById(R.id.saveUpdateBtn);
+
+        adminRemarksLayout = findViewById(R.id.adminRemarksLayout);
+        resolvedLayout = findViewById(R.id.resolvedLayout);
+        underInvestigationLayout = findViewById(R.id.underInvestigationLayout);
+        reportFiledLayout = findViewById(R.id.reportFiledLayout);
+        dateFiled = findViewById(R.id.dateFiled);
+        underInvestigationTV = findViewById(R.id.underInvestigationTV);
+        resolvedTV = findViewById(R.id.resolvedTV);
+        remarksTV = findViewById(R.id.remarksTV);
 
         homeOwnersRentersLayout = findViewById(R.id.homeOwnersRentersLayout);
         adminLayout = findViewById(R.id.adminLayout);
@@ -73,22 +93,89 @@ public class GrievanceClicked extends AppCompatActivity {
         displayDatas();
         loadUIBasedOnRole();
         setupSpinner();
+        setupProgressHomeowners();
 
         saveUpdateBtn.setOnClickListener(d -> {
             updateStatus();
         });
     }
+    private void setupProgressHomeowners() {
+        if(theStatus.equals("pending")) {
+            reportFiledLayout.setVisibility(View.VISIBLE);
+            dateFiled.setText(theDate);
+        } else if (theStatus.equals("under_investigation")) {
+            reportFiledLayout.setVisibility(View.VISIBLE);
+            underInvestigationLayout.setVisibility(View.VISIBLE);
+            dateFiled.setText(theDate);
+            underInvestigationTV.setText(theUnderInvestigationDate);
+        } else if (theStatus.equals("resolved")) {
+            reportFiledLayout.setVisibility(View.VISIBLE);
+            underInvestigationLayout.setVisibility(View.VISIBLE);
+            resolvedLayout.setVisibility(View.VISIBLE);
+            dateFiled.setText(theDate);
+            underInvestigationTV.setText(theUnderInvestigationDate);
+            resolvedTV.setText(theResolvedDate);
+
+            if(theAdminRemarks == null || theAdminRemarks.isEmpty() || theAdminRemarks.equals("")) {
+                adminRemarksLayout.setVisibility(View.GONE);
+            } else {
+                adminRemarksLayout.setVisibility(View.VISIBLE);
+                remarksTV.setText(theAdminRemarks);
+            }
+        }
+    }
     private void setupSpinner() {
-        List<String> incidentTypes = Arrays.asList(
+
+        List<String> statusList = Arrays.asList(
                 "Update Status",
                 "Under Investigation",
                 "Resolved"
         );
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, R.layout.spinner_item,
-                incidentTypes
-        );
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                this,
+                android.R.layout.simple_spinner_item,
+                statusList
+        ) {
+
+            @Override
+            public boolean isEnabled(int position) {
+
+                if (theStatus == null) {
+                    return true;
+                }
+
+                switch (theStatus) {
+
+                    case "under_investigation":
+                        // Disable only "Update Status"
+                        return position != 0;
+
+                    case "resolved":
+                        // Disable "Update Status" and "Under Investigation"
+                        return position == 2;
+
+                    default: // pending
+                        return true;
+                }
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+
+                View view = super.getDropDownView(position, convertView, parent);
+
+                TextView tv = view.findViewById(android.R.id.text1);
+
+                if (isEnabled(position)) {
+                    tv.setTextColor(Color.BLACK);
+                } else {
+                    tv.setTextColor(Color.GRAY);
+                }
+
+                return view;
+            }
+        };
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         updateStatusSpinner.setAdapter(adapter);

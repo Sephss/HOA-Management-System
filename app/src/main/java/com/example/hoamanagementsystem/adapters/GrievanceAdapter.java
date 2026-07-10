@@ -57,11 +57,15 @@ public class GrievanceAdapter
             intent.putExtra("title", grievance.getIncidentTitle());
             intent.putExtra("type", grievance.getIncidentType());
             intent.putExtra("status", grievance.getIncidentStatus());
-            intent.putExtra("date", grievance.getDateSubmitted());
+            intent.putExtra("date", grievance.getDateSubmitted() + ", " + grievance.getTimeSubmitted());
+            intent.putExtra("dateUnderInvestigation", grievance.getUnderInvestigationDate());
+            intent.putExtra("dateResolved", grievance.getResolvedDate());
             intent.putExtra("description", grievance.getIncidentDescription());
             intent.putExtra("ticket", grievance.getIncidentTicket());
             intent.putExtra("location", grievance.getIncidentExactLocation());
             intent.putExtra("incidentReportID", grievance.getIncidentReportID());
+
+            intent.putExtra("adminRemarks", grievance.getAdminRemarks());
 
             holder.itemView.getContext().startActivity(intent);
         });
