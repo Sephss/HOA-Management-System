@@ -1,5 +1,7 @@
 package com.example.hoamanagementsystem.FirebaseServices;
 
+import androidx.annotation.NonNull;
+
 import com.example.hoamanagementsystem.FirebaseServices.callback.FetchMaintenanceCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.SubmitMaintenanceCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.UpdateMaintenanceStatusCallback;
@@ -11,6 +13,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,10 +45,45 @@ public class FirebaseMaintenanceManager {
         getDatabase()
                 .orderByChild("submitterID")
                 .equalTo(userId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                .addValueEventListener(new ValueEventListener() {
 
                     @Override
-                    public void onDataChange(DataSnapshot snapshot) {
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        List<MaintenanceModel> requests = new ArrayList<>();
+
+                        for (DataSnapshot data : snapshot.getChildren()) {
+
+                            MaintenanceModel model =
+                                    data.getValue(MaintenanceModel.class);
+
+                            if (model != null) {
+                                requests.add(model);
+                            }
+                        }
+                        Collections.sort(requests, (a, b) ->
+                                Long.compare(
+                                        Long.parseLong(b.getTimestamp()),
+                                        Long.parseLong(a.getTimestamp())
+                                ));
+                        callback.onSuccess(requests);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        callback.onFailure(error.getMessage());
+                    }
+                });
+    }
+    public static void getAllMaintenanceRequests(
+            FetchMaintenanceCallback callback
+    ) {
+
+        getDatabase()
+                .addValueEventListener(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                         List<MaintenanceModel> requests = new ArrayList<>();
 
@@ -59,40 +97,20 @@ public class FirebaseMaintenanceManager {
                             }
                         }
 
+                        Collections.sort(requests, (a, b) ->
+                                Long.compare(
+                                        Long.parseLong(b.getTimestamp()),
+                                        Long.parseLong(a.getTimestamp())
+                                ));
+
                         callback.onSuccess(requests);
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError error) {
+                    public void onCancelled(@NonNull DatabaseError error) {
                         callback.onFailure(error.getMessage());
                     }
                 });
-    }
-    public static void getAllMaintenanceRequests(
-            FetchMaintenanceCallback callback
-    ) {
-
-        getDatabase()
-                .get()
-                .addOnSuccessListener(snapshot -> {
-
-                    List<MaintenanceModel> requests = new ArrayList<>();
-
-                    for (DataSnapshot data : snapshot.getChildren()) {
-
-                        MaintenanceModel model =
-                                data.getValue(MaintenanceModel.class);
-
-                        if (model != null) {
-                            requests.add(model);
-                        }
-                    }
-
-                    callback.onSuccess(requests);
-
-                })
-                .addOnFailureListener(e ->
-                        callback.onFailure(e.getMessage()));
     }
     public static void updateMaintenanceStatus(
             String maintenanceId,

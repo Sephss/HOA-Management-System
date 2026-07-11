@@ -1,8 +1,10 @@
 package com.example.hoamanagementsystem.Modules;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -203,11 +206,49 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
         maintenanceType.setText(theType);
         maintenanceLocation.setText(theLocation);
         maintenanceTicket.setText(theTicket);
-        maintenanceStatus.setText(theStatus);
         maintenanceTitle.setText(theTitle);
         maintenanceDescription.setText(theDescription);
         maintenanceDate.setText(theDate);
         maintenancePriority.setText(thePriority);
+
+        switch(theStatus) {
+            case "pending":
+                maintenanceStatus.setBackgroundResource(
+                        R.drawable.pending_document_request
+                );
+
+                maintenanceStatus.setTextColor(
+                        ContextCompat.getColor(this, R.color.darkyellow)
+                );
+
+                maintenanceStatus.setText("Pending");
+                break;
+
+            case "repair_in_progress":
+                maintenanceStatus.setBackgroundResource(
+                        R.drawable.under_review_color
+                );
+
+                maintenanceStatus.setTextColor(
+                        ContextCompat.getColor(this, R.color.darkyellow)
+                );
+
+                maintenanceStatus.setText("In Progress");
+                break;
+
+            case "completed":
+                maintenanceStatus.setBackgroundResource(
+                        R.drawable.approved_and_ready_color
+                );
+
+                maintenanceStatus.setTextColor(
+                        ContextCompat.getColor(this, R.color.green)
+                );
+
+                maintenanceStatus.setText("Completed");
+                break;
+
+        }
 
     }
     private void setupSpinner() {
@@ -218,10 +259,48 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
                 "Completed"
         );
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 this, R.layout.spinner_item,
                 maintenanceTypes
-        );
+        ) {
+            @Override
+            public boolean isEnabled(int position) {
+
+                if (theStatus == null) {
+                    return true;
+                }
+
+                switch (theStatus) {
+
+                    case "repair_in_progress":
+                        // Disable only "Update Status"
+                        return position != 0;
+
+                    case "completed":
+                        // Disable "Update Status" and "Under Investigation"
+                        return position == 2;
+
+                    default: // pending
+                        return true;
+                }
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+
+                View view = super.getDropDownView(position, convertView, parent);
+
+                TextView tv = view.findViewById(android.R.id.text1);
+
+                if (isEnabled(position)) {
+                    tv.setTextColor(Color.BLACK);
+                } else {
+                    tv.setTextColor(Color.GRAY);
+                }
+
+                return view;
+            }
+        };
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         updateStatusSpinner.setAdapter(adapter);

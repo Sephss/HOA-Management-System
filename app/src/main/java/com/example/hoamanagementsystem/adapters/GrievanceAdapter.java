@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hoamanagementsystem.Model.GrievanceModel;
@@ -49,7 +50,7 @@ public class GrievanceAdapter
 
         holder.title.setText(grievance.getIncidentTitle());
         holder.type.setText(grievance.getIncidentType());
-        holder.status.setText(grievance.getIncidentStatus());
+
         holder.date.setText(grievance.getDateSubmitted());
 
         holder.viewDetailsTV.setOnClickListener(s -> {
@@ -69,6 +70,44 @@ public class GrievanceAdapter
 
             holder.itemView.getContext().startActivity(intent);
         });
+
+        switch (grievance.getIncidentStatus()) {
+            case "pending":
+                holder.status.setBackgroundResource(
+                        R.drawable.pending_document_request
+                );
+
+                holder.status.setTextColor(
+                        ContextCompat.getColor(holder.itemView.getContext(), R.color.darkyellow)
+                );
+
+                holder.status.setText("Pending");
+                break;
+
+            case "under_investigation":
+                holder.status.setBackgroundResource(
+                        R.drawable.under_review_color
+                );
+
+                holder.status.setTextColor(
+                        ContextCompat.getColor(holder.itemView.getContext(), R.color.darkyellow)
+                );
+
+                holder.status.setText("Under Investigation");
+                break;
+
+            case "resolved":
+                holder.status.setBackgroundResource(
+                        R.drawable.approved_and_ready_color
+                );
+
+                holder.status.setTextColor(
+                        ContextCompat.getColor(holder.itemView.getContext(), R.color.green)
+                );
+
+                holder.status.setText("Resolved");
+                break;
+        }
     }
 
     @Override

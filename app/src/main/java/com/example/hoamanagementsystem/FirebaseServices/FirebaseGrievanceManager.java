@@ -1,5 +1,7 @@
 package com.example.hoamanagementsystem.FirebaseServices;
 
+import androidx.annotation.NonNull;
+
 import com.example.hoamanagementsystem.FirebaseServices.callback.FetchGrievanceCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.SubmitGrievanceCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.UpdateGrievanceStatusCallback;
@@ -12,6 +14,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FirebaseGrievanceManager {
@@ -39,59 +42,85 @@ public class FirebaseGrievanceManager {
                 .orderByChild("incidentReporterID")
                 .equalTo(uid);
 
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 List<GrievanceModel> reports = new ArrayList<>();
 
-                for(DataSnapshot data : snapshot.getChildren()) {
+                for (DataSnapshot data : snapshot.getChildren()) {
 
                     GrievanceModel report =
                             data.getValue(GrievanceModel.class);
 
-                    if(report != null) {
+                    if (report != null) {
                         reports.add(report);
                     }
                 }
+                Collections.sort(reports, (a, b) -> {
+                    long timeA = 0;
+                    long timeB = 0;
 
+                    try {
+                        timeA = Long.parseLong(a.getTimestamp());
+                    } catch (Exception ignored) {}
+
+                    try {
+                        timeB = Long.parseLong(b.getTimestamp());
+                    } catch (Exception ignored) {}
+
+                    return Long.compare(timeB, timeA);
+                });
                 callback.onSuccess(reports);
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error) {
                 callback.onFailure(error.getMessage());
             }
         });
     }
     public static void getAllReports(FetchGrievanceCallback callback) {
 
-        getDatabase().addListenerForSingleValueEvent(
-                new ValueEventListener() {
+        getDatabase().addValueEventListener(new ValueEventListener() {
 
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        List<GrievanceModel> reports = new ArrayList<>();
+                List<GrievanceModel> reports = new ArrayList<>();
 
-                        for (DataSnapshot data : snapshot.getChildren()) {
+                for (DataSnapshot data : snapshot.getChildren()) {
 
-                            GrievanceModel report =
-                                    data.getValue(GrievanceModel.class);
+                    GrievanceModel report =
+                            data.getValue(GrievanceModel.class);
 
-                            if (report != null) {
-                                reports.add(report);
-                            }
-                        }
-
-                        callback.onSuccess(reports);
+                    if (report != null) {
+                        reports.add(report);
                     }
+                }
+                Collections.sort(reports, (a, b) -> {
+                    long timeA = 0;
+                    long timeB = 0;
 
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                        callback.onFailure(error.getMessage());
-                    }
+                    try {
+                        timeA = Long.parseLong(a.getTimestamp());
+                    } catch (Exception ignored) {}
+
+                    try {
+                        timeB = Long.parseLong(b.getTimestamp());
+                    } catch (Exception ignored) {}
+
+                    return Long.compare(timeB, timeA);
                 });
+
+                callback.onSuccess(reports);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onFailure(error.getMessage());
+            }
+        });
     }
     public static void updateGrievanceStatus(
             String reportId,

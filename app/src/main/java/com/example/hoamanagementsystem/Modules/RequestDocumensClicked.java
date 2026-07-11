@@ -1,5 +1,6 @@
 package com.example.hoamanagementsystem.Modules;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,7 +39,7 @@ public class RequestDocumensClicked extends AppCompatActivity {
     private String theCurrentLoggedInUserID;
     // Admin
     private LinearLayout underReviewBtn, approveBtn, rejectBtn;
-    private Button saveUpdateBtn;
+    private Button saveUpdateBtn, cancelRequestBtn;
     private EditText remarksET, linkET;
     private String setTheStatus = "none";
     private TextView underReviewTV, approveTV, rejectedTV;
@@ -75,7 +76,7 @@ public class RequestDocumensClicked extends AppCompatActivity {
         requestRejectedLayout = findViewById(R.id.requestRejectedLayout);
         requestCancelledLayout = findViewById(R.id.requestCancelledLayout);
         adminRemarksLayout = findViewById(R.id.adminRemarksLayout);
-
+        cancelRequestBtn = findViewById(R.id.cancelRequestBtn);
         theCurrentLoggedInUserID = FirebaseAuthManager.getCurrentUserUid();
 
         // admin
@@ -135,6 +136,31 @@ public class RequestDocumensClicked extends AppCompatActivity {
             setUpStatusUpdate();
         });
 
+        cancelRequestBtn.setOnClickListener(v -> {
+            new AlertDialog.Builder(this)
+                    .setTitle("Cancel Request")
+                    .setMessage("Are you sure you want to cancel this request?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        String dateTime =
+                                new SimpleDateFormat(
+                                        "MMMM dd, yyyy • hh:mm a",
+                                        Locale.getDefault()
+                                ).format(new Date());
+
+                        setTheStatus = "cancelled";
+
+
+                         cancelTheRequest();
+                        cancelledDT.setText(dateTime);
+                        requestCancelledLayout.setVisibility(View.VISIBLE);
+                        cancelRequestBtn.setVisibility(View.GONE);
+
+                        Toast.makeText(this, "Request cancelled.", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
+                    .show();
+        });
+
         linkTV.setOnClickListener(d -> {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(adminLink));
             startActivity(intent);
@@ -170,6 +196,51 @@ public class RequestDocumensClicked extends AppCompatActivity {
             approveTV.setTextColor(ContextCompat.getColor(this, R.color.darkergrey));
             rejectedTV.setTextColor(ContextCompat.getColor(this, R.color.white));
         });
+    }
+    private void cancelTheRequest() {
+        if(setTheStatus.equals("none")) {
+            Toast.makeText(this, "Please select a status to update", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        String dateTime =
+                new SimpleDateFormat(
+                        "MMMM dd, yyyy • hh:mm a",
+                        Locale.getDefault()
+                ).format(new Date());
+
+
+        FirebaseDocumentsManager.updateDocumentRequest(
+                requestID,
+                setTheStatus,
+                "cancelled by user",
+                "cancelled by user",
+                dateTime,
+                new UpdateDocumentStatusCallback() {
+                    @Override
+                    public void onSuccess(String message) {
+
+                        Toast.makeText(
+                                RequestDocumensClicked.this,
+                                message,
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        finish();
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+
+                        Toast.makeText(
+                                RequestDocumensClicked.this,
+                                error,
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                }
+        );
     }
     private void setUpStatusUpdate() {
         if(setTheStatus.equals("none")) {
@@ -254,6 +325,14 @@ public class RequestDocumensClicked extends AppCompatActivity {
 
             rejectBtn.setBackgroundResource(R.drawable.rounded_background);
             rejectedTV.setTextColor(ContextCompat.getColor(this, R.color.white));
+        } else if (theDocumentStatus.equals("cancelled")) {
+            approveBtn.setEnabled(false);
+            approveBtn.setAlpha(0.5f);
+            underReviewBtn.setEnabled(false);
+            underReviewBtn.setAlpha(0.5f);
+            rejectBtn.setEnabled(false);
+            rejectBtn.setAlpha(0.5f);
+
         }
     }
     private void setupDateTexts() {
@@ -363,9 +442,65 @@ public class RequestDocumensClicked extends AppCompatActivity {
         documentPurpose.setText(theDocumentPurpose);
         dateSubmitted.setText(theDateSubmitted);
         documentCategory.setText(theDocumentCategory);
-        documentStatus.setText(theDocumentStatus);
         documentRequestor.setText(theFullName);
         documentRequestorLocation.setText(theBlock + " " + theLot + " " + theStreet);
+
+        switch (theDocumentStatus) {
+
+            case "pending":
+                documentStatus.setBackgroundResource(
+                        R.drawable.pending_document_request
+                );
+                documentStatus.setTextColor(
+                        this.getColor(R.color.darkyellow)
+
+                );
+                documentStatus.setText("Pending");
+
+                cancelRequestBtn.setVisibility(View.VISIBLE);
+                break;
+
+            case "under review":
+                documentStatus.setBackgroundResource(
+                        R.drawable.under_review_color
+                );
+                documentStatus.setTextColor(
+                        this.getColor(R.color.darkyellow)
+                );
+                documentStatus.setText("Under Review");
+                break;
+
+            case "approved":
+            case "approved and ready":
+                documentStatus.setBackgroundResource(
+                        R.drawable.approved_and_ready_color
+                );
+                documentStatus.setTextColor(
+                        this.getColor(R.color.green)
+                );
+                documentStatus.setText("Approved");
+                break;
+
+            case "rejected":
+                documentStatus.setBackgroundResource(
+                        R.drawable.rejected_color
+                );
+                documentStatus.setTextColor(
+                        this.getColor(R.color.rejectedtext)
+                );
+                documentStatus.setText("Rejected");
+                break;
+
+            case "cancelled":
+                documentStatus.setBackgroundResource(
+                        R.drawable.cancelled_color
+                );
+                documentStatus.setTextColor(
+                        this.getColor(R.color.black)
+                );
+                documentStatus.setText("Cancelled");
+                break;
+        }
 
     }
 }

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hoamanagementsystem.Model.MaintenanceModel;
@@ -45,7 +46,6 @@ public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceAdapter.
         holder.tvDescription.setText(model.getFullDescription());
         holder.tvLocation.setText(model.getExactLocation());
         holder.tvDate.setText(model.getDateSubmitted());
-        holder.tvStatus.setText(model.getMaintenanceStatus());
 
         holder.viewDetailsTV.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), MaintenanceRequestClicked.class);
@@ -65,6 +65,44 @@ public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceAdapter.
             intent.putExtra("dateCompleted", model.getResolvedDate());
             holder.itemView.getContext().startActivity(intent);
         });
+
+        switch (model.getMaintenanceStatus()) {
+            case "pending":
+                holder.tvStatus.setBackgroundResource(
+                        R.drawable.pending_document_request
+                );
+
+                holder.tvStatus.setTextColor(
+                        ContextCompat.getColor(holder.itemView.getContext(), R.color.darkyellow)
+                );
+
+                holder.tvStatus.setText("Pending");
+                break;
+
+            case "repair_in_progress":
+                holder.tvStatus.setBackgroundResource(
+                        R.drawable.under_review_color
+                );
+
+                holder.tvStatus.setTextColor(
+                        ContextCompat.getColor(holder.itemView.getContext(), R.color.darkyellow)
+                );
+
+                holder.tvStatus.setText("In Progress");
+                break;
+
+            case "completed":
+                holder.tvStatus.setBackgroundResource(
+                        R.drawable.approved_and_ready_color
+                );
+
+                holder.tvStatus.setTextColor(
+                        ContextCompat.getColor(holder.itemView.getContext(), R.color.green)
+                );
+
+                holder.tvStatus.setText("Completed");
+                break;
+        }
 
     }
 

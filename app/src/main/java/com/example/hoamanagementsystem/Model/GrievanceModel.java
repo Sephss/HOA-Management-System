@@ -1,7 +1,7 @@
 package com.example.hoamanagementsystem.Model;
 
 public class GrievanceModel {
-    String incidentType, incidentTitle, incidentDescription, incidentExactLocation, incidentImageUrl, incidentReportID, incidentReporterID, incidentStatus, incidentTicket, dateSubmitted, timeSubmitted, adminRemarks, underInvestigationDate, resolvedDate;
+    String incidentType, incidentTitle, incidentDescription, incidentExactLocation, incidentImageUrl, incidentReportID, incidentReporterID, incidentStatus, incidentTicket, dateSubmitted, timeSubmitted, adminRemarks, underInvestigationDate, resolvedDate, timestamp;
     public GrievanceModel () {
 
     }
@@ -118,6 +118,14 @@ public class GrievanceModel {
         this.resolvedDate = resolvedDate;
     }
 
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public GrievanceModel(String incidentType,
                           String incidentTitle,
                           String incidentDescription,
@@ -131,7 +139,7 @@ public class GrievanceModel {
                           String timeSubmitted,
                           String adminRemarks,
                           String underInvestigationDate,
-                          String resolvedDate) {
+                          String resolvedDate, String timestamp) {
         this.incidentType = incidentType;
         this.incidentTitle = incidentTitle;
         this.incidentDescription = incidentDescription;
@@ -146,6 +154,6 @@ public class GrievanceModel {
         this.adminRemarks = adminRemarks;
         this.underInvestigationDate = underInvestigationDate;
         this.resolvedDate = resolvedDate;
-
+        this.timestamp = timestamp;
     }
 }

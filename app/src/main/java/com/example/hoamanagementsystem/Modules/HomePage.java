@@ -93,7 +93,7 @@ public class HomePage extends AppCompatActivity {
             startActivity(intent);
         });
         announcementLink.setOnClickListener(l -> {
-            navigateTo(CreateAnnouncementPage.class);
+            navigateTo(AnnouncementPage.class);
         });
         fetchAnnouncements();
     }

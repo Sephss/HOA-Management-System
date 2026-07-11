@@ -156,7 +156,7 @@ public class SubmitGrievanceReport extends AppCompatActivity {
                 FirebaseTicketCounterManager.generateTicketNumber(new TicketCallback() {
                     @Override
                     public void onSuccess(String ticketNumber) {
-                        GrievanceModel grievanceModel = new GrievanceModel(incidentType, title, description, location, imageUrl, "", currentUserID, "pending", ticketNumber,currentDate, currentTime, "", "", "");
+                        GrievanceModel grievanceModel = new GrievanceModel(incidentType, title, description, location, imageUrl, "", currentUserID, "pending", ticketNumber,currentDate, currentTime, "", "", "", theTimeStamp);
 
                         FirebaseGrievanceManager.createReport(grievanceModel, new SubmitGrievanceCallback() {
                             @Override

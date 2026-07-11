@@ -133,7 +133,9 @@ public class DocumentRequestAdapter
                 );
                 statusText.setTextColor(
                         context.getColor(R.color.darkyellow)
+
                 );
+                statusText.setText("Pending");
                 break;
 
             case "under review":
@@ -143,6 +145,7 @@ public class DocumentRequestAdapter
                 statusText.setTextColor(
                         context.getColor(R.color.darkyellow)
                 );
+                statusText.setText("Under Review");
                 break;
 
             case "approved":
@@ -153,6 +156,7 @@ public class DocumentRequestAdapter
                 statusText.setTextColor(
                         context.getColor(R.color.green)
                 );
+                statusText.setText("Approved");
                 break;
 
             case "rejected":
@@ -162,6 +166,7 @@ public class DocumentRequestAdapter
                 statusText.setTextColor(
                         context.getColor(R.color.rejectedtext)
                 );
+                statusText.setText("Rejected");
                 break;
 
             case "cancelled":
@@ -171,6 +176,7 @@ public class DocumentRequestAdapter
                 statusText.setTextColor(
                         context.getColor(R.color.black)
                 );
+                statusText.setText("Cancelled");
                 break;
         }
     }

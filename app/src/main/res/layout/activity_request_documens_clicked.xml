@@ -253,7 +253,7 @@
                             android:id="@+id/underReviewTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Under Review"
+                            android:text="Review"
                             android:textColor="@color/darkergrey"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -710,7 +710,22 @@
                     </LinearLayout>
                 </LinearLayout>
 
-             <LinearLayout
+                <Button
+                    android:id="@+id/cancelRequestBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:visibility="gone"
+                    android:background="@drawable/edit_text_bg"
+                    android:text="Cancel Request"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+
+                <LinearLayout
                  android:id="@+id/adminRemarksLayout"
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"

@@ -1,14 +1,19 @@
 package com.example.hoamanagementsystem.FirebaseServices;
 
+import androidx.annotation.NonNull;
+
 import com.example.hoamanagementsystem.FirebaseServices.callback.CreateDocumentCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.GetDocumentRequestsCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.UpdateDocumentStatusCallback;
 import com.example.hoamanagementsystem.Model.DocumentRequestModel;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,26 +46,43 @@ public class FirebaseDocumentsManager {
         getDatabase()
                 .orderByChild("requesterID")
                 .equalTo(userId)
-                .get()
-                .addOnSuccessListener(snapshot -> {
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    List<DocumentRequestModel> requests = new ArrayList<>();
+                        List<DocumentRequestModel> requests = new ArrayList<>();
 
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 
-                        DocumentRequestModel model =
-                                dataSnapshot.getValue(DocumentRequestModel.class);
+                            DocumentRequestModel model =
+                                    dataSnapshot.getValue(DocumentRequestModel.class);
 
-                        if(model != null) {
-                            requests.add(model);
+                            if (model != null) {
+                                requests.add(model);
+                            }
                         }
+                        Collections.sort(requests, (a, b) -> {
+                            long timeA = 0;
+                            long timeB = 0;
+
+                            try {
+                                timeA = Long.parseLong(a.getRequstTimestamp());
+                            } catch (Exception ignored) {}
+
+                            try {
+                                timeB = Long.parseLong(b.getRequstTimestamp());
+                            } catch (Exception ignored) {}
+
+                            return Long.compare(timeB, timeA);
+                        });
+                        callback.onSuccess(requests);
+                        callback.onSuccess(requests);
                     }
 
-                    callback.onSuccess(requests);
-
-                })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e.getMessage());
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        callback.onFailure(error.getMessage());
+                    }
                 });
     }
     public static void getAllDocumentRequests(
@@ -68,26 +90,43 @@ public class FirebaseDocumentsManager {
     ) {
 
         getDatabase()
-                .get()
-                .addOnSuccessListener(snapshot -> {
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    List<DocumentRequestModel> requests = new ArrayList<>();
+                        List<DocumentRequestModel> requests = new ArrayList<>();
 
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
 
-                        DocumentRequestModel model =
-                                dataSnapshot.getValue(DocumentRequestModel.class);
+                            DocumentRequestModel model =
+                                    dataSnapshot.getValue(DocumentRequestModel.class);
 
-                        if (model != null) {
-                            requests.add(model);
+                            if (model != null) {
+                                requests.add(model);
+                            }
                         }
+
+                        Collections.sort(requests, (a, b) -> {
+                            long timeA = 0;
+                            long timeB = 0;
+
+                            try {
+                                timeA = Long.parseLong(a.getRequstTimestamp());
+                            } catch (Exception ignored) {}
+
+                            try {
+                                timeB = Long.parseLong(b.getRequstTimestamp());
+                            } catch (Exception ignored) {}
+
+                            return Long.compare(timeB, timeA);
+                        });
+                        callback.onSuccess(requests);
                     }
 
-                    callback.onSuccess(requests);
-
-                })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e.getMessage());
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        callback.onFailure(error.getMessage());
+                    }
                 });
     }
     public static void updateDocumentRequest(
@@ -125,6 +164,10 @@ public class FirebaseDocumentsManager {
 
             case "rejected":
                 updates.put("rejectedDateTime", dateTime);
+                break;
+
+            case "cancelled":
+                updates.put("cancelledDateTime", dateTime);
                 break;
 
             default:

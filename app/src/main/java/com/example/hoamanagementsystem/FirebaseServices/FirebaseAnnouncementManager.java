@@ -1,13 +1,18 @@
 package com.example.hoamanagementsystem.FirebaseServices;
 
+import androidx.annotation.NonNull;
+
 import com.example.hoamanagementsystem.FirebaseServices.callback.CreateAnnouncementCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.FetchAnnouncementsCallback;
 import com.example.hoamanagementsystem.Model.AnnouncementModel;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FirebaseAnnouncementManager {
@@ -31,24 +36,33 @@ public class FirebaseAnnouncementManager {
     }
     public static void fetchAnnouncements(FetchAnnouncementsCallback callback) {
 
-        getDatabase().get()
-                .addOnSuccessListener(snapshot -> {
+        getDatabase().addValueEventListener(new ValueEventListener() {
 
-                    List<AnnouncementModel> announcements = new ArrayList<>();
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    for (DataSnapshot ds : snapshot.getChildren()) {
+                List<AnnouncementModel> announcements = new ArrayList<>();
 
-                        AnnouncementModel announcement =
-                                ds.getValue(AnnouncementModel.class);
+                for (DataSnapshot ds : snapshot.getChildren()) {
 
-                        if (announcement != null) {
-                            announcements.add(announcement);
-                        }
+                    AnnouncementModel announcement =
+                            ds.getValue(AnnouncementModel.class);
+
+                    if (announcement != null) {
+                        announcements.add(announcement);
                     }
+                }
+                // Sort by timestamp (newest first)
+                Collections.sort(announcements, (a, b) ->
+                        Long.compare(b.getTimestamp(), a.getTimestamp()));
 
-                    callback.onSuccess(announcements);
-                })
-                .addOnFailureListener(e ->
-                        callback.onFailure(e.getMessage()));
+                callback.onSuccess(announcements);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onFailure(error.getMessage());
+            }
+        });
     }
 }

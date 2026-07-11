@@ -1,7 +1,7 @@
 package com.example.hoamanagementsystem.Model;
 
 public class DocumentRequestModel {
-    String requestCategory, documentType, purpose, remarks, link, requestID, requesterID, requesterName, requesterImage, requesterEmail, requesterBlock, requesterLot, requesterStreet, requesterResidentType, requesterLavanyaPhaseType, requestStatus, requestTicket, requestDate, requestTime, requstTimestamp, adminNote, adminLinkResponse, adminName, adminRole, underReviewDateTime, approvedDateTime, rejectedDateTime;
+    String requestCategory, documentType, purpose, remarks, link, requestID, requesterID, requesterName, requesterImage, requesterEmail, requesterBlock, requesterLot, requesterStreet, requesterResidentType, requesterLavanyaPhaseType, requestStatus, requestTicket, requestDate, requestTime, requstTimestamp, adminNote, adminLinkResponse, adminName, adminRole, underReviewDateTime, approvedDateTime, rejectedDateTime, cancelledDateTime;
     public DocumentRequestModel() {
 
     }
@@ -222,7 +222,15 @@ public class DocumentRequestModel {
         this.link = link;
     }
 
-    public DocumentRequestModel(String requestCategory, String documentType, String purpose, String remarks, String link, String requestID, String requesterID, String requesterName, String requesterImage, String requesterEmail, String requesterBlock, String requesterLot, String requesterStreet, String requesterResidentType, String requesterLavanyaPhaseType, String requestStatus, String requestTicket, String requestDate, String requestTime, String requstTimestamp, String adminNote, String adminLinkResponse, String adminName, String adminRole, String underReviewDateTime, String approvedDateTime, String rejectedDateTime) {
+    public String getCancelledDateTime() {
+        return cancelledDateTime;
+    }
+
+    public void setCancelledDateTime(String cancelledDateTime) {
+        this.cancelledDateTime = cancelledDateTime;
+    }
+
+    public DocumentRequestModel(String requestCategory, String documentType, String purpose, String remarks, String link, String requestID, String requesterID, String requesterName, String requesterImage, String requesterEmail, String requesterBlock, String requesterLot, String requesterStreet, String requesterResidentType, String requesterLavanyaPhaseType, String requestStatus, String requestTicket, String requestDate, String requestTime, String requstTimestamp, String adminNote, String adminLinkResponse, String adminName, String adminRole, String underReviewDateTime, String approvedDateTime, String rejectedDateTime, String cancelledDateTime) {
         this.requestCategory = requestCategory;
         this.documentType = documentType;
         this.purpose = purpose;
@@ -250,5 +258,6 @@ public class DocumentRequestModel {
         this.underReviewDateTime = underReviewDateTime;
         this.approvedDateTime = approvedDateTime;
         this.rejectedDateTime = rejectedDateTime;
+        this.cancelledDateTime = cancelledDateTime;
     }
 }

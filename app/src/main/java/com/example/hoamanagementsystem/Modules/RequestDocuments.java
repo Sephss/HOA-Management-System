@@ -116,7 +116,7 @@ public class RequestDocuments extends AppCompatActivity {
 
         setLoadingState();
 
-        DocumentRequestModel details = new DocumentRequestModel(requestCategory, documentType, purpose, remarks, "", "", uid, theFullName, theImage, theEmail, theBlock, theLot, theStreet, theRole,theLavanyaPhaseType, "pending", "", currentDate, currentTime, theTimeStamp, "", "", "", "","", "","");
+        DocumentRequestModel details = new DocumentRequestModel(requestCategory, documentType, purpose, remarks, "", "", uid, theFullName, theImage, theEmail, theBlock, theLot, theStreet, theRole,theLavanyaPhaseType, "pending", "", currentDate, currentTime, theTimeStamp, "", "", "", "","", "","", "");
 
         FirebaseDocumentsManager.createDocumentRequest(details, new CreateDocumentCallback() {
             @Override
@@ -141,6 +141,7 @@ public class RequestDocuments extends AppCompatActivity {
         requestCategories.add("Documents & Forms");
         requestCategories.add("Membership");
         requestCategories.add("Elecom");
+        requestCategories.add("Finance");
 
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(
                 this,
@@ -195,6 +196,26 @@ public class RequestDocuments extends AppCompatActivity {
                         documentTypes.add("Election Schedule");
                         documentTypes.add("Election Results");
                         documentTypes.add("Other Election Documents");
+                        break;
+
+                    case "Finance":
+                        documentTypes.add("Statement of Account");
+                        documentTypes.add("Official Receipt");
+                        documentTypes.add("Payment Verification");
+                        documentTypes.add("Billing Concern");
+                        documentTypes.add("Assessment Fee Inquiry");
+                        documentTypes.add("Payment Plan Request");
+                        documentTypes.add("Payment Extension Request");
+                        documentTypes.add("Refund Request");
+                        documentTypes.add("Late Fee Concern");
+                        documentTypes.add("Overpayment Concern");
+                        documentTypes.add("Account Balance Inquiry");
+                        documentTypes.add("Special Assessment Inquiry");
+                        documentTypes.add("Ownership Transfer Request");
+                        documentTypes.add("Deposit Refund Request");
+                        documentTypes.add("Expense Reimbursement");
+                        documentTypes.add("Financial Records Request");
+                        documentTypes.add("Others");
                         break;
                 }
 

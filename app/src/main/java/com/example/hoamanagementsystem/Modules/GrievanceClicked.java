@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -156,7 +157,7 @@ public class GrievanceClicked extends AppCompatActivity {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 this,
-                android.R.layout.simple_spinner_item,
+                R.layout.spinner_item,
                 statusList
         ) {
 
@@ -274,6 +275,45 @@ public class GrievanceClicked extends AppCompatActivity {
         tvDate.setText(theDate);
         tvTitle.setText(theTitle);
         tvDescription.setText(theDescription);
+
+        switch(theStatus) {
+            case "pending":
+                tvStatus.setBackgroundResource(
+                        R.drawable.pending_document_request
+                );
+
+                tvStatus.setTextColor(
+                        ContextCompat.getColor(this, R.color.darkyellow)
+                );
+
+                tvStatus.setText("Pending");
+                break;
+
+            case "under_investigation":
+                tvStatus.setBackgroundResource(
+                        R.drawable.under_review_color
+                );
+
+                tvStatus.setTextColor(
+                        ContextCompat.getColor(this, R.color.darkyellow)
+                );
+
+                tvStatus.setText("Under Investigation");
+                break;
+
+            case "resolved":
+                tvStatus.setBackgroundResource(
+                        R.drawable.approved_and_ready_color
+                );
+
+                tvStatus.setTextColor(
+                        ContextCompat.getColor(this, R.color.green)
+                );
+
+                tvStatus.setText("Resolved");
+                break;
+
+        }
     }
     private void setLoadingState() {
         saveUpdateBtn.setEnabled(false);
