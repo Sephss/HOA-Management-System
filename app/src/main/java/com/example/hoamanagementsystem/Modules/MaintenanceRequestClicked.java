@@ -22,20 +22,28 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseMaintenanceManager;
+import com.example.hoamanagementsystem.FirebaseServices.FirebaseNotificationManager;
+import com.example.hoamanagementsystem.FirebaseServices.callback.CreateNotificationCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.UpdateMaintenanceStatusCallback;
 import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
+import com.example.hoamanagementsystem.Model.NotificationModel;
 import com.example.hoamanagementsystem.R;
 import com.example.hoamanagementsystem.Session.UserSession;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class MaintenanceRequestClicked extends AppCompatActivity {
     private TextView maintenanceType, maintenanceLocation, maintenanceTicket, maintenanceStatus, maintenanceTitle, maintenanceDescription, maintenanceDate, maintenancePriority;
-    private String theType, adminRemarksText, dateTimeRepairInProgress, dateCompleted, dateTime, theMaintenanceID, theLocation, theTicket, theStatus, theTitle, theDescription, theDate, thePriority;
+    private String theType, theSubmitterID, adminRemarksText, dateTimeRepairInProgress, dateCompleted, dateTime, theMaintenanceID, theLocation, theTicket, theStatus, theTitle, theDescription, theDate, thePriority;
     private HomeOwnerRentersModel currentUser;
     private Spinner updateStatusSpinner;
     private EditText remarksET;
+    private String notifStatus = "none";
 
     private Button saveUpdateBtn;
 
@@ -91,6 +99,7 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
         dateTimeRepairInProgress = data.getStringExtra("dateTimeRepairInProgress");
         dateCompleted = data.getStringExtra("dateCompleted");
         adminRemarksText = data.getStringExtra("adminRemarksText");
+        theSubmitterID = data.getStringExtra("submitterID");
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -159,6 +168,26 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
         }
     }
     private void updateStatus() {
+        long timestamp = System.currentTimeMillis();
+        String theTimestamp = String.valueOf(timestamp);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "MMMM dd, yyyy",
+                Locale.ENGLISH
+        );
+
+        dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
+
+        String currentDate = dateFormat.format(new Date());
+
+        SimpleDateFormat timeFormat = new SimpleDateFormat(
+                "hh:mm a",
+                Locale.ENGLISH
+        );
+
+        timeFormat.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
+
+        String currentTime = timeFormat.format(new Date());
+
         String theStatus = "";
         String selectedStatus = updateStatusSpinner
                 .getSelectedItem()
@@ -168,8 +197,10 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
             Toast.makeText(this, "Select status", Toast.LENGTH_SHORT).show();
         } else if (selectedStatus.equals("Repair in progress")) {
             theStatus = "repair_in_progress";
+            notifStatus = "repair_in_progress";
         } else if (selectedStatus.equals("Completed")) {
             theStatus = "completed";
+            notifStatus = "repair_in_progress";
         }
 
         String remarks = remarksET.getText().toString();
@@ -179,10 +210,45 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
                 java.util.Locale.getDefault()
         ).format(new java.util.Date());
 
+        String notifMessage;
+
+        switch (theStatus.toLowerCase()) {
+
+            case "repair_in_progress":
+                notifMessage = "Your maintenance request is now in progress.";
+                break;
+
+            case "completed":
+                notifMessage = "Your maintenance request has been marked as completed.";
+                break;
+
+            default:
+                notifMessage = "Your maintenance request has been updated.";
+                break;
+        }
+
         FirebaseMaintenanceManager.updateMaintenanceStatus(theMaintenanceID, theStatus, remarks, dateTime, new UpdateMaintenanceStatusCallback() {
             @Override
             public void onSuccess(String message) {
-                Toast.makeText(MaintenanceRequestClicked.this, message, Toast.LENGTH_SHORT).show();
+
+                NotificationModel data = new NotificationModel("", theSubmitterID,"", remarks, theType, notifStatus, currentDate, currentTime, theMaintenanceID, "no", theTimestamp, notifMessage);
+
+                FirebaseNotificationManager.createNotification(data, new CreateNotificationCallback() {
+                    @Override
+                    public void onSuccess(String success) {
+                        Toast.makeText(
+                                MaintenanceRequestClicked.this,
+                                message,
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+
+                    }
+                });
+
             }
 
             @Override

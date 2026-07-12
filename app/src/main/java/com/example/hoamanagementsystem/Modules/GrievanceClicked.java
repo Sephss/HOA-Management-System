@@ -22,22 +22,30 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseGrievanceManager;
+import com.example.hoamanagementsystem.FirebaseServices.FirebaseNotificationManager;
+import com.example.hoamanagementsystem.FirebaseServices.callback.CreateNotificationCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.UpdateGrievanceStatusCallback;
 import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
+import com.example.hoamanagementsystem.Model.NotificationModel;
 import com.example.hoamanagementsystem.R;
 import com.example.hoamanagementsystem.Session.UserSession;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class GrievanceClicked extends AppCompatActivity {
-    private String theTitle, theDescription, theType, theLocation, theStatus, theDate, theTicket,incidentReportID, theUnderInvestigationDate, theResolvedDate, theAdminRemarks;
+    private String theTitle, theDescription, theType, theLocation, theStatus, theReporterID, theDate, theTicket,incidentReportID, theUnderInvestigationDate, theResolvedDate, theAdminRemarks;
     private TextView tvType, tvLocation, tvTicket, tvStatus, tvDate, tvTitle, tvDescription;
     private HomeOwnerRentersModel currentUser;
     private ScrollView homeOwnersRentersLayout, adminLayout;
     private Spinner updateStatusSpinner;
     private EditText remarksET;
     private Button saveUpdateBtn;
+    private String notifStatus = "none";
 
     private LinearLayout adminRemarksLayout, resolvedLayout, underInvestigationLayout, reportFiledLayout;
     private TextView dateFiled, underInvestigationTV, resolvedTV, remarksTV;
@@ -60,6 +68,7 @@ public class GrievanceClicked extends AppCompatActivity {
         theUnderInvestigationDate = data.getStringExtra("dateUnderInvestigation");
         theResolvedDate = data.getStringExtra("dateResolved");
         theAdminRemarks = data.getStringExtra("adminRemarks");
+        theReporterID = data.getStringExtra("reporterID");
 
 
         tvType = findViewById(R.id.tvType);
@@ -204,6 +213,25 @@ public class GrievanceClicked extends AppCompatActivity {
         updateStatusSpinner.setAdapter(adapter);
     }
     private void updateStatus() {
+        long timestamp = System.currentTimeMillis();
+        String theTimestamp = String.valueOf(timestamp);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "MMMM dd, yyyy",
+                Locale.ENGLISH
+        );
+
+        dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
+
+        String currentDate = dateFormat.format(new Date());
+
+        SimpleDateFormat timeFormat = new SimpleDateFormat(
+                "hh:mm a",
+                Locale.ENGLISH
+        );
+
+        timeFormat.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
+
+        String currentTime = timeFormat.format(new Date());
         String theStatus = "";
 
         String selectedStatus = updateStatusSpinner
@@ -214,8 +242,10 @@ public class GrievanceClicked extends AppCompatActivity {
             Toast.makeText(this, "Select status", Toast.LENGTH_SHORT).show();
         } else if (selectedStatus.equals("Under Investigation")) {
             theStatus = "under_investigation";
+            notifStatus = "under_investigation";
         } else if (selectedStatus.equals("Resolved")) {
             theStatus = "resolved";
+            notifStatus = "resolved";
         }
 
         String remarks = remarksET
@@ -228,6 +258,23 @@ public class GrievanceClicked extends AppCompatActivity {
                 java.util.Locale.getDefault()
         ).format(new java.util.Date());
 
+        String notifMessage;
+
+        switch (theStatus.toLowerCase()) {
+
+            case "under_investigation":
+                notifMessage = "Your incident report is now under investigation.";
+                break;
+
+            case "resolved":
+                notifMessage = "Your incident report has been marked as resolved.";
+                break;
+
+            default:
+                notifMessage = "Your incident report has been updated.";
+                break;
+        }
+
         setLoadingState();
         FirebaseGrievanceManager.updateGrievanceStatus(
                 incidentReportID,
@@ -238,12 +285,27 @@ public class GrievanceClicked extends AppCompatActivity {
                     @Override
                     public void onSuccess(String message) {
 
-                        Toast.makeText(
-                                GrievanceClicked.this,
-                                message,
-                                Toast.LENGTH_SHORT
-                        ).show();
-                        setNormalState();
+
+                        NotificationModel data = new NotificationModel("", theReporterID,"", remarks, theType, notifStatus, currentDate, currentTime, incidentReportID, "no", theTimestamp, notifMessage);
+
+                        FirebaseNotificationManager.createNotification(data, new CreateNotificationCallback() {
+                            @Override
+                            public void onSuccess(String success) {
+                                Toast.makeText(
+                                        GrievanceClicked.this,
+                                        message,
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                                setNormalState();
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+
+                            }
+                        });
+
+
                     }
 
                     @Override

@@ -21,12 +21,16 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseAuthManager;
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseDocumentsManager;
+import com.example.hoamanagementsystem.FirebaseServices.FirebaseNotificationManager;
+import com.example.hoamanagementsystem.FirebaseServices.callback.CreateNotificationCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.UpdateDocumentStatusCallback;
+import com.example.hoamanagementsystem.Model.NotificationModel;
 import com.example.hoamanagementsystem.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class RequestDocumensClicked extends AppCompatActivity {
     private String theRole, theUid, theFullName, theEmail, theBlock, theLot, theStreet, theLavanyaPhaseType, theImage, theDocumentType, theDocumentPurpose, theDateSubmitted, theDocumentCategory, theDocumentStatus, documentUnderReviewDate, documentApprovedDate, documentRejectedDate, documentPendingDate;
@@ -243,6 +247,26 @@ public class RequestDocumensClicked extends AppCompatActivity {
         );
     }
     private void setUpStatusUpdate() {
+        long timestamp = System.currentTimeMillis();
+        String theTimestamp = String.valueOf(timestamp);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "MMMM dd, yyyy",
+                Locale.ENGLISH
+        );
+
+        dateFormat.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
+
+        String currentDate = dateFormat.format(new Date());
+
+        SimpleDateFormat timeFormat = new SimpleDateFormat(
+                "hh:mm a",
+                Locale.ENGLISH
+        );
+
+        timeFormat.setTimeZone(TimeZone.getTimeZone("Asia/Manila"));
+
+        String currentTime = timeFormat.format(new Date());
+
         if(setTheStatus.equals("none")) {
             Toast.makeText(this, "Please select a status to update", Toast.LENGTH_SHORT).show();
             return;
@@ -266,6 +290,28 @@ public class RequestDocumensClicked extends AppCompatActivity {
             return;
         }
 
+        String notifMessage;
+
+        switch (setTheStatus.toLowerCase()) {
+
+            case "under_review":
+                notifMessage = "Your " + theDocumentType + " request is now under review.";
+                break;
+
+            case "approved":
+                notifMessage = "Your " + theDocumentType + " request has been approved.";
+                break;
+
+            case "rejected":
+                notifMessage = "Your " + theDocumentType + " request has been rejected. Please review the remarks for more information.";
+                break;
+
+
+            default:
+                notifMessage = "Your document request has been updated.";
+                break;
+        }
+
         FirebaseDocumentsManager.updateDocumentRequest(
                 requestID,
                 setTheStatus,
@@ -276,13 +322,27 @@ public class RequestDocumensClicked extends AppCompatActivity {
                     @Override
                     public void onSuccess(String message) {
 
-                        Toast.makeText(
-                                RequestDocumensClicked.this,
-                                message,
-                                Toast.LENGTH_SHORT
-                        ).show();
+                        NotificationModel data = new NotificationModel("", theUid,"", remarks, theDocumentType, setTheStatus, currentDate, currentTime, requestID, "no", theTimestamp, notifMessage);
 
-                        finish();
+                        FirebaseNotificationManager.createNotification(data, new CreateNotificationCallback() {
+                            @Override
+                            public void onSuccess(String success) {
+                                Toast.makeText(
+                                        RequestDocumensClicked.this,
+                                        message,
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
+                                finish();
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+
+                            }
+                        });
+
+
                     }
 
                     @Override

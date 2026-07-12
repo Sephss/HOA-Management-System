@@ -63,6 +63,8 @@ public class MaintenanceAdapter extends RecyclerView.Adapter<MaintenanceAdapter.
             intent.putExtra("dateTimeRepairInProgress", model.getUnderInvestigationDate());
             intent.putExtra("maintenanceID", model.getMaintenanceID());
             intent.putExtra("dateCompleted", model.getResolvedDate());
+
+            intent.putExtra("submitterID", model.getSubmitterID());
             holder.itemView.getContext().startActivity(intent);
         });
 

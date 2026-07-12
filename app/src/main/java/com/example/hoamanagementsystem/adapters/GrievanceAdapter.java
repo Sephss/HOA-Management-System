@@ -66,6 +66,8 @@ public class GrievanceAdapter
             intent.putExtra("location", grievance.getIncidentExactLocation());
             intent.putExtra("incidentReportID", grievance.getIncidentReportID());
 
+            intent.putExtra("reporterID", grievance.getIncidentReporterID());
+
             intent.putExtra("adminRemarks", grievance.getAdminRemarks());
 
             holder.itemView.getContext().startActivity(intent);

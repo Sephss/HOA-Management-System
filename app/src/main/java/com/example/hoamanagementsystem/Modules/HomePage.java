@@ -2,6 +2,8 @@ package com.example.hoamanagementsystem.Modules;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -15,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseAnnouncementManager;
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseAuthManager;
+import com.example.hoamanagementsystem.FirebaseServices.FirebaseNotificationManager;
+import com.example.hoamanagementsystem.FirebaseServices.callback.CheckUnreadNotificationCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.FetchAnnouncementsCallback;
 import com.example.hoamanagementsystem.MainActivity;
 import com.example.hoamanagementsystem.Model.AnnouncementModel;
@@ -29,6 +33,14 @@ public class HomePage extends AppCompatActivity {
     private com.example.hoamanagementsystem.Adapter.AnnouncementAdapter announcementAdapter;
     private ArrayList<AnnouncementModel> announcementList;
     private TextView fullName, userRole, userLocation;
+    private ImageView notificationIcon;
+    private View notificationDot;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkNotificationStatus();
+    }
 
     private String theRole, theUid, theFullName, theEmail, theBlock, theLot, theStreet, theLavanyaPhaseType, theImage;
     @Override
@@ -41,6 +53,10 @@ public class HomePage extends AppCompatActivity {
         documentsLink = findViewById(R.id.documentsLink);
         grievanceLink = findViewById(R.id.grievanceLink);
         maintenanceLink = findViewById(R.id.maintenanceLink);
+
+        notificationDot = findViewById(R.id.notificationDot);
+
+        notificationIcon = findViewById(R.id.notificationIcon);
 
         announcementRV  = findViewById(R.id.announcementRV);
         announcementList = new ArrayList<>();
@@ -68,6 +84,11 @@ public class HomePage extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+        checkNotificationStatus();
+
+        notificationIcon.setOnClickListener(dd -> {
+            navigateTo(NotificationPage.class);
         });
 
         setUpData();
@@ -137,6 +158,26 @@ public class HomePage extends AppCompatActivity {
         intent.putExtra("image", theImage);
         startActivity(intent);
 
+    }
+    private void checkNotificationStatus() {
+        FirebaseNotificationManager.hasUnreadNotifications(
+                theUid,
+                new CheckUnreadNotificationCallback() {
+                    @Override
+                    public void onResult(boolean hasUnread) {
+
+                        if (hasUnread) {
+                            notificationDot.setVisibility(View.VISIBLE);
+                        } else {
+                            notificationDot.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        notificationDot.setVisibility(View.GONE);
+                    }
+                });
     }
 
 }
