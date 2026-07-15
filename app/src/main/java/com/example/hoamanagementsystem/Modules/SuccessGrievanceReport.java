@@ -15,6 +15,12 @@ public class SuccessGrievanceReport extends AppCompatActivity {
     private Button backBtn;
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);

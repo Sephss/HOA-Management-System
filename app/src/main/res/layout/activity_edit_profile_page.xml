@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Modules.EditProfilePage">
+
+    <LinearLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/backBtn"
+            android:layout_width="25dp"
+            android:layout_marginEnd="10dp"
+            android:layout_height="25dp"
+            android:src="@drawable/baseline_arrow_back_24"/>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit profile"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/nextBtn"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/theProfile"
+            android:layout_width="120dp"
+            android:layout_marginBottom="10dp"
+            android:layout_height="120dp"
+            android:src="@drawable/profile_placeholder" />
+
+        <EditText
+            android:id="@+id/firstNameET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:background="@drawable/edit_text_bg"
+            android:hint="First Name"
+            android:padding="15dp"
+            android:textColorHint="@color/grey" />
+
+        <EditText
+            android:id="@+id/lastNameET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_bg"
+            android:hint="Last Name"
+            android:padding="15dp"
+            android:layout_marginTop="10dp"
+            android:textColorHint="@color/grey" />
+
+
+
+        <EditText
+            android:id="@+id/middleNameET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/edit_text_bg"
+            android:hint="Middle Name"
+            android:padding="15dp"
+            android:textColorHint="@color/grey" />
+
+        <EditText
+            android:id="@+id/phoneNumberET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/edit_text_bg"
+            android:hint="Phone Number"
+            android:padding="15dp"
+            android:textColorHint="@color/grey" />
+
+
+
+        <EditText
+            android:id="@+id/blockET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_bg"
+            android:hint="Block"
+            android:layout_marginTop="10dp"
+            android:padding="15dp"
+            android:textColorHint="@color/grey" />
+
+        <EditText
+            android:id="@+id/lotET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/edit_text_bg"
+            android:hint="Lot"
+            android:padding="15dp"
+            android:textColorHint="@color/grey" />
+
+        <EditText
+            android:id="@+id/streetET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/edit_text_bg"
+            android:hint="Street"
+            android:padding="15dp"
+            android:textColorHint="@color/grey" />
+
+
+    </LinearLayout>
+</LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/saveBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_background"
+        android:text="Save"
+        android:layout_margin="20dp"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -24,8 +26,10 @@ import com.example.hoamanagementsystem.FirebaseServices.FirebaseDocumentsManager
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseNotificationManager;
 import com.example.hoamanagementsystem.FirebaseServices.callback.CreateNotificationCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.UpdateDocumentStatusCallback;
+import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.example.hoamanagementsystem.Model.NotificationModel;
 import com.example.hoamanagementsystem.R;
+import com.example.hoamanagementsystem.Session.UserSession;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -49,12 +53,22 @@ public class RequestDocumensClicked extends AppCompatActivity {
     private TextView underReviewTV, approveTV, rejectedTV;
     private String adminLink, adminRemarks;
     private TextView linkTV, remarksTV;
+    private ImageView backBtn;
+    private String theUserRole;
+
+    private HomeOwnerRentersModel currentUser;
+
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_request_documens_clicked);
+        currentUser = UserSession.getInstance().getCurrentUser();
 
         documentType = findViewById(R.id.documentType);
         documentPurpose = findViewById(R.id.documentPurpose);
@@ -69,6 +83,16 @@ public class RequestDocumensClicked extends AppCompatActivity {
         approvedDT = findViewById(R.id.approvedDT);
         rejectedDT = findViewById(R.id.rejectedDT);
         cancelledDT = findViewById(R.id.cancelledDT);
+
+        theUserRole = currentUser.getRole();
+        if(theUserRole.equals("Home Owners") || theUserRole.equals("Renters")) {
+            getWindow().setFlags(
+                    WindowManager.LayoutParams.FLAG_SECURE,
+                    WindowManager.LayoutParams.FLAG_SECURE
+            );
+        }
+
+        backBtn= findViewById(R.id.backBtn);
 
         adminLayout = findViewById(R.id.adminLayout);
         homeOwnersRentersLayout = findViewById(R.id.homeOwnersRentersLayout);
@@ -125,16 +149,16 @@ public class RequestDocumensClicked extends AppCompatActivity {
         requestID = data.getStringExtra("requestID");
 
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
         setupData();
         setupUIPerRole();
         setupTimeline();
         setupDateTexts();
         setUpUIStateAdmin();
+
+        backBtn.setOnClickListener(s -> {
+            finish();
+        });
 
         saveUpdateBtn.setOnClickListener(s -> {
             setUpStatusUpdate();
@@ -290,6 +314,22 @@ public class RequestDocumensClicked extends AppCompatActivity {
             return;
         }
 
+        if (!link.isEmpty()) {
+
+            Uri uri = Uri.parse(link);
+
+            boolean isValid =
+                    (uri.getScheme() != null) &&
+                            (uri.getHost() != null) &&
+                            (uri.getScheme().equals("http") || uri.getScheme().equals("https"));
+
+            if (!isValid) {
+                linkET.setError("Enter a valid URL starting with http:// or https://");
+                linkET.requestFocus();
+                return;
+            }
+        }
+
         String notifMessage;
 
         switch (setTheStatus.toLowerCase()) {
@@ -312,6 +352,7 @@ public class RequestDocumensClicked extends AppCompatActivity {
                 break;
         }
 
+        setLoadingState();
         FirebaseDocumentsManager.updateDocumentRequest(
                 requestID,
                 setTheStatus,
@@ -332,13 +373,13 @@ public class RequestDocumensClicked extends AppCompatActivity {
                                         message,
                                         Toast.LENGTH_SHORT
                                 ).show();
-
+                                setNormalState();
                                 finish();
                             }
 
                             @Override
                             public void onFailure(String error) {
-
+                                setNormalState();
                             }
                         });
 
@@ -347,7 +388,7 @@ public class RequestDocumensClicked extends AppCompatActivity {
 
                     @Override
                     public void onFailure(String error) {
-
+                        setNormalState();
                         Toast.makeText(
                                 RequestDocumensClicked.this,
                                 error,
@@ -419,7 +460,7 @@ public class RequestDocumensClicked extends AppCompatActivity {
         if(adminLink == null || adminLink.trim().isEmpty()) {
             linkTV.setVisibility(View.GONE);
         } else {
-            linkTV.setText(adminLink);
+            linkTV.setText("View attachment");
             linkTV.setVisibility(View.VISIBLE);
         }
 
@@ -473,21 +514,10 @@ public class RequestDocumensClicked extends AppCompatActivity {
 
     }
     private void setupUIPerRole() {
-        // Determine which UI to display based on request ownership.
-//
-// Home Owners and Renters can only access their own requests,
-// so their UID will always match the requesterID.
-//
-// HOA Officials (Admin, President, Secretary, Treasurer, etc.)
-// can view requests submitted by other users, so their UID will
-// not match the requesterID.
-//
-// If currentUserUid == requesterID:
-//      Show Homeowner/Renter UI
-//
-// If currentUserUid != requesterID:
-//      Show HOA Official UI
-        if(theCurrentLoggedInUserID.equals(theUid)) {
+
+        String role = currentUser.getRole();
+
+        if(role.equals("Home Owners") || role.equals("Renters")) {
             requestTimeline.setVisibility(View.VISIBLE);
             homeOwnersRentersLayout.setVisibility(View.VISIBLE);
             adminLayout.setVisibility(View.GONE);
@@ -496,6 +526,7 @@ public class RequestDocumensClicked extends AppCompatActivity {
             requestTimeline.setVisibility(View.GONE);
             homeOwnersRentersLayout.setVisibility(View.GONE);
         }
+
     }
     private void setupData() {
         documentType.setText(theDocumentType);
@@ -562,5 +593,16 @@ public class RequestDocumensClicked extends AppCompatActivity {
                 break;
         }
 
+    }
+    private void setLoadingState() {
+        saveUpdateBtn.setEnabled(false);
+        saveUpdateBtn.setAlpha(0.5f);
+        saveUpdateBtn.setText("Saving...");
+    }
+
+    private void setNormalState() {
+        saveUpdateBtn.setEnabled(true);
+        saveUpdateBtn.setAlpha(1f);
+        saveUpdateBtn.setText("Save Update");
     }
 }

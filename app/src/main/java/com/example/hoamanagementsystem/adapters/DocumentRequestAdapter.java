@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,13 +16,15 @@ import com.example.hoamanagementsystem.Model.DocumentRequestModel;
 import com.example.hoamanagementsystem.Modules.RequestDocumensClicked;
 import com.example.hoamanagementsystem.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DocumentRequestAdapter
-        extends RecyclerView.Adapter<DocumentRequestAdapter.ViewHolder> {
+        extends RecyclerView.Adapter<DocumentRequestAdapter.ViewHolder> implements Filterable {
 
     private final Context context;
     private final List<DocumentRequestModel> requestList;
+    private final List<DocumentRequestModel> requestListFull;
 
     public DocumentRequestAdapter(
             Context context,
@@ -28,6 +32,7 @@ public class DocumentRequestAdapter
     ) {
         this.context = context;
         this.requestList = requestList;
+        this.requestListFull = new ArrayList<>(requestList);
     }
 
     @NonNull
@@ -117,6 +122,65 @@ public class DocumentRequestAdapter
     public int getItemCount() {
         return requestList.size();
     }
+    public void updateList(List<DocumentRequestModel> newList) {
+        requestList.clear();
+        requestList.addAll(newList);
+
+        requestListFull.clear();
+        requestListFull.addAll(newList);
+
+        notifyDataSetChanged();
+    }
+    @Override
+    public Filter getFilter() {
+        return requestFilter;
+    }
+
+    private final Filter requestFilter = new Filter() {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+
+            List<DocumentRequestModel> filteredList = new ArrayList<>();
+
+            if (constraint == null || constraint.length() == 0) {
+
+                filteredList.addAll(requestListFull);
+
+            } else {
+
+                String filterPattern =
+                        constraint.toString().toLowerCase().trim();
+
+                for (DocumentRequestModel item : requestListFull) {
+
+                    if (item.getDocumentType().toLowerCase().contains(filterPattern)
+                            || item.getRequestCategory().toLowerCase().contains(filterPattern)
+                            || item.getPurpose().toLowerCase().contains(filterPattern)
+                            || item.getRequestStatus().toLowerCase().contains(filterPattern)
+                            || item.getRequesterName().toLowerCase().contains(filterPattern)
+                            || item.getRequestTicket().toLowerCase().contains(filterPattern)) {
+
+                        filteredList.add(item);
+                    }
+                }
+            }
+
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint,
+                                      FilterResults results) {
+
+            requestList.clear();
+            requestList.addAll((List<DocumentRequestModel>) results.values);
+            notifyDataSetChanged();
+        }
+    };
 
     private void setStatusDesign(
             TextView statusText,

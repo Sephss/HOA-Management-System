@@ -5,9 +5,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -29,6 +31,7 @@ import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.example.hoamanagementsystem.Model.NotificationModel;
 import com.example.hoamanagementsystem.R;
 import com.example.hoamanagementsystem.Session.UserSession;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -44,6 +47,12 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
     private Spinner updateStatusSpinner;
     private EditText remarksET;
     private String notifStatus = "none";
+    private ImageView backBtn;
+    private String theUserRole;
+
+    private TextView viewImageBtn, closeBtn;
+    private ImageView imageDisplay;
+    private String theIncidentImage;
 
     private Button saveUpdateBtn;
 
@@ -52,10 +61,15 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
     private TextView requestSubmittedTV, repairInProgressTV, completedTV, remarksTV;
 
     private ScrollView adminLayout, homeOwnersRentersLayout;
+
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_maintenance_request_clicked);
 
         maintenanceType = findViewById(R.id.maintenanceType);
@@ -68,6 +82,15 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
         maintenancePriority = findViewById(R.id.maintenancePriority);
         currentUser = UserSession.getInstance().getCurrentUser();
 
+        theUserRole = currentUser.getRole();
+
+        if(theUserRole.equals("Home Owners") || theUserRole.equals("Renters")) {
+            getWindow().setFlags(
+                    WindowManager.LayoutParams.FLAG_SECURE,
+                    WindowManager.LayoutParams.FLAG_SECURE
+            );
+        }
+
         homeOwnersRentersLayout = findViewById(R.id.homeOwnersRentersLayout);
         adminLayout = findViewById(R.id.adminLayout);
 
@@ -75,6 +98,8 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
         remarksET = findViewById(R.id.remarksET);
 
         saveUpdateBtn = findViewById(R.id.saveUpdateBtn);
+
+        backBtn= findViewById(R.id.backBtn);
 
         requestSubmittedLayout = findViewById(R.id.requestSubmittedLayout);
         repairInProgressLayout = findViewById(R.id.repairInProgressLayout);
@@ -85,7 +110,13 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
         completedTV = findViewById(R.id.completedTV);
         remarksTV = findViewById(R.id.remarksTV);
 
+
+        imageDisplay = findViewById(R.id.imageDisplay);
+        viewImageBtn = findViewById(R.id.viewImageBtn);
+        closeBtn = findViewById(R.id.closeBtn);
+
         Intent data = getIntent();
+        theIncidentImage = data.getStringExtra("maintenanceImage");
         theType = data.getStringExtra("maintenanceType");
         theLocation = data.getStringExtra("maintenanceLocation");
         theTicket = data.getStringExtra("maintenanceTicket");
@@ -101,18 +132,30 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
         adminRemarksText = data.getStringExtra("adminRemarksText");
         theSubmitterID = data.getStringExtra("submitterID");
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
         setupData();
         showUIBasedOnRole();
         setupSpinner();
         setupProgressHomeOwners();
 
+        viewImageBtn.setOnClickListener(d -> {
+            viewImageBtn.setVisibility(View.GONE);
+            closeBtn.setVisibility(View.VISIBLE);
+            imageDisplay.setVisibility(View.VISIBLE);
+        });
+
+        closeBtn.setOnClickListener(d -> {
+            viewImageBtn.setVisibility(View.VISIBLE);
+            closeBtn.setVisibility(View.GONE);
+            imageDisplay.setVisibility(View.GONE);
+        });
+
         saveUpdateBtn.setOnClickListener(d -> {
             updateStatus();
+        });
+
+        backBtn.setOnClickListener(f -> {
+            finish();
         });
     }
     private boolean isNotEmpty(String value) {
@@ -227,6 +270,7 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
                 break;
         }
 
+        setLoadingState();
         FirebaseMaintenanceManager.updateMaintenanceStatus(theMaintenanceID, theStatus, remarks, dateTime, new UpdateMaintenanceStatusCallback() {
             @Override
             public void onSuccess(String message) {
@@ -236,16 +280,18 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
                 FirebaseNotificationManager.createNotification(data, new CreateNotificationCallback() {
                     @Override
                     public void onSuccess(String success) {
+                        setNormalState();
                         Toast.makeText(
                                 MaintenanceRequestClicked.this,
                                 message,
                                 Toast.LENGTH_SHORT
                         ).show();
+                        finish();
                     }
 
                     @Override
                     public void onFailure(String error) {
-
+                        setNormalState();
                     }
                 });
 
@@ -254,6 +300,7 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
             @Override
             public void onFailure(String error) {
                 Toast.makeText(MaintenanceRequestClicked.this, error, Toast.LENGTH_SHORT).show();
+                setNormalState();
             }
         });
 
@@ -276,6 +323,8 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
         maintenanceDescription.setText(theDescription);
         maintenanceDate.setText(theDate);
         maintenancePriority.setText(thePriority);
+
+        Picasso.get().load(theIncidentImage).into(imageDisplay);
 
         switch(theStatus) {
             case "pending":
@@ -370,5 +419,16 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         updateStatusSpinner.setAdapter(adapter);
+    }
+    private void setLoadingState() {
+        saveUpdateBtn.setEnabled(false);
+        saveUpdateBtn.setAlpha(0.5f);
+        saveUpdateBtn.setText("Saving...");
+    }
+
+    private void setNormalState() {
+        saveUpdateBtn.setEnabled(true);
+        saveUpdateBtn.setAlpha(1f);
+        saveUpdateBtn.setText("Save Update");
     }
 }

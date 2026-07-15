@@ -3,6 +3,7 @@ package com.example.hoamanagementsystem.Modules;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,14 +24,15 @@ import com.example.hoamanagementsystem.FirebaseServices.callback.FetchAnnounceme
 import com.example.hoamanagementsystem.MainActivity;
 import com.example.hoamanagementsystem.Model.AnnouncementModel;
 import com.example.hoamanagementsystem.R;
+import com.example.hoamanagementsystem.adapters.AnnouncementAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomePage extends AppCompatActivity {
-    private LinearLayout sampleLogout, announcementLink, documentsLink, grievanceLink, maintenanceLink;
+    private LinearLayout profilePage, announcementLink, documentsLink, grievanceLink, maintenanceLink;
     private RecyclerView announcementRV;
-    private com.example.hoamanagementsystem.Adapter.AnnouncementAdapter announcementAdapter;
+    private AnnouncementAdapter announcementAdapter;
     private ArrayList<AnnouncementModel> announcementList;
     private TextView fullName, userRole, userLocation;
     private ImageView notificationIcon;
@@ -46,9 +48,13 @@ public class HomePage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Prevent screenshots and screen recordings
+
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home_page);
-        sampleLogout= findViewById(R.id.sampleLogout);
+        profilePage= findViewById(R.id.profilePage);
         announcementLink = findViewById(R.id.announcementLink);
         documentsLink = findViewById(R.id.documentsLink);
         grievanceLink = findViewById(R.id.grievanceLink);
@@ -61,7 +67,7 @@ public class HomePage extends AppCompatActivity {
         announcementRV  = findViewById(R.id.announcementRV);
         announcementList = new ArrayList<>();
 
-        announcementAdapter = new com.example.hoamanagementsystem.Adapter.AnnouncementAdapter(this, announcementList);
+        announcementAdapter = new AnnouncementAdapter(this, announcementList);
         announcementRV.setLayoutManager(new LinearLayoutManager(this));
         announcementRV.setAdapter(announcementAdapter);
 
@@ -79,6 +85,13 @@ public class HomePage extends AppCompatActivity {
         theStreet = datas.getStringExtra("street");
         theLavanyaPhaseType = datas.getStringExtra("lavanyaPhaseType");
         theImage = datas.getStringExtra("image");
+
+        if(theRole.equals("Home Owners") || theRole.equals("Renters")) {
+            getWindow().setFlags(
+                    WindowManager.LayoutParams.FLAG_SECURE,
+                    WindowManager.LayoutParams.FLAG_SECURE
+            );
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -107,14 +120,16 @@ public class HomePage extends AppCompatActivity {
             startActivity(asd);
         });
 
-        sampleLogout.setOnClickListener(d -> {
-            FirebaseAuthManager.logout();
-            Intent intent = new Intent(HomePage.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        profilePage.setOnClickListener(s -> {
+            Intent intent = new Intent(HomePage.this, ProfilePage.class);
             startActivity(intent);
+            overridePendingTransition(0, 0);
         });
+
         announcementLink.setOnClickListener(l -> {
-            navigateTo(AnnouncementPage.class);
+            Intent intent = new Intent(HomePage.this, AnnouncementPage.class);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
         });
         fetchAnnouncements();
     }

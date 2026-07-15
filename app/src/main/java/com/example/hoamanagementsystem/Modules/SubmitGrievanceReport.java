@@ -45,6 +45,7 @@ public class SubmitGrievanceReport extends AppCompatActivity {
     private Spinner incidentTypeSpinner;
     private LinearLayout selectImage;
     private ImageView imageDisplay;
+    private HomeOwnerRentersModel currentUser;
     private String currentUserID;
 
     private Button submitReportBtn;
@@ -54,9 +55,9 @@ public class SubmitGrievanceReport extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_submit_grievance_report);
 
+        setContentView(R.layout.activity_submit_grievance_report);
+        currentUser = UserSession.getInstance().getCurrentUser();
         incidentTitleET = findViewById(R.id.incidentTitleET);
         incidentDescriptionET = findViewById(R.id.incidentDescriptionET);
         incidentLocationET = findViewById(R.id.incidentLocationET);
@@ -72,14 +73,9 @@ public class SubmitGrievanceReport extends AppCompatActivity {
 
         HomeOwnerRentersModel currentUser = UserSession.getInstance().getCurrentUser();
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
         setupSpinner();
 
-        Toast.makeText(this, currentUser.getFirstName() + " " + currentUser.getLastName(), Toast.LENGTH_SHORT).show();
 
         selectImage.setOnClickListener(f -> {
             choosePhotoFromGallery();
@@ -161,7 +157,6 @@ public class SubmitGrievanceReport extends AppCompatActivity {
                         FirebaseGrievanceManager.createReport(grievanceModel, new SubmitGrievanceCallback() {
                             @Override
                             public void onSuccess(String Success) {
-                                Toast.makeText(SubmitGrievanceReport.this, Success, Toast.LENGTH_SHORT).show();
                                 setNormalState();
                                 navigateTo(SuccessGrievanceReport.class);
                                 finish();

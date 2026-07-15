@@ -14,7 +14,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseAuthManager;
+import com.example.hoamanagementsystem.FirebaseServices.FirebaseDatabaseManager;
 import com.example.hoamanagementsystem.FirebaseServices.callback.LoginUserCallback;
+import com.example.hoamanagementsystem.FirebaseServices.callback.UserDatasCallback;
 import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.example.hoamanagementsystem.Modules.HomePage;
 import com.example.hoamanagementsystem.Session.UserSession;
@@ -27,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_main);
 
         createAccountLink = findViewById(R.id.createAccountLink);
@@ -35,12 +37,8 @@ public class MainActivity extends AppCompatActivity {
         emailET = findViewById(R.id.emailET);
         passwordET = findViewById(R.id.passwordET);
         loginBtn =findViewById(R.id.loginBtn);
+        autoLoginUser();
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
         createAccountLink.setOnClickListener(s -> {
             navigateTo(SignupPage.class);
         });
@@ -76,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(FirebaseUser user, HomeOwnerRentersModel userDetails) {
                 UserSession.getInstance().setCurrentUser(userDetails);
                 if(userDetails.getRole().equals("Admin")) {
-                    Toast.makeText(MainActivity.this, "you are an admin", Toast.LENGTH_SHORT).show();
+
                     Intent intent = new Intent(MainActivity.this, HomePage.class);
                     intent.putExtra("role", userDetails.getRole());
                     intent.putExtra("uid", userDetails.getUid());
@@ -128,5 +126,56 @@ public class MainActivity extends AppCompatActivity {
         loginBtn.setEnabled(true);
         loginBtn.setAlpha(1f);
         loginBtn.setText("Login");
+    }
+    private void autoLoginUser() {
+        if(FirebaseAuthManager.getCurrentUser() == null) {
+            return;
+        }
+        String uid = FirebaseAuthManager.getCurrentUserUid();
+
+        FirebaseDatabaseManager.getUserDatas(uid, new UserDatasCallback() {
+            @Override
+            public void onSuccess(HomeOwnerRentersModel user) {
+                UserSession.getInstance().setCurrentUser(user);
+                if(user.getRole().equals("Admin")) {
+
+                    Intent intent = new Intent(MainActivity.this, HomePage.class);
+                    intent.putExtra("role", user.getRole());
+                    intent.putExtra("uid", user.getUid());
+                    intent.putExtra("name", user.getFirstName() + " " + user.getLastName());
+                    intent.putExtra("email", user.getEmail());
+                    intent.putExtra("block", user.getBlock());
+                    intent.putExtra("lot", user.getLot());
+                    intent.putExtra("street", user.getStreet());
+                    intent.putExtra("lavanyaPhaseType", user.getLavanyaPhaseType());
+                    intent.putExtra("image", user.getImageUrl());
+
+                    startActivity(intent);
+
+                    finish();
+                } else {
+                    Intent intent = new Intent(MainActivity.this, HomePage.class);
+                    intent.putExtra("role", user.getRole());
+                    intent.putExtra("uid", user.getUid());
+                    intent.putExtra("name", user.getFirstName() + " " + user.getLastName());
+                    intent.putExtra("email", user.getEmail());
+                    intent.putExtra("block", user.getBlock());
+                    intent.putExtra("lot", user.getLot());
+                    intent.putExtra("street", user.getStreet());
+                    intent.putExtra("lavanyaPhaseType", user.getLavanyaPhaseType());
+                    intent.putExtra("image", user.getImageUrl());
+
+                    startActivity(intent);
+
+                    finish();
+                }
+
+            }
+
+            @Override
+            public void onFailure(String message) {
+            }
+        });
+
     }
 }

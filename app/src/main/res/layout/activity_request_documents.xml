@@ -40,6 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
 
+        app:layout_constraintBottom_toTopOf="@+id/submitRequestButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
@@ -53,129 +54,138 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-              <LinearLayout
-                  android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:orientation="vertical">
-                  <TextView
-                      android:layout_marginTop="20dp"
-                      android:layout_width="wrap_content"
-                      android:layout_height="wrap_content"
-                      android:text="Request Category"
-                      android:textStyle="bold"
-                      android:layout_marginBottom="5dp"
-                      android:layout_marginStart="20dp"
-                      android:textColor="@color/grey"
-                      android:textSize="15sp" />
-                  <Spinner
-                      android:id="@+id/requestCategorySpinner"
-                      android:layout_width="match_parent"
-                      android:padding="10dp"
-                      android:layout_marginBottom="20dp"
-                      android:layout_marginStart="20dp"
-                      android:layout_marginEnd="20dp"
-                      android:background="@drawable/edit_text_bg"
-                      android:layout_height="wrap_content"/>
 
                 <LinearLayout
-                    android:visibility="gone"
-                    android:id="@+id/documentTypeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Document Type"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="5dp"
                         android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="5dp"
+                        android:text="Request Category"
                         android:textColor="@color/grey"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
                     <Spinner
-                        android:id="@+id/documentTypeSpinner"
+                        android:id="@+id/requestCategorySpinner"
                         android:layout_width="match_parent"
-                        android:padding="10dp"
-                        android:layout_marginBottom="20dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="20dp"
                         android:background="@drawable/edit_text_bg"
-                        android:layout_height="wrap_content"/>
+                        android:padding="10dp" />
+
+                    <LinearLayout
+                        android:id="@+id/documentTypeLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginBottom="5dp"
+                            android:text="Document Type"
+                            android:textColor="@color/grey"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <Spinner
+                            android:id="@+id/documentTypeSpinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginBottom="20dp"
+                            android:background="@drawable/edit_text_bg"
+                            android:padding="10dp" />
+                    </LinearLayout>
                 </LinearLayout>
-              </LinearLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Purpose"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="5dp"
                     android:layout_marginStart="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="Purpose"
                     android:textColor="@color/grey"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/purposeEditText"
-                    android:layout_marginBottom="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="20dp"
                     android:background="@drawable/edit_text_bg"
-                    android:hint="State your purpose..."
-                    android:padding="10dp"
-                    android:textColorHint="@color/grey"
                     android:gravity="top|start"
+                    android:hint="State your purpose..."
                     android:inputType="textMultiLine"
-                    android:minLines="4"
                     android:maxLines="8"
-                    android:scrollbars="vertical" />
+                    android:minLines="4"
+                    android:padding="10dp"
+                    android:scrollbars="vertical"
+                    android:textColorHint="@color/grey" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Remarks (optional)"
-                    android:layout_marginBottom="5dp"
-                    android:textStyle="bold"
                     android:layout_marginStart="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="Remarks (optional)"
                     android:textColor="@color/grey"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
 
 
                 <EditText
                     android:id="@+id/remarksEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
                     android:background="@drawable/edit_text_bg"
                     android:hint="Add any additional notes..."
                     android:padding="10dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
                     android:textColorHint="@color/grey" />
 
-               <LinearLayout
-                   android:layout_width="match_parent"
-                   android:orientation="vertical"
-                   android:layout_marginTop="20dp"
-                   android:layout_marginStart="20dp"
-                   android:layout_marginEnd="20dp"
-                   android:padding="10dp"
-                   android:background="@drawable/request_document_note"
-                   android:layout_height="wrap_content">
-                   <TextView
-                       android:id="@+id/category"
-                       android:textSize="16dp"
-                       android:layout_width="match_parent"
-                       android:layout_marginBottom="5dp"
-                       android:layout_height="wrap_content"
-                       android:text="Processing time 3-5 business days"
-                       android:textStyle="bold"
-                       android:textColor="@color/darkyellow" />
-                   <TextView
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"
-                       android:text="Requests are subject to verification and approval by the HOA administration."
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/request_document_note"
+                    android:orientation="vertical"
+                    android:padding="10dp">
 
-                       android:textColor="@color/darkyellow" />
-               </LinearLayout>
+                    <TextView
+                        android:id="@+id/category"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="Processing time 3-5 business days"
+                        android:textColor="@color/darkyellow"
+                        android:textSize="16dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Requests are subject to verification and approval by the HOA administration."
+
+                        android:textColor="@color/darkyellow" />
+                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>

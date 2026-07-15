@@ -46,5 +46,6 @@ dependencies {
 
     implementation("com.cloudinary:cloudinary-android:3.0.2")
     implementation("com.squareup.picasso:picasso:2.8")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 
 }

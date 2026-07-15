@@ -2,7 +2,13 @@ package com.example.hoamanagementsystem.Modules;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,14 +33,20 @@ import java.util.List;
 public class MaintenancePage extends AppCompatActivity {
     private Button newRequestBtn;
     private RecyclerView maintenanceRequestRV;
+    private ImageView backBtn;
+    private EditText searchET;
 
     private List<MaintenanceModel> maintenanceList;
     private MaintenanceAdapter adapter;
 
     private HomeOwnerRentersModel currentUser;
+    private String userRole;
 
     private String theUserRole;
-
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +55,9 @@ public class MaintenancePage extends AppCompatActivity {
         setContentView(R.layout.activity_maintenance_page);
 
         newRequestBtn = findViewById(R.id.newRequestBtn);
+        searchET = findViewById(R.id.searchET);
         maintenanceRequestRV = findViewById(R.id.maintenanceRequestRV);
-
+        backBtn = findViewById(R.id.backBtn);
         maintenanceList = new ArrayList<>();
 
         adapter = new MaintenanceAdapter(this, maintenanceList);
@@ -54,6 +67,13 @@ public class MaintenancePage extends AppCompatActivity {
 
         currentUser = UserSession.getInstance().getCurrentUser();
 
+        userRole = currentUser.getRole();
+        if(userRole.equals("Home Owners") || userRole.equals("Renters")) {
+            getWindow().setFlags(
+                    WindowManager.LayoutParams.FLAG_SECURE,
+                    WindowManager.LayoutParams.FLAG_SECURE
+            );
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -61,8 +81,30 @@ public class MaintenancePage extends AppCompatActivity {
             return insets;
         });
         displayUIBasedOnRole();
+        setUpBtn();
         newRequestBtn.setOnClickListener(s -> {
             navigateTo(SubmitMaintenanceRequest.class);
+        });
+
+        backBtn.setOnClickListener(s -> {
+            finish();
+        });
+
+        searchET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
         });
     }
     private void displayUIBasedOnRole() {
@@ -88,11 +130,7 @@ public class MaintenancePage extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(List<MaintenanceModel> requests) {
-
-                        maintenanceList.clear();
-                        maintenanceList.addAll(requests);
-
-                        adapter.notifyDataSetChanged();
+                        adapter.updateList(requests);
                     }
 
                     @Override
@@ -107,9 +145,7 @@ public class MaintenancePage extends AppCompatActivity {
                     @Override
                     public void onSuccess(List<MaintenanceModel> requests) {
 
-                        maintenanceList.clear();
-                        maintenanceList.addAll(requests);
-                        adapter.notifyDataSetChanged();
+                        adapter.updateList(requests);
                     }
 
                     @Override
@@ -118,5 +154,14 @@ public class MaintenancePage extends AppCompatActivity {
                     }
                 }
         );
+    }
+    private void setUpBtn() {
+        String role = currentUser.getRole();
+
+        if(role.equals("Home Owners") || role.equals("Renters")) {
+            newRequestBtn.setVisibility(View.VISIBLE);
+        } else {
+            newRequestBtn.setVisibility(View.GONE);
+        }
     }
 }

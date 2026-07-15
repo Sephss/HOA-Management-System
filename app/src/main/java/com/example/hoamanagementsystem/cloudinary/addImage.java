@@ -1,6 +1,8 @@
 package com.example.hoamanagementsystem.cloudinary;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
@@ -33,8 +35,7 @@ public class addImage {
      */
     public static void uploadImage(Context context, Uri imageUri, UploadCallback callback) {
         try {
-            InputStream inputStream = context.getContentResolver().openInputStream(imageUri);
-            byte[] imageBytes = getBytesFromInputStream(inputStream);
+            byte[] imageBytes = compressImage(context, imageUri);
 
             new Thread(() -> {
                 try {
@@ -59,8 +60,7 @@ public class addImage {
     public static void updateImage(Context context, Uri newImageUri, String oldImageUrl,UploadCallback callback) {
         try {
             // Convert new image to byte array
-            InputStream inputStream = context.getContentResolver().openInputStream(newImageUri);
-            byte[] imageBytes = getBytesFromInputStream(inputStream);
+            byte[] imageBytes = compressImage(context, newImageUri);
 
             new Thread(() -> {
                 try {
@@ -110,5 +110,38 @@ public class addImage {
         void onSuccess(String imageUrl);
 
         void onFailure(Exception e);
+    }
+    private static byte[] compressImage(Context context, Uri imageUri) throws Exception {
+
+        InputStream inputStream = context.getContentResolver().openInputStream(imageUri);
+
+        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
+        if (inputStream != null)
+            inputStream.close();
+
+        // Resize first
+        int maxWidth = 1280;
+        int maxHeight = 1280;
+
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+        float ratio = Math.min(
+                (float) maxWidth / width,
+                (float) maxHeight / height
+        );
+
+        width = Math.round(width * ratio);
+        height = Math.round(height * ratio);
+
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        // JPEG quality (0-100)
+        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 75, outputStream);
+
+        return outputStream.toByteArray();
     }
 }

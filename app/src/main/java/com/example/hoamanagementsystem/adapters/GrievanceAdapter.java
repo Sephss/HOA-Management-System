@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,16 +17,19 @@ import com.example.hoamanagementsystem.Modules.GrievanceClicked;
 import com.example.hoamanagementsystem.Modules.RequestDocumensClicked;
 import com.example.hoamanagementsystem.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GrievanceAdapter
-        extends RecyclerView.Adapter<GrievanceAdapter.ViewHolder> {
+        extends RecyclerView.Adapter<GrievanceAdapter.ViewHolder> implements Filterable {
 
     private final List<GrievanceModel> grievanceList;
+    private final List<GrievanceModel> grievanceListFull;
 
 
     public GrievanceAdapter(List<GrievanceModel> grievanceList) {
         this.grievanceList = grievanceList;
+        this.grievanceListFull = new ArrayList<>(grievanceList);
     }
 
     @NonNull
@@ -65,6 +70,8 @@ public class GrievanceAdapter
             intent.putExtra("ticket", grievance.getIncidentTicket());
             intent.putExtra("location", grievance.getIncidentExactLocation());
             intent.putExtra("incidentReportID", grievance.getIncidentReportID());
+
+            intent.putExtra("incidentImage", grievance.getIncidentImageUrl());
 
             intent.putExtra("reporterID", grievance.getIncidentReporterID());
 
@@ -131,4 +138,75 @@ public class GrievanceAdapter
             viewDetailsTV = itemView.findViewById(R.id.viewDetailsTV);
         }
     }
+    public void updateList(List<GrievanceModel> newList) {
+
+        grievanceList.clear();
+        grievanceList.addAll(newList);
+
+        grievanceListFull.clear();
+        grievanceListFull.addAll(newList);
+
+        notifyDataSetChanged();
+    }
+    @Override
+    public Filter getFilter() {
+        return grievanceFilter;
+    }
+
+    private final Filter grievanceFilter = new Filter() {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+
+            List<GrievanceModel> filteredList = new ArrayList<>();
+
+            if (constraint == null || constraint.length() == 0) {
+
+                filteredList.addAll(grievanceListFull);
+
+            } else {
+
+                String filterPattern =
+                        constraint.toString().toLowerCase().trim();
+
+                for (GrievanceModel grievance : grievanceListFull) {
+
+                    if ((grievance.getIncidentTitle() != null &&
+                            grievance.getIncidentTitle().toLowerCase().contains(filterPattern))
+
+                            || (grievance.getIncidentType() != null &&
+                            grievance.getIncidentType().toLowerCase().contains(filterPattern))
+
+                            || (grievance.getIncidentStatus() != null &&
+                            grievance.getIncidentStatus().toLowerCase().contains(filterPattern))
+
+                            || (grievance.getIncidentTicket() != null &&
+                            grievance.getIncidentTicket().toLowerCase().contains(filterPattern))
+
+                            || (grievance.getIncidentDescription() != null &&
+                            grievance.getIncidentDescription().toLowerCase().contains(filterPattern))
+
+                            || (grievance.getIncidentExactLocation() != null &&
+                            grievance.getIncidentExactLocation().toLowerCase().contains(filterPattern))) {
+
+                        filteredList.add(grievance);
+                    }
+                }
+            }
+
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint,
+                                      FilterResults results) {
+
+            grievanceList.clear();
+            grievanceList.addAll((List<GrievanceModel>) results.values);
+            notifyDataSetChanged();
+        }
+    };
 }

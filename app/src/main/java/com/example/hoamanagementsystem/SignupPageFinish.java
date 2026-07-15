@@ -19,6 +19,7 @@ import com.example.hoamanagementsystem.FirebaseServices.FirebaseAuthManager;
 import com.example.hoamanagementsystem.FirebaseServices.callback.RegisterHomeownerRenterCallback;
 import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.example.hoamanagementsystem.Modules.HomePage;
+import com.example.hoamanagementsystem.Modules.ProfilePage;
 
 public class SignupPageFinish extends AppCompatActivity {
     private TextView backLink;
@@ -30,7 +31,7 @@ public class SignupPageFinish extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_signup_page_finish);
 
         backLink = findViewById(R.id.backLink);
@@ -52,11 +53,7 @@ public class SignupPageFinish extends AppCompatActivity {
          email = intent.getStringExtra("email");
          password = intent.getStringExtra("password");
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
         setUpSpinners();
         backLink.setOnClickListener(s -> {
             finish();
@@ -110,10 +107,10 @@ public class SignupPageFinish extends AppCompatActivity {
             @Override
             public void onSuccess(String success) {
                 Toast.makeText(SignupPageFinish.this, success, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(SignupPageFinish.this, HomePage.class);
+                Intent intent = new Intent(SignupPageFinish.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 setNormalState();
-                finish();
             }
 
             @Override

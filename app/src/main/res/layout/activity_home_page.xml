@@ -298,7 +298,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/sampleLogout"
+            android:id="@+id/profilePage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

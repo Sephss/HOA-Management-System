@@ -2,7 +2,13 @@ package com.example.hoamanagementsystem.Modules;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +22,9 @@ import com.example.hoamanagementsystem.FirebaseServices.FirebaseAuthManager;
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseDocumentsManager;
 import com.example.hoamanagementsystem.FirebaseServices.callback.GetDocumentRequestsCallback;
 import com.example.hoamanagementsystem.Model.DocumentRequestModel;
+import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.example.hoamanagementsystem.R;
+import com.example.hoamanagementsystem.Session.UserSession;
 import com.example.hoamanagementsystem.adapters.DocumentRequestAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -26,19 +34,30 @@ import java.util.List;
 public class DocumentsPage extends AppCompatActivity {
     private RecyclerView documentRequestsRV;
     private Button newRequestBtn;
-
+    private ImageView backBtn;
+    private HomeOwnerRentersModel currentUser;
     private DocumentRequestAdapter adapter;
+    private EditText searchET;
 
     private String theRole, theUid, theFullName, theEmail, theBlock, theLot, theStreet, theLavanyaPhaseType, theImage;
 
     private List<DocumentRequestModel> requestList;
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_documents_page);
 
+
+        currentUser = UserSession.getInstance().getCurrentUser();
         newRequestBtn = findViewById(R.id.newRequestBtn);
+        backBtn = findViewById(R.id.backBtn);
+
+        searchET = findViewById(R.id.searchET);
 
         documentRequestsRV =
                 findViewById(R.id.documentRequestsRV);
@@ -67,14 +86,43 @@ public class DocumentsPage extends AppCompatActivity {
         theLavanyaPhaseType = datas.getStringExtra("lavanyaPhaseType");
         theImage = datas.getStringExtra("image");
 
+        if(theRole.equals("Home Owners") || theRole.equals("Renters")) {
+            getWindow().setFlags(
+                    WindowManager.LayoutParams.FLAG_SECURE,
+                    WindowManager.LayoutParams.FLAG_SECURE
+            );
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        searchET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        setUpBtn();
         loadDataBasedOnRole();
         newRequestBtn.setOnClickListener(g -> {
             navigateToCreateDocumentRequestPage();
+        });
+
+        backBtn.setOnClickListener(s-> {
+            finish();
         });
     }
     private void loadDataBasedOnRole() {
@@ -90,9 +138,7 @@ public class DocumentsPage extends AppCompatActivity {
                     @Override
                     public void onSuccess(List<DocumentRequestModel> requests) {
 
-                        requestList.clear();
-                        requestList.addAll(requests);
-                        adapter.notifyDataSetChanged();
+                        adapter.updateList(requests);
                     }
 
                     @Override
@@ -114,11 +160,7 @@ public class DocumentsPage extends AppCompatActivity {
                             List<DocumentRequestModel> requests
                     ) {
 
-                        requestList.clear();
-
-                        requestList.addAll(requests);
-
-                        adapter.notifyDataSetChanged();
+                        adapter.updateList(requests);
                     }
 
                     @Override
@@ -144,5 +186,14 @@ public class DocumentsPage extends AppCompatActivity {
         intent.putExtra("image", theImage);
         startActivity(intent);
 
+    }
+    private void setUpBtn() {
+        String role = currentUser.getRole();
+
+        if(role.equals("Home Owners") || role.equals("Renters")) {
+            newRequestBtn.setVisibility(View.VISIBLE);
+        } else {
+            newRequestBtn.setVisibility(View.GONE);
+        }
     }
 }

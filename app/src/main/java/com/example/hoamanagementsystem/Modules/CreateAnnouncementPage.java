@@ -2,6 +2,7 @@ package com.example.hoamanagementsystem.Modules;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -33,7 +34,7 @@ public class CreateAnnouncementPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_create_announcement_page);
 
         titleET = findViewById(R.id.titleET);
@@ -45,11 +46,7 @@ public class CreateAnnouncementPage extends AppCompatActivity {
 
         publishAnnouncementBtn = findViewById(R.id.publishAnnouncementBtn);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
         setupSpinner();
         dateET.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
@@ -155,6 +152,24 @@ public class CreateAnnouncementPage extends AppCompatActivity {
             timeET.requestFocus();
             return;
         }
+
+        if (!link.isEmpty()) {
+
+            Uri uri = Uri.parse(link);
+
+            boolean isValid =
+                    (uri.getScheme() != null) &&
+                            (uri.getHost() != null) &&
+                            (uri.getScheme().equals("http") || uri.getScheme().equals("https"));
+
+            if (!isValid) {
+                linkET.setError("Enter a valid URL starting with http:// or https://");
+                linkET.requestFocus();
+                return;
+            }
+        }
+
+
         setLoadingState();
 
         AnnouncementModel details = new AnnouncementModel(title, description, category, date, time, link, "", "", "", "", currentDate, currentTime, timestamp);

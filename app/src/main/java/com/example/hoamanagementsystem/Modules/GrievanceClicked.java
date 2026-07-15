@@ -5,9 +5,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -29,6 +31,7 @@ import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.example.hoamanagementsystem.Model.NotificationModel;
 import com.example.hoamanagementsystem.R;
 import com.example.hoamanagementsystem.Session.UserSession;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -46,13 +49,24 @@ public class GrievanceClicked extends AppCompatActivity {
     private EditText remarksET;
     private Button saveUpdateBtn;
     private String notifStatus = "none";
+    private ImageView backBtn;
+
+    private TextView viewImageBtn, closeBtn;
+    private ImageView imageDisplay;
+    private String theIncidentImage;
+    private String theUserRole;
 
     private LinearLayout adminRemarksLayout, resolvedLayout, underInvestigationLayout, reportFiledLayout;
     private TextView dateFiled, underInvestigationTV, resolvedTV, remarksTV;
+
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_grievance_clicked);
 
         Intent data = getIntent();
@@ -70,6 +84,11 @@ public class GrievanceClicked extends AppCompatActivity {
         theAdminRemarks = data.getStringExtra("adminRemarks");
         theReporterID = data.getStringExtra("reporterID");
 
+        theIncidentImage = data.getStringExtra("incidentImage");
+
+        imageDisplay = findViewById(R.id.imageDisplay);
+        viewImageBtn = findViewById(R.id.viewImageBtn);
+        closeBtn = findViewById(R.id.closeBtn);
 
         tvType = findViewById(R.id.tvType);
         tvLocation = findViewById(R.id.tvLocation);
@@ -91,22 +110,46 @@ public class GrievanceClicked extends AppCompatActivity {
         resolvedTV = findViewById(R.id.resolvedTV);
         remarksTV = findViewById(R.id.remarksTV);
 
+        backBtn = findViewById(R.id.backBtn);
+
         homeOwnersRentersLayout = findViewById(R.id.homeOwnersRentersLayout);
         adminLayout = findViewById(R.id.adminLayout);
         currentUser = UserSession.getInstance().getCurrentUser();
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        theUserRole = currentUser.getRole();
+        if(theUserRole.equals("Home Owners") || theUserRole.equals("Renters")) {
+            getWindow().setFlags(
+                    WindowManager.LayoutParams.FLAG_SECURE,
+                    WindowManager.LayoutParams.FLAG_SECURE
+            );
+        }
+
+
         displayDatas();
         loadUIBasedOnRole();
         setupSpinner();
         setupProgressHomeowners();
 
+
+
+        viewImageBtn.setOnClickListener(d -> {
+           viewImageBtn.setVisibility(View.GONE);
+           closeBtn.setVisibility(View.VISIBLE);
+           imageDisplay.setVisibility(View.VISIBLE);
+        });
+
+        closeBtn.setOnClickListener(d -> {
+            viewImageBtn.setVisibility(View.VISIBLE);
+            closeBtn.setVisibility(View.GONE);
+            imageDisplay.setVisibility(View.GONE);
+        });
+
         saveUpdateBtn.setOnClickListener(d -> {
             updateStatus();
+        });
+
+        backBtn.setOnClickListener(d -> {
+            finish();
         });
     }
     private boolean isNotEmpty(String value) {
@@ -248,6 +291,7 @@ public class GrievanceClicked extends AppCompatActivity {
             notifStatus = "resolved";
         }
 
+
         String remarks = remarksET
                 .getText()
                 .toString()
@@ -297,11 +341,12 @@ public class GrievanceClicked extends AppCompatActivity {
                                         Toast.LENGTH_SHORT
                                 ).show();
                                 setNormalState();
+                                finish();
                             }
 
                             @Override
                             public void onFailure(String error) {
-
+                                setNormalState();
                             }
                         });
 
@@ -337,6 +382,8 @@ public class GrievanceClicked extends AppCompatActivity {
         tvDate.setText(theDate);
         tvTitle.setText(theTitle);
         tvDescription.setText(theDescription);
+
+        Picasso.get().load(theIncidentImage).into(imageDisplay);
 
         switch(theStatus) {
             case "pending":

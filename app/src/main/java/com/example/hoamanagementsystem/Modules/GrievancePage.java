@@ -2,7 +2,13 @@ package com.example.hoamanagementsystem.Modules;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +26,7 @@ import com.example.hoamanagementsystem.R;
 import com.example.hoamanagementsystem.Session.UserSession;
 import com.example.hoamanagementsystem.adapters.GrievanceAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GrievancePage extends AppCompatActivity {
@@ -27,6 +34,14 @@ public class GrievancePage extends AppCompatActivity {
     private String theRole, theUid, theFullName, theEmail, theBlock, theLot, theStreet, theLavanyaPhaseType, theImage;
     private RecyclerView grievanceRV;
     private HomeOwnerRentersModel currentUser;
+    private ImageView backBtn;
+    private String theUserRole;
+    private GrievanceAdapter adapter;
+    private EditText searchET;
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,11 +49,15 @@ public class GrievancePage extends AppCompatActivity {
         setContentView(R.layout.activity_grievance_page);
 
         newReportBtn = findViewById(R.id.newReportBtn);
+        backBtn = findViewById(R.id.backBtn);
+        searchET = findViewById(R.id.searchET);
 
         grievanceRV = findViewById(R.id.grievanceRV);
         grievanceRV.setLayoutManager(
                 new LinearLayoutManager(this));
 
+        adapter = new GrievanceAdapter(new ArrayList<>());
+        grievanceRV.setAdapter(adapter);
         currentUser = UserSession.getInstance().getCurrentUser();
 
         Intent datas = getIntent();
@@ -52,6 +71,14 @@ public class GrievancePage extends AppCompatActivity {
         theLavanyaPhaseType = datas.getStringExtra("lavanyaPhaseType");
         theImage = datas.getStringExtra("image");
 
+        theUserRole = currentUser.getRole();
+        if(theUserRole.equals("Home Owners") || theUserRole.equals("Renters")) {
+            getWindow().setFlags(
+                    WindowManager.LayoutParams.FLAG_SECURE,
+                    WindowManager.LayoutParams.FLAG_SECURE
+            );
+        }
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -59,9 +86,30 @@ public class GrievancePage extends AppCompatActivity {
             return insets;
         });
         loadUIBasedOnRole();
-
+        setUpBtn();
         newReportBtn.setOnClickListener(g -> {
             navigateToSubmitReportPage();
+        });
+
+        backBtn.setOnClickListener(s -> {
+            finish();
+        });
+
+        searchET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
         });
     }
     private void navigateToSubmitReportPage() {
@@ -87,10 +135,7 @@ public class GrievancePage extends AppCompatActivity {
                     public void onSuccess(
                             List<GrievanceModel> grievances) {
 
-                        GrievanceAdapter adapter =
-                                new GrievanceAdapter(grievances);
-
-                        grievanceRV.setAdapter(adapter);
+                        adapter.updateList(grievances);
                     }
 
                     @Override
@@ -106,10 +151,7 @@ public class GrievancePage extends AppCompatActivity {
                     public void onSuccess(
                             List<GrievanceModel> grievances) {
 
-                        GrievanceAdapter adapter =
-                                new GrievanceAdapter(grievances);
-
-                        grievanceRV.setAdapter(adapter);
+                        adapter.updateList(grievances);
                     }
 
                     @Override
@@ -117,5 +159,14 @@ public class GrievancePage extends AppCompatActivity {
 
                     }
                 });
+    }
+    private void setUpBtn() {
+        String role = currentUser.getRole();
+
+        if(role.equals("Home Owners") || role.equals("Renters")) {
+            newReportBtn.setVisibility(View.VISIBLE);
+        } else {
+            newReportBtn.setVisibility(View.GONE);
+        }
     }
 }

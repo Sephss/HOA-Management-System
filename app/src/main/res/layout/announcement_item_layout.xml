@@ -10,6 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <TextView
@@ -24,6 +25,20 @@
             android:background="@drawable/rounded_bg_announcement_tag"
             android:textStyle="bold"
             android:textColor="@color/green" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:gravity="end
+"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/deleteIcon"
+                android:layout_width="30dp"
+                android:visibility="gone"
+                android:src="@drawable/baseline_delete_24"
+                android:layout_height="30dp"/>
+        </LinearLayout>
 
     </LinearLayout>
 

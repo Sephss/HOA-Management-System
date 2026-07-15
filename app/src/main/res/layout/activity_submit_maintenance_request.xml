@@ -137,7 +137,7 @@
 
 
                         <TextView
-                            android:id="@+id/underReviewTV"
+                            android:id="@+id/routineTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Routine"
@@ -159,7 +159,7 @@
 
 
                         <TextView
-                            android:id="@+id/approveTV"
+                            android:id="@+id/moderateTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Moderate"
@@ -180,7 +180,7 @@
 
 
                         <TextView
-                            android:id="@+id/rejectedTV"
+                            android:id="@+id/urgentTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Urgent"

@@ -3,6 +3,7 @@ package com.example.hoamanagementsystem.FirebaseServices;
 import androidx.annotation.NonNull;
 
 import com.example.hoamanagementsystem.FirebaseServices.callback.CreateAnnouncementCallback;
+import com.example.hoamanagementsystem.FirebaseServices.callback.DeleteAnnouncementCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.FetchAnnouncementsCallback;
 import com.example.hoamanagementsystem.Model.AnnouncementModel;
 import com.google.firebase.database.DataSnapshot;
@@ -64,5 +65,17 @@ public class FirebaseAnnouncementManager {
                 callback.onFailure(error.getMessage());
             }
         });
+    }
+    public static void deleteAnnouncement(String announcementId,
+                                          DeleteAnnouncementCallback callback) {
+
+        getDatabase().child(announcementId)
+                .removeValue()
+                .addOnSuccessListener(unused -> {
+                    callback.onSuccess("Announcement deleted successfully");
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e.getMessage());
+                });
     }
 }

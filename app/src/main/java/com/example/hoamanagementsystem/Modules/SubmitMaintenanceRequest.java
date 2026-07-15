@@ -11,10 +11,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -44,6 +46,8 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
     private HomeOwnerRentersModel currentUser;
     private Button submitRequestBtn;
 
+    private TextView routineTV, moderateTV, urgentTV;
+
     private String theUrgencyLevel = "none";
 
     private Uri imageUri;
@@ -51,7 +55,7 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_submit_maintenance_request);
 
         maintenanceTypeSpinner = findViewById(R.id.maintenanceTypeSpinner);
@@ -65,13 +69,13 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
         imageDisplay = findViewById(R.id.imageDisplay);
         submitRequestBtn = findViewById(R.id.submitReportBtn);
 
+        routineTV = findViewById(R.id.routineTV);
+        moderateTV = findViewById(R.id.moderateTV);
+        urgentTV = findViewById(R.id.urgentTV);
+
         currentUser = UserSession.getInstance().getCurrentUser();
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
         setupSpinner();
 
         submitRequestBtn.setOnClickListener(s -> {
@@ -87,14 +91,35 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
 
         routineBtn.setOnClickListener(d -> {
             theUrgencyLevel = "routine";
+            routineBtn.setBackgroundResource(R.drawable.rounded_background);
+            moderateBtn.setBackgroundResource(R.drawable.document_request_bg);
+            urgentBtn.setBackgroundResource(R.drawable.document_request_bg);
+
+            routineTV.setTextColor(ContextCompat.getColor(this, R.color.white));
+            moderateTV.setTextColor(ContextCompat.getColor(this, R.color.darkergrey));
+            urgentTV.setTextColor(ContextCompat.getColor(this, R.color.darkergrey));
         });
 
         moderateBtn.setOnClickListener(d -> {
             theUrgencyLevel = "moderate";
+            moderateBtn.setBackgroundResource(R.drawable.rounded_background);
+            routineBtn.setBackgroundResource(R.drawable.document_request_bg);
+            urgentBtn.setBackgroundResource(R.drawable.document_request_bg);
+
+            moderateTV.setTextColor(ContextCompat.getColor(this, R.color.white));
+            routineTV.setTextColor(ContextCompat.getColor(this, R.color.darkergrey));
+            urgentTV.setTextColor(ContextCompat.getColor(this, R.color.darkergrey));
         });
 
         urgentBtn.setOnClickListener(d -> {
             theUrgencyLevel = "urgent";
+            urgentBtn.setBackgroundResource(R.drawable.rounded_background);
+            routineBtn.setBackgroundResource(R.drawable.document_request_bg);
+            moderateBtn.setBackgroundResource(R.drawable.document_request_bg);
+
+            urgentTV.setTextColor(ContextCompat.getColor(this, R.color.white));
+            routineTV.setTextColor(ContextCompat.getColor(this, R.color.darkergrey));
+            moderateTV.setTextColor(ContextCompat.getColor(this, R.color.darkergrey));
         });
 
     }
@@ -196,8 +221,9 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
                         FirebaseMaintenanceManager.submitMaintenanceRequest(data, new SubmitMaintenanceCallback() {
                             @Override
                             public void onSuccess(String Success) {
-                                Toast.makeText(SubmitMaintenanceRequest.this, Success, Toast.LENGTH_SHORT).show();
                                 setNormalState();
+                                navigateTo(MaintenanceRequestSuccess.class);
+                                finish();
                             }
 
                             @Override
@@ -251,5 +277,9 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
         submitRequestBtn.setEnabled(true);
         submitRequestBtn.setAlpha(1f);
         submitRequestBtn.setText("SUBMIT REQUEST");
+    }
+    private void navigateTo(Class<?> destination) {
+        Intent intent = new Intent(this, destination);
+        startActivity(intent);
     }
 }

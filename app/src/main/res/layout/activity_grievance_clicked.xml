@@ -19,6 +19,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
+            android:id="@+id/backBtn"
             android:layout_width="25dp"
             android:layout_marginEnd="10dp"
             android:layout_height="25dp"
@@ -198,6 +199,35 @@
             android:text="Neighbor at Blk 4 Lot 7 has been playing loud music past midnight on weekdays, disturbing multiple residents for over two weeks."
             android:textColor="@color/darkergrey"
             android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/viewImageBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/green"
+            android:text="View Image"/>
+        <TextView
+            android:id="@+id/closeBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:visibility="gone"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/green"
+            android:text="Close"/>
+
+        <ImageView
+            android:id="@+id/imageDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
 
     </LinearLayout>
 

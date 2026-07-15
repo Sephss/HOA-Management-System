@@ -21,7 +21,9 @@ import com.example.hoamanagementsystem.FirebaseServices.FirebaseAuthManager;
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseDocumentsManager;
 import com.example.hoamanagementsystem.FirebaseServices.callback.CreateDocumentCallback;
 import com.example.hoamanagementsystem.Model.DocumentRequestModel;
+import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.example.hoamanagementsystem.R;
+import com.example.hoamanagementsystem.Session.UserSession;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ public class RequestDocuments extends AppCompatActivity {
     private EditText purposeEditText, remarksEditText;
     private LinearLayout documentTypeLayout;
     private Button submitRequestButton;
+    private HomeOwnerRentersModel currentUser;
     private String uid;
 
     private String theRole, theUid, theFullName, theEmail, theBlock, theLot, theStreet, theLavanyaPhaseType, theImage;
@@ -42,9 +45,10 @@ public class RequestDocuments extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_request_documents);
 
+        currentUser = UserSession.getInstance().getCurrentUser();
         requestCategorySpinner = findViewById(R.id.requestCategorySpinner);
         documentTypeSpinner = findViewById(R.id.documentTypeSpinner);
         purposeEditText = findViewById(R.id.purposeEditText);
@@ -65,11 +69,7 @@ public class RequestDocuments extends AppCompatActivity {
         theLavanyaPhaseType = datas.getStringExtra("lavanyaPhaseType");
         theImage = datas.getStringExtra("image");
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
         setUpSpinner();
 
         submitRequestButton.setOnClickListener(g -> {
@@ -78,7 +78,7 @@ public class RequestDocuments extends AppCompatActivity {
     }
     private void submitDocumentRequest() {
         String requestCategory = requestCategorySpinner.getSelectedItem().toString();
-        String documentType = documentTypeSpinner.getSelectedItem().toString();
+
         String purpose = purposeEditText.getText().toString();
         String remarks = remarksEditText.getText().toString();
 
@@ -105,6 +105,7 @@ public class RequestDocuments extends AppCompatActivity {
             Toast.makeText(this, "Please select a request category", Toast.LENGTH_SHORT).show();
             return;
         }
+        String documentType = documentTypeSpinner.getSelectedItem().toString();
         if (documentType.equals("Select Document Type")) {
             Toast.makeText(this, "Please select a document type", Toast.LENGTH_SHORT).show();
             return;
