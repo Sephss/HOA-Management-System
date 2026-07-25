@@ -1,7 +1,7 @@
 package com.example.hoamanagementsystem.Model;
 
 public class HomeOwnerRentersModel {
-    String firstName, middleName, lastName, phoneNumber, email, block, lot, street, role, lavanyaPhaseType, uid, imageUrl;
+    String firstName, middleName, lastName, phoneNumber, email, block, lot, street, role, lavanyaPhaseType, uid, imageUrl, isAccountDisabled, isAccountBanned, isAccountApprovedByAdmin;
     public HomeOwnerRentersModel() {
 
     }
@@ -102,7 +102,31 @@ public class HomeOwnerRentersModel {
         this.imageUrl = imageUrl;
     }
 
-    public HomeOwnerRentersModel(String firstName, String middleName, String lastName, String phoneNumber, String email, String block, String lot, String street, String role, String lavanyaPhaseType, String uid, String imageUrl) {
+    public String getIsAccountDisabled() {
+        return isAccountDisabled;
+    }
+
+    public void setIsAccountDisabled(String isAccountDisabled) {
+        this.isAccountDisabled = isAccountDisabled;
+    }
+
+    public String getIsAccountBanned() {
+        return isAccountBanned;
+    }
+
+    public void setIsAccountBanned(String isAccountBanned) {
+        this.isAccountBanned = isAccountBanned;
+    }
+
+    public String getIsAccountApprovedByAdmin() {
+        return isAccountApprovedByAdmin;
+    }
+
+    public void setIsAccountApprovedByAdmin(String isAccountApprovedByAdmin) {
+        this.isAccountApprovedByAdmin = isAccountApprovedByAdmin;
+    }
+
+    public HomeOwnerRentersModel(String firstName, String middleName, String lastName, String phoneNumber, String email, String block, String lot, String street, String role, String lavanyaPhaseType, String uid, String imageUrl, String isAccountDisabled, String isAccountBanned, String isAccountApprovedByAdmin) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
@@ -115,5 +139,8 @@ public class HomeOwnerRentersModel {
         this.lavanyaPhaseType = lavanyaPhaseType;
         this.uid = uid;
         this.imageUrl = imageUrl;
+        this.isAccountDisabled = isAccountDisabled;
+        this.isAccountBanned = isAccountBanned;
+        this.isAccountApprovedByAdmin = isAccountApprovedByAdmin;
     }
 }

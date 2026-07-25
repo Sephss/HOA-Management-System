@@ -18,18 +18,33 @@ public class FirebaseAuthManager {
     }
     public static void loginUser(String email, String password, LoginUserCallback callback) {
         getAuth().signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-            if(task.isSuccessful()) {
-                String uid = getCurrentUserUid();
-                if(uid != null) {
-                    FirebaseDatabaseManager.getUserDatas(uid, new UserDatasCallback() {
-                        @Override
-                        public void onSuccess(HomeOwnerRentersModel user) {
-                            callback.onSuccess(getCurrentUser(), user);
-                        }
+            if (task.isSuccessful()) {
+                FirebaseUser firebaseUser = getCurrentUser();
 
-                        @Override
-                        public void onFailure(String message) {
-                            callback.onFailure(message);
+                if (firebaseUser != null) {
+                    // Force refresh to get the latest verification status from Firebase servers
+                    firebaseUser.reload().addOnCompleteListener(reloadTask -> {
+                        if (reloadTask.isSuccessful()) {
+                            if (!firebaseUser.isEmailVerified()) {
+                                getAuth().signOut(); // don't leave them signed in unverified
+                                callback.onFailure("Please verify your email before logging in.");
+                                return;
+                            }
+
+                            String uid = firebaseUser.getUid();
+                            FirebaseDatabaseManager.getUserDatas(uid, new UserDatasCallback() {
+                                @Override
+                                public void onSuccess(HomeOwnerRentersModel user) {
+                                    callback.onSuccess(firebaseUser, user);
+                                }
+
+                                @Override
+                                public void onFailure(String message) {
+                                    callback.onFailure(message);
+                                }
+                            });
+                        } else {
+                            callback.onFailure("Failed to refresh user status.");
                         }
                     });
                 } else {
@@ -42,12 +57,12 @@ public class FirebaseAuthManager {
             callback.onFailure(failedTask.getMessage());
         });
     }
-    public static void signupUser (String email, String password, HomeOwnerRentersModel homeOwnerRentersModel, RegisterHomeownerRenterCallback callback) {
+    public static void signupUser(String email, String password, HomeOwnerRentersModel homeOwnerRentersModel, RegisterHomeownerRenterCallback callback) {
         getAuth().createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-            if(task.isSuccessful()) {
+            if (task.isSuccessful()) {
                 FirebaseUser firebaseUser = getAuth().getCurrentUser();
 
-                if(firebaseUser != null) {
+                if (firebaseUser != null) {
                     String uid = firebaseUser.getUid();
 
                     homeOwnerRentersModel.setUid(uid);
@@ -55,7 +70,19 @@ public class FirebaseAuthManager {
                     FirebaseDatabaseManager.saveUser(homeOwnerRentersModel, new RegisterHomeownerRenterCallback() {
                         @Override
                         public void onSuccess(String success) {
-                            callback.onSuccess(success);
+                            // Data saved successfully, now send verification email
+                            firebaseUser.sendEmailVerification().addOnCompleteListener(verifyTask -> {
+                                if (verifyTask.isSuccessful()) {
+                                    callback.onSuccess(success);
+                                } else {
+                                    // Account + data exist, but verification email failed to send.
+                                    // Don't roll back the account for this — just let the caller know.
+                                    callback.onFailure("Account created but failed to send verification email: " +
+                                            (verifyTask.getException() != null
+                                                    ? verifyTask.getException().getMessage()
+                                                    : "Unknown error"));
+                                }
+                            });
                         }
 
                         @Override
@@ -63,7 +90,6 @@ public class FirebaseAuthManager {
                             firebaseUser.delete().addOnCompleteListener(deleteTask -> {
                                 callback.onFailure(failed);
                             });
-
                         }
                     });
                 } else {
@@ -90,5 +116,25 @@ public class FirebaseAuthManager {
         if (firebaseAuth != null) {
             firebaseAuth.signOut();
         }
+    }
+    public static void resendEmailVerification(RegisterHomeownerRenterCallback callback) {
+        FirebaseUser firebaseUser = getAuth().getCurrentUser();
+
+        if (firebaseUser == null) {
+            callback.onFailure("No user is currently signed in.");
+            return;
+        }
+
+        firebaseUser.sendEmailVerification().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                callback.onSuccess("Verification email sent. Please check your inbox.");
+            } else {
+                callback.onFailure(
+                        task.getException() != null
+                                ? task.getException().getMessage()
+                                : "Failed to resend verification email."
+                );
+            }
+        });
     }
 }

@@ -1,7 +1,13 @@
 package com.example.hoamanagementsystem;
 
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +33,7 @@ public class SignupPageFinish extends AppCompatActivity {
     private Spinner residentTypeSpinner, lavanyaPhaseTypeSpinner;
     private String firstname, middlename, lastname, phonenumber, email, password;
     private Button signupBtn;
-
+    private TextView resendEmailVerificationBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +46,7 @@ public class SignupPageFinish extends AppCompatActivity {
         steetET = findViewById(R.id.streetET);
 
         signupBtn = findViewById(R.id.signupBtn);
+        resendEmailVerificationBtn = findViewById(R.id.resendEmailVerificationBtn);
 
         residentTypeSpinner = findViewById(R.id.residentTypeSpinner);
         lavanyaPhaseTypeSpinner = findViewById(R.id.lavanyaPhaseTypeSpinner);
@@ -61,6 +68,39 @@ public class SignupPageFinish extends AppCompatActivity {
         signupBtn.setOnClickListener(g -> {
             signUpUser();
         });
+
+        resendEmailVerificationBtn.setOnClickListener(v -> {
+            resendEmailVerificationBtn.setEnabled(false); // prevent spam-clicking
+
+            FirebaseAuthManager.resendEmailVerification(new RegisterHomeownerRenterCallback() {
+                @Override
+                public void onSuccess(String success) {
+                    Toast.makeText(SignupPageFinish.this, success, Toast.LENGTH_SHORT).show();
+                    startResendCooldown();
+                }
+
+                @Override
+                public void onFailure(String failed) {
+                    Toast.makeText(SignupPageFinish.this, failed, Toast.LENGTH_SHORT).show();
+                    resendEmailVerificationBtn.setEnabled(true); // no cooldown on failure, let them retry
+                }
+            });
+        });
+    }
+    private void startResendCooldown() {
+        new CountDownTimer(10000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long secondsLeft = millisUntilFinished / 1000;
+                resendEmailVerificationBtn.setText("Resend in " + secondsLeft + "s");
+            }
+
+            @Override
+            public void onFinish() {
+                resendEmailVerificationBtn.setText("Resend email verification");
+                resendEmailVerificationBtn.setEnabled(true);
+            }
+        }.start();
     }
     private void navigateTo(Class<?> destination) {
         Intent intent = new Intent(this, destination);
@@ -101,16 +141,14 @@ public class SignupPageFinish extends AppCompatActivity {
 
         setLoadingState();
 
-        HomeOwnerRentersModel details = new HomeOwnerRentersModel(firstname, middlename, lastname, phonenumber, email, block, lot, street, residentType, lavanyaPhaseType, "", "none");
+        HomeOwnerRentersModel details = new HomeOwnerRentersModel(firstname, middlename, lastname, phonenumber, email, block, lot, street, residentType, lavanyaPhaseType, "", "none", "no", "no", "no");
 
         FirebaseAuthManager.signupUser(email, password, details, new RegisterHomeownerRenterCallback() {
             @Override
             public void onSuccess(String success) {
-                Toast.makeText(SignupPageFinish.this, success, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(SignupPageFinish.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
+                resendEmailVerificationBtn.setVisibility(View.VISIBLE);
                 setNormalState();
+                showVerificationSentDialog(email);
             }
 
             @Override
@@ -119,6 +157,26 @@ public class SignupPageFinish extends AppCompatActivity {
                 Toast.makeText(SignupPageFinish.this, failed, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    private void showVerificationSentDialog(String userEmail) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_verify_email, null);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        TextView emailText = dialogView.findViewById(R.id.dialogEmail);
+        emailText.setText(userEmail);
+
+        Button okBtn = dialogView.findViewById(R.id.dialogOkBtn);
+        okBtn.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
     private void setUpSpinners() {
         String[] residentTypes = {
