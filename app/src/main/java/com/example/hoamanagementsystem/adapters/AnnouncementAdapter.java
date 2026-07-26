@@ -3,20 +3,25 @@ package com.example.hoamanagementsystem.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseAnnouncementManager;
+import com.example.hoamanagementsystem.FirebaseServices.callback.AttendanceStatusCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.DeleteAnnouncementCallback;
+import com.example.hoamanagementsystem.FirebaseServices.callback.ToggleAttendanceCallback;
 import com.example.hoamanagementsystem.Model.AnnouncementModel;
 import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.example.hoamanagementsystem.R;
@@ -49,6 +54,19 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         AnnouncementModel announcement = announcementList.get(position);
+
+        if(currentUser.getRole().equals("Home Owners") || currentUser.getRole().equals("Renters")) {
+            if (announcement.getCategory().equals("Meeting")) {
+                holder.attendanceLayout.setVisibility(View.VISIBLE);
+                bindAttendance(holder, announcement.getAnnouncementId());
+            } else {
+                holder.attendanceLayout.setVisibility(View.GONE);
+            }
+        }
+
+
+
+
 
         if(announcement.getLink().isEmpty() || announcement.getLink() == null || announcement.getLink().equals("")) {
             holder.link.setVisibility(View.GONE);
@@ -121,6 +139,56 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
         }
     }
 
+    private void bindAttendance(ViewHolder holder, String announcementId) {
+
+        FirebaseAnnouncementManager.getAttendanceStatus(announcementId, new AttendanceStatusCallback() {
+            @Override
+            public void onResult(boolean isAttending, long attendeeCount) {
+                holder.attendeeCount.setText(attendeeCount + " attending");
+                setButtonState(holder.btnConfirmAttendance, isAttending);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                holder.attendeeCount.setText("-- attending");
+            }
+        });
+
+        holder.btnConfirmAttendance.setOnClickListener(v -> {
+            holder.btnConfirmAttendance.setEnabled(false);
+
+            String homeownerName = (currentUser.getFirstName() + " " + currentUser.getLastName());
+            String unitNumber = currentUser.getLavanyaPhaseType();
+
+            FirebaseAnnouncementManager.toggleAttendance(announcementId, homeownerName, unitNumber,
+                    new ToggleAttendanceCallback() {
+                        @Override
+                        public void onSuccess(boolean isNowAttending) {
+                            holder.btnConfirmAttendance.setEnabled(true);
+                            bindAttendance(holder, announcementId);
+                        }
+
+                        @Override
+                        public void onFailure(String message) {
+                            holder.btnConfirmAttendance.setEnabled(true);
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        });
+    }
+
+    private void setButtonState(Button button, boolean isAttending) {
+        if (isAttending) {
+            button.setText("Attending ✓");
+            button.setBackgroundTintList(ColorStateList.valueOf(
+                    ContextCompat.getColor(context, R.color.grey)));
+        } else {
+            button.setText("Confirm Attendance");
+            button.setBackgroundTintList(ColorStateList.valueOf(
+                    ContextCompat.getColor(context, R.color.green)));
+        }
+    }
+
     @Override
     public int getItemCount() {
         return announcementList.size();
@@ -128,9 +196,11 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView category, title, description, dateAndTime, link;
+        TextView category, title, description, dateAndTime, link, attendeeCount;
         LinearLayout linkLayout;
         ImageView deleteIcon;
+        LinearLayout attendanceLayout;
+        Button btnConfirmAttendance;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -142,6 +212,9 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
             link = itemView.findViewById(R.id.link);
             linkLayout = itemView.findViewById(R.id.linkLayout);
             deleteIcon = itemView.findViewById(R.id.deleteIcon);
+            attendanceLayout = itemView.findViewById(R.id.attendanceLayout);
+            btnConfirmAttendance = itemView.findViewById(R.id.btnConfirmAttendance);
+            attendeeCount = itemView.findViewById(R.id.attendeeCount);
         }
     }
 }

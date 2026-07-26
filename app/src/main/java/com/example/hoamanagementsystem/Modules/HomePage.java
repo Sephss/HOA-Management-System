@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomePage extends AppCompatActivity {
-    private LinearLayout profilePage, announcementLink, documentsLink, grievanceLink, maintenanceLink;
+    private LinearLayout profilePage, bookingsLink, announcementLink, documentsLink, grievanceLink, maintenanceLink;
     private RecyclerView announcementRV;
     private AnnouncementAdapter announcementAdapter;
     private ArrayList<AnnouncementModel> announcementList;
@@ -59,6 +59,7 @@ public class HomePage extends AppCompatActivity {
         documentsLink = findViewById(R.id.documentsLink);
         grievanceLink = findViewById(R.id.grievanceLink);
         maintenanceLink = findViewById(R.id.maintenanceLink);
+        bookingsLink = findViewById(R.id.bookingsLink);
 
         notificationDot = findViewById(R.id.notificationDot);
 
@@ -124,6 +125,11 @@ public class HomePage extends AppCompatActivity {
             Intent intent = new Intent(HomePage.this, ProfilePage.class);
             startActivity(intent);
             overridePendingTransition(0, 0);
+        });
+
+        bookingsLink.setOnClickListener(s -> {
+            Intent asssd = new Intent(HomePage.this, BookFacilityPage.class);
+            startActivity(asssd);
         });
 
         announcementLink.setOnClickListener(l -> {

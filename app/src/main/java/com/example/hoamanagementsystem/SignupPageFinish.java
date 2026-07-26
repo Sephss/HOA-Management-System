@@ -174,7 +174,11 @@ public class SignupPageFinish extends AppCompatActivity {
         emailText.setText(userEmail);
 
         Button okBtn = dialogView.findViewById(R.id.dialogOkBtn);
-        okBtn.setOnClickListener(v -> dialog.dismiss());
+        okBtn.setOnClickListener(v -> {
+            dialog.dismiss();
+            navigateTo(HomePage.class);
+            finish();
+        });
 
         dialog.show();
     }
