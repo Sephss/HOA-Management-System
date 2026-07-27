@@ -6,7 +6,7 @@ import com.example.hoamanagementsystem.FirebaseServices.callback.AttendanceStatu
 import com.example.hoamanagementsystem.FirebaseServices.callback.CreateAnnouncementCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.DeleteAnnouncementCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.FetchAnnouncementsCallback;
-import com.example.hoamanagementsystem.FirebaseServices.callback.ToggleAttendanceCallback;
+import com.example.hoamanagementsystem.FirebaseServices.callback.SetAttendanceStatusCallback;
 import com.example.hoamanagementsystem.Model.AnnouncementModel;
 import com.example.hoamanagementsystem.Model.AttendeeModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,6 +40,7 @@ public class FirebaseAnnouncementManager {
             callback.onFailure("Failed to create announcement");
         });
     }
+
     public static void fetchAnnouncements(FetchAnnouncementsCallback callback) {
 
         getDatabase().addValueEventListener(new ValueEventListener() {
@@ -71,6 +72,7 @@ public class FirebaseAnnouncementManager {
             }
         });
     }
+
     public static void deleteAnnouncement(String announcementId,
                                           DeleteAnnouncementCallback callback) {
 
@@ -83,11 +85,11 @@ public class FirebaseAnnouncementManager {
                     callback.onFailure(e.getMessage());
                 });
     }
-    public static void getAttendanceRef(String announcementId) {
-        // helper shown inline below, not a standalone method
-    }
 
-    public static void toggleAttendance(String announcementId, String homeownerName, String unitNumber, ToggleAttendanceCallback callback) {
+    public static void setAttendanceStatus(String announcementId, String status, String reason,
+                                           String homeownerName, String block, String lot, String street,
+                                           String role, String lavanyaPhaseType,
+                                           SetAttendanceStatusCallback callback) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
             callback.onFailure("User not logged in");
@@ -103,20 +105,28 @@ public class FirebaseAnnouncementManager {
         myAttendanceRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
                 if (snapshot.exists()) {
-                    // already confirmed -> un-confirm
-                    myAttendanceRef.removeValue()
-                            .addOnSuccessListener(v -> callback.onSuccess(false))
-                            .addOnFailureListener(e -> callback.onFailure("Failed to remove attendance"));
-                } else {
-                    // not confirmed yet -> confirm
-                    AttendeeModel attendee = new AttendeeModel(
-                            uid, homeownerName, unitNumber, System.currentTimeMillis()
-                    );
-                    myAttendanceRef.setValue(attendee)
-                            .addOnSuccessListener(v -> callback.onSuccess(true))
-                            .addOnFailureListener(e -> callback.onFailure("Failed to confirm attendance"));
+                    AttendeeModel existing = snapshot.getValue(AttendeeModel.class);
+
+                    if (existing != null && status.equals(existing.getStatus())) {
+                        // tapping the same button again -> undo their response
+                        myAttendanceRef.removeValue()
+                                .addOnSuccessListener(v -> callback.onSuccess(null))
+                                .addOnFailureListener(e -> callback.onFailure("Failed to undo response"));
+                        return;
+                    }
                 }
+
+                // new response, or switching from one status to the other
+                AttendeeModel attendee = new AttendeeModel(
+                        uid, homeownerName, block, lot, street, role, lavanyaPhaseType,
+                        status, reason, System.currentTimeMillis()
+                );
+
+                myAttendanceRef.setValue(attendee)
+                        .addOnSuccessListener(v -> callback.onSuccess(status))
+                        .addOnFailureListener(e -> callback.onFailure("Failed to save response"));
             }
 
             @Override
@@ -141,9 +151,26 @@ public class FirebaseAnnouncementManager {
         attendeesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                long count = snapshot.getChildrenCount();
-                boolean isAttending = snapshot.hasChild(uid);
-                callback.onResult(isAttending, count);
+                long attendingCount = 0;
+                long notAttendingCount = 0;
+                String currentUserStatus = null;
+
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    AttendeeModel attendee = child.getValue(AttendeeModel.class);
+                    if (attendee == null) continue;
+
+                    if ("attending".equals(attendee.getStatus())) {
+                        attendingCount++;
+                    } else if ("not_attending".equals(attendee.getStatus())) {
+                        notAttendingCount++;
+                    }
+
+                    if (child.getKey() != null && child.getKey().equals(uid)) {
+                        currentUserStatus = attendee.getStatus();
+                    }
+                }
+
+                callback.onResult(currentUserStatus, attendingCount, notAttendingCount);
             }
 
             @Override

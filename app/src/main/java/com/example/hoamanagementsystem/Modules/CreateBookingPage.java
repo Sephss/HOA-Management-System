@@ -54,12 +54,10 @@ public class CreateBookingPage extends AppCompatActivity {
     private String selectedSlot = "";
 
     private final List<String> allSlots = Arrays.asList(
-            "8:00 AM - 10:00 AM",
-            "10:00 AM - 12:00 PM",
-            "12:00 PM - 2:00 PM",
-            "2:00 PM - 4:00 PM",
-            "4:00 PM - 6:00 PM",
-            "6:00 PM - 8:00 PM"
+            "8:00 AM - 11:00 AM",
+            "11:00 AM - 2:00 PM",
+            "2:00 PM - 5:00 PM",
+            "5:00 PM - 8:00 PM"
     );
 
     @Override
@@ -309,18 +307,13 @@ public class CreateBookingPage extends AppCompatActivity {
                 "Select Sport",
                 "Basketball",
                 "Volleyball",
-                "Badminton",
-                "Table Tennis",
-                "Tennis",
-                "Pickleball",
-                "Swimming",
-                "Jogging",
-                "Cycling",
-                "Fitness/Gym",
-                "Zumba",
                 "Chess",
-                "Billiards",
-                "Others"
+                "Zumba",
+                "Puregold Bazaar",
+                "Community Event",
+                "Emergency / Repair",
+                "Holy Mass",
+                "General Assembly"
         );
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(

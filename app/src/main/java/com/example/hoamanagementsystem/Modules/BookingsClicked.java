@@ -1,8 +1,12 @@
 package com.example.hoamanagementsystem.Modules;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,20 +15,30 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.hoamanagementsystem.FirebaseServices.FirebaseBookingSlotManager;
+import com.example.hoamanagementsystem.FirebaseServices.FirebaseBookingsManager;
+import com.example.hoamanagementsystem.FirebaseServices.callback.UpdateBookingStatusCallback;
+import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.example.hoamanagementsystem.R;
+import com.example.hoamanagementsystem.Session.UserSession;
 
 public class BookingsClicked extends AppCompatActivity {
 
     private TextView sportCategory, bookingStatus, bookingDate, bookingTime,
+            adminRemarksText,
             bookingPurpose, remarksLabel, bookingRemarks, bookerName, dateRequested;
     private View statusPill, statusDot, adminRemarksSection, backButton, divider2;
+    private Button cancelReservationBtn, cancelReservationBtnAdmin;
+    private EditText cancelRemarks;
+    private HomeOwnerRentersModel currentUser;
+    private String bookingID, sport, status, requestBookingDate, requestBookingTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_bookings_clicked);
-
+        currentUser = UserSession.getInstance().getCurrentUser();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -36,6 +50,14 @@ public class BookingsClicked extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
 
         displayBookingDetails();
+
+        cancelReservationBtn.setOnClickListener(v -> showCancelConfirmation());
+
+        cancelReservationBtnAdmin.setOnClickListener(d -> {
+            showCancelConfirmationAdmin();
+        });
+
+
     }
 
     private void bindViews() {
@@ -53,17 +75,26 @@ public class BookingsClicked extends AppCompatActivity {
         bookerName = findViewById(R.id.bookerName);
         dateRequested = findViewById(R.id.dateRequested);
         adminRemarksSection = findViewById(R.id.adminRemarksSection);
+        cancelReservationBtn = findViewById(R.id.cancelReservationBtn);
+        cancelReservationBtnAdmin = findViewById(R.id.cancelReservationBtnAdmin);
+        cancelRemarks = findViewById(R.id.cancelRemarks);
+        adminRemarksText = findViewById(R.id.adminRemarksText);
+
     }
 
     private void displayBookingDetails() {
-        String sport = getIntent().getStringExtra("bookingSport");
-        String status = getIntent().getStringExtra("bookingStatus");
-        String requestBookingDate = getIntent().getStringExtra("reqeustBookingDate");
-        String requestBookingTime = getIntent().getStringExtra("requestBookingTime");
+
+
+        bookingID = getIntent().getStringExtra("bookingID");
+        sport = getIntent().getStringExtra("bookingSport");
+        status = getIntent().getStringExtra("bookingStatus");
+        requestBookingDate = getIntent().getStringExtra("reqeustBookingDate");
+        requestBookingTime = getIntent().getStringExtra("requestBookingTime");
         String purpose = getIntent().getStringExtra("bookingPurpose");
         String remarks = getIntent().getStringExtra("bookerRemarks");
         String booker = getIntent().getStringExtra("bookerName");
         String bookedDate = getIntent().getStringExtra("bookedDate");
+        String adminRemarks = getIntent().getStringExtra("adminRemarks");
 
         sportCategory.setText(sport);
         bookingDate.setText(requestBookingDate);
@@ -85,17 +116,110 @@ public class BookingsClicked extends AppCompatActivity {
 
         bookingStatus.setText(capitalize(status));
 
-        if ("cancelled".equalsIgnoreCase(status)) {
+        if(status.equals("cancelled")) {
             statusPill.setBackgroundResource(R.drawable.status_pill_cancelled);
             statusDot.setBackgroundResource(R.drawable.booking_accent_cancelled);
             bookingStatus.setTextColor(ContextCompat.getColor(this, R.color.grey));
-            adminRemarksSection.setVisibility(View.VISIBLE);
+
+            cancelReservationBtnAdmin.setVisibility(View.GONE);
+            cancelReservationBtn.setVisibility(View.GONE);
+            cancelRemarks.setVisibility(View.GONE);
+
+            if (adminRemarks == null || adminRemarks.trim().isEmpty()) {
+                adminRemarksSection.setVisibility(View.VISIBLE);
+                adminRemarksText.setVisibility(View.GONE);
+            } else {
+                adminRemarksSection.setVisibility(View.VISIBLE);
+                adminRemarksText.setVisibility(View.VISIBLE);
+                adminRemarksText.setText(adminRemarks);
+            }
         } else {
             statusPill.setBackgroundResource(R.drawable.status_pill_confirmed);
             statusDot.setBackgroundResource(R.drawable.booking_accent_confirmed);
             bookingStatus.setTextColor(ContextCompat.getColor(this, R.color.green));
-            adminRemarksSection.setVisibility(View.GONE);
+
+            if(currentUser.getRole().equals("Home Owners") || currentUser.getRole().equals("Renters")) {
+                adminRemarksSection.setVisibility(View.GONE);
+                cancelReservationBtn.setVisibility(View.VISIBLE);
+            } else {
+                cancelRemarks.setVisibility(View.VISIBLE);
+                cancelReservationBtnAdmin.setVisibility(View.VISIBLE);
+                cancelReservationBtn.setVisibility(View.GONE);
+            }
         }
+
+
+
+    }
+
+    private void showCancelConfirmationAdmin() {
+        new AlertDialog.Builder(this)
+                .setTitle("Cancel Reservation")
+                .setMessage("Are you sure you want to cancel this reservation? This cannot be undone.")
+                .setPositiveButton("Yes, Cancel", (dialog, which) -> performCancellationAdmin())
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private void showCancelConfirmation() {
+        new AlertDialog.Builder(this)
+                .setTitle("Cancel Reservation")
+                .setMessage("Are you sure you want to cancel this reservation? This cannot be undone.")
+                .setPositiveButton("Yes, Cancel", (dialog, which) -> performCancellation())
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private void performCancellation() {
+        cancelReservationBtn.setEnabled(false);
+        cancelReservationBtn.setText("Cancelling...");
+
+        FirebaseBookingsManager.cancelBooking(bookingID, new UpdateBookingStatusCallback() {
+            @Override
+            public void onSuccess() {
+                // Booking marked cancelled, now free up the slot
+                FirebaseBookingSlotManager.removeBookingSlot(sport, requestBookingDate, requestBookingTime);
+
+                Toast.makeText(BookingsClicked.this, "Reservation cancelled", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailure(String message) {
+                cancelReservationBtn.setEnabled(true);
+                cancelReservationBtn.setText("Cancel Reservation");
+                Toast.makeText(BookingsClicked.this, "Failed to cancel: " + message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void performCancellationAdmin() {
+        cancelReservationBtn.setEnabled(false);
+        cancelReservationBtn.setText("Cancelling...");
+
+        String remarks = cancelRemarks.getText().toString();
+        if(remarks.isEmpty()) {
+            cancelRemarks.setError("Add remarks");
+            return;
+        }
+
+        FirebaseBookingsManager.cancelBookingAdmin(bookingID, remarks, new UpdateBookingStatusCallback() {
+            @Override
+            public void onSuccess() {
+                // Booking marked cancelled, now free up the slot
+                FirebaseBookingSlotManager.removeBookingSlot(sport, requestBookingDate, requestBookingTime);
+
+                Toast.makeText(BookingsClicked.this, "Reservation cancelled", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onFailure(String message) {
+                cancelReservationBtn.setEnabled(true);
+                cancelReservationBtn.setText("Cancel Reservation");
+                Toast.makeText(BookingsClicked.this, "Failed to cancel: " + message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private String capitalize(String text) {

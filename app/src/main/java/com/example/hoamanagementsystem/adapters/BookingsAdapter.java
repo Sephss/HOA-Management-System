@@ -58,6 +58,10 @@ public class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHo
 
             intent.putExtra("bookerName", booking.getBookerName());
             intent.putExtra("bookedDate", booking.getDateBooked());
+
+            intent.putExtra("adminRemarks", booking.getAdminRemarks());
+
+            intent.putExtra("requestBookingTime", booking.getRequestBookingTimeIn() + " - " + booking.getRequestBookingsTimeOut());
             context.startActivity(intent);
         });
 

@@ -104,28 +104,49 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
+        android:orientation="vertical"
         android:visibility="gone">
 
-        <Button
-            android:id="@+id/btnConfirmAttendance"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Confirm Attendance"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/green"
-            android:textColor="@color/white" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnConfirmAttendance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:text="Confirm Attendance"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:backgroundTint="@color/green"
+                android:textColor="@color/white" />
+
+            <Button
+                android:id="@+id/btnWillNotAttend"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:text="Will Not Attend"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:backgroundTint="@color/grey"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/attendeeCount"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginTop="8dp"
             android:gravity="end"
-            android:text="0 attending"
+            android:text="0 attending · 0 not attending"
             android:textStyle="bold"
+            android:textSize="12sp"
             android:textColor="@color/grey" />
 
     </LinearLayout>

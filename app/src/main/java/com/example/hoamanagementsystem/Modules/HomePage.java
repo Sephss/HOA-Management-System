@@ -128,8 +128,13 @@ public class HomePage extends AppCompatActivity {
         });
 
         bookingsLink.setOnClickListener(s -> {
-            Intent asssd = new Intent(HomePage.this, BookFacilityPage.class);
-            startActivity(asssd);
+         if(theRole.equals("Home Owners") || theRole.equals("Renters")) {
+             Intent asssd = new Intent(HomePage.this, BookFacilityPage.class);
+             startActivity(asssd);
+         } else {
+             Intent dsaf = new Intent(HomePage.this, AdminBookingsCalendarPage.class);
+             startActivity(dsaf);
+         }
         });
 
         announcementLink.setOnClickListener(l -> {
