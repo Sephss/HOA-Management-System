@@ -243,7 +243,7 @@ public class MaintenanceRequestClicked extends AppCompatActivity {
             notifStatus = "repair_in_progress";
         } else if (selectedStatus.equals("Completed")) {
             theStatus = "completed";
-            notifStatus = "repair_in_progress";
+            notifStatus = "completed";
         }
 
         String remarks = remarksET.getText().toString();

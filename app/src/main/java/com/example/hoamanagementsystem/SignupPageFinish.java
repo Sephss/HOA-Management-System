@@ -176,8 +176,9 @@ public class SignupPageFinish extends AppCompatActivity {
         Button okBtn = dialogView.findViewById(R.id.dialogOkBtn);
         okBtn.setOnClickListener(v -> {
             dialog.dismiss();
-            navigateTo(HomePage.class);
-            finish();
+            Intent intent = new Intent(SignupPageFinish.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         });
 
         dialog.show();

@@ -15,10 +15,9 @@ import java.io.InputStream;
 import java.util.Map;
 
 public class addImage {
-
-    private static final String CLOUD_NAME = "dioxovniz";
-    private static final String API_KEY = "895797867172465";
-    private static final String API_SECRET = "I8oGdsbAwavCMI-WvQsJd1CBR9g";
+    private static final String CLOUD_NAME = "gmtq06oo";
+    private static final String API_KEY = "181487115313841";
+    private static final String API_SECRET = "gHG-b3L_82PfrK1nACLrq_p5YZ8";
 
     private static final Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
             "cloud_name", CLOUD_NAME,
@@ -53,6 +52,35 @@ public class addImage {
         } catch (Exception e) {
             Log.e("Cloudinary", "Error reading image file", e);
             // Notify failure via callback
+            callback.onFailure(e);
+        }
+    }
+
+    /**
+     * Uploads a Bitmap directly to Cloudinary. Used for content that doesn't come
+     * from a file Uri, e.g. the signature pad, which hands back a Bitmap.
+     *
+     * @param context  The application context.
+     * @param bitmap   The bitmap to upload (e.g. signaturePad.getSignatureBitmap()).
+     * @param callback The callback to handle the result (success or failure).
+     */
+    public static void uploadBitmap(Context context, Bitmap bitmap, UploadCallback callback) {
+        try {
+            byte[] imageBytes = compressBitmap(bitmap, true);
+
+            new Thread(() -> {
+                try {
+                    Map uploadResult = cloudinary.uploader().upload(imageBytes, ObjectUtils.emptyMap());
+                    String imageUrl = (String) uploadResult.get("url");
+
+                    callback.onSuccess(imageUrl);
+                } catch (Exception e) {
+                    Log.e("Cloudinary", "Error uploading bitmap", e);
+                    callback.onFailure(e);
+                }
+            }).start();
+        } catch (Exception e) {
+            Log.e("Cloudinary", "Error compressing bitmap", e);
             callback.onFailure(e);
         }
     }
@@ -111,6 +139,7 @@ public class addImage {
 
         void onFailure(Exception e);
     }
+
     private static byte[] compressImage(Context context, Uri imageUri) throws Exception {
 
         InputStream inputStream = context.getContentResolver().openInputStream(imageUri);
@@ -119,6 +148,19 @@ public class addImage {
 
         if (inputStream != null)
             inputStream.close();
+
+        return compressBitmap(bitmap, false);
+    }
+
+    /**
+     * Resizes (if needed) and compresses a bitmap.
+     *
+     * @param bitmap     The source bitmap.
+     * @param isLineArt  If true, compresses as PNG (no artifacts, good for signatures/
+     *                   line art with transparent backgrounds). If false, compresses
+     *                   as JPEG (smaller size, good for photos).
+     */
+    private static byte[] compressBitmap(Bitmap bitmap, boolean isLineArt) throws Exception {
 
         // Resize first
         int maxWidth = 1280;
@@ -131,6 +173,8 @@ public class addImage {
                 (float) maxWidth / width,
                 (float) maxHeight / height
         );
+        // don't upscale images that are already smaller than the max bounds
+        ratio = Math.min(ratio, 1f);
 
         width = Math.round(width * ratio);
         height = Math.round(height * ratio);
@@ -139,8 +183,13 @@ public class addImage {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        // JPEG quality (0-100)
-        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 75, outputStream);
+        if (isLineArt) {
+            // PNG: lossless, preserves crisp strokes/transparency (signatures)
+            resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        } else {
+            // JPEG quality (0-100), smaller file size for photos
+            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 75, outputStream);
+        }
 
         return outputStream.toByteArray();
     }

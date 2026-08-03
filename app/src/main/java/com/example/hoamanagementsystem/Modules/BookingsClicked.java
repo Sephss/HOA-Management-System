@@ -32,7 +32,10 @@ public class BookingsClicked extends AppCompatActivity {
     private EditText cancelRemarks;
     private HomeOwnerRentersModel currentUser;
     private String bookingID, sport, status, requestBookingDate, requestBookingTime;
-
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

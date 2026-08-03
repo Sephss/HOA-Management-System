@@ -1,7 +1,7 @@
 package com.example.hoamanagementsystem.Model;
 
 public class AnnouncementModel {
-    String title, description, category, date, time, link, announcementId, announcerId, announcerName, announcerRole, dateCreated, timeCreated;
+    String title, description, category, date, time, link, announcementId, announcerId, announcerName, announcerRole, dateCreated, timeCreated, imageUrl;
     long timestamp;
     public AnnouncementModel () {
 
@@ -111,7 +111,15 @@ public class AnnouncementModel {
         this.timestamp = timestamp;
     }
 
-    public AnnouncementModel(String title, String description, String category, String date, String time, String link, String announcementId, String announcerId, String announcerName, String announcerRole, String dateCreated, String timeCreated, long timestamp) {
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public AnnouncementModel(String title, String description, String category, String date, String time, String link, String announcementId, String announcerId, String announcerName, String announcerRole, String dateCreated, String timeCreated, String imageUrl, long timestamp) {
         this.title = title;
         this.description = description;
         this.category = category;
@@ -124,6 +132,7 @@ public class AnnouncementModel {
         this.announcerRole = announcerRole;
         this.dateCreated = dateCreated;
         this.timeCreated = timeCreated;
+        this.imageUrl = imageUrl;
         this.timestamp = timestamp;
     }
 }

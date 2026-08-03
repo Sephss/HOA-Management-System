@@ -119,14 +119,14 @@
                         android:background="@drawable/edit_text_bg"
                         android:layout_height="wrap_content"/>
 
+
                     <Spinner
                         android:id="@+id/lavanyaPhaseTypeSpinner"
                         android:layout_width="match_parent"
-                        android:padding="15dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/edit_text_bg"
-                        android:layout_height="wrap_content"/>
-
+                        android:padding="15dp" />
 
                     <Button
                         android:id="@+id/signupBtn"

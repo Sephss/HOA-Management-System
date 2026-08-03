@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseAuthManager;
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseDatabaseManager;
 import com.example.hoamanagementsystem.FirebaseServices.callback.LoginUserCallback;
+import com.example.hoamanagementsystem.FirebaseServices.callback.RegisterHomeownerRenterCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.UserDatasCallback;
 import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.example.hoamanagementsystem.Modules.HomePage;
@@ -31,7 +32,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView createAccountLink;
+    private TextView createAccountLink, forgotPasswordBtn;
     private EditText emailET, passwordET;
     private Button loginBtn;
     @Override
@@ -45,10 +46,15 @@ public class MainActivity extends AppCompatActivity {
         emailET = findViewById(R.id.emailET);
         passwordET = findViewById(R.id.passwordET);
         loginBtn =findViewById(R.id.loginBtn);
+        forgotPasswordBtn = findViewById(R.id.forgotPasswordBtn);
 
 
         createAccountLink.setOnClickListener(s -> {
             navigateTo(SignupPage.class);
+        });
+
+        forgotPasswordBtn.setOnClickListener(d -> {
+            sendPasswordForgotEmail();
         });
 
         loginBtn.setOnClickListener(g -> {
@@ -362,5 +368,26 @@ public class MainActivity extends AppCompatActivity {
         int hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
         String period = hour24 < 12 ? "AM" : "PM";
         return hour12 + ":00 " + period;
+    }
+    private void sendPasswordForgotEmail() {
+        String theEmail = emailET.getText().toString();
+
+        if(theEmail.isEmpty()) {
+            emailET.setError("Email is required");
+            emailET.requestFocus();
+            return;
+        }
+
+        FirebaseAuthManager.sendPasswordResetEmail(theEmail, new RegisterHomeownerRenterCallback() {
+            @Override
+            public void onSuccess(String success) {
+                Toast.makeText(MainActivity.this, success, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(String failed) {
+                Toast.makeText(MainActivity.this, failed, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

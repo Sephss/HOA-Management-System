@@ -137,4 +137,24 @@ public class FirebaseAuthManager {
             }
         });
     }
+    public static void sendPasswordResetEmail(String email, RegisterHomeownerRenterCallback callback) {
+        if (email == null || email.trim().isEmpty()) {
+            callback.onFailure("Please enter your email address.");
+            return;
+        }
+
+        getAuth().sendPasswordResetEmail(email.trim())
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        callback.onSuccess("Password reset email has been sent. Please check your inbox.");
+                    } else {
+                        callback.onFailure(
+                                task.getException() != null
+                                        ? task.getException().getMessage()
+                                        : "Failed to send password reset email."
+                        );
+                    }
+                })
+                .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+    }
 }

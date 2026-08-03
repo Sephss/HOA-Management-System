@@ -172,7 +172,7 @@ public class CreateAnnouncementPage extends AppCompatActivity {
 
         setLoadingState();
 
-        AnnouncementModel details = new AnnouncementModel(title, description, category, date, time, link, "", "", "", "", currentDate, currentTime, timestamp);
+        AnnouncementModel details = new AnnouncementModel(title, description, category, date, time, link, "", "", "", "", currentDate, currentTime, "", timestamp);
 
         FirebaseAnnouncementManager.createAnnouncement(details, new CreateAnnouncementCallback() {
             @Override

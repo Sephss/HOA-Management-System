@@ -25,8 +25,10 @@ import com.example.hoamanagementsystem.FirebaseServices.callback.DeleteAnnouncem
 import com.example.hoamanagementsystem.FirebaseServices.callback.SetAttendanceStatusCallback;
 import com.example.hoamanagementsystem.Model.AnnouncementModel;
 import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
+import com.example.hoamanagementsystem.Modules.CreateSignature;
 import com.example.hoamanagementsystem.R;
 import com.example.hoamanagementsystem.Session.UserSession;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -65,6 +67,17 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
             }
         }
 
+        if(announcement.getImageUrl().isEmpty() || announcement.getImageUrl() == null || announcement.getImageUrl().equals("")) {
+            holder.ivAnnouncement.setVisibility(View.GONE);
+        } else {
+            holder.ivAnnouncement.setVisibility(View.VISIBLE);
+            Picasso.get().load(announcement.getImageUrl()).into(holder.ivAnnouncement);
+
+            holder.ivAnnouncement.setOnClickListener(d -> {
+                showFullImage(announcement.getImageUrl());
+            });
+        }
+
         if(announcement.getLink().isEmpty() || announcement.getLink() == null || announcement.getLink().equals("")) {
             holder.link.setVisibility(View.GONE);
         } else {
@@ -83,7 +96,6 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
         holder.title.setText(announcement.getTitle());
         holder.description.setText(announcement.getDescription());
 
-
         holder.deleteIcon.setOnClickListener(d -> {
             new AlertDialog.Builder(context)
                     .setTitle("Delete Announcement")
@@ -96,18 +108,12 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
 
                                     @Override
                                     public void onSuccess(String message) {
-
-                                        Toast.makeText(context,
-                                                message,
-                                                Toast.LENGTH_SHORT).show();
-
+                                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                                     }
 
                                     @Override
                                     public void onFailure(String message) {
-                                        Toast.makeText(context,
-                                                message,
-                                                Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                                     }
                                 });
 
@@ -125,7 +131,6 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
         if (link == null || link.trim().isEmpty()) {
             holder.linkLayout.setVisibility(View.GONE);
         } else {
-
             holder.linkLayout.setVisibility(View.VISIBLE);
             holder.link.setText("View attachment");
 
@@ -134,6 +139,28 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
                 context.startActivity(intent);
             });
         }
+    }
+    private void showFullImage(String imageUrl) {
+        ImageView imageView = new ImageView(context);
+
+        imageView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        ));
+
+        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+        Picasso.get()
+                .load(imageUrl)
+                .into(imageView);
+
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(imageView)
+                .create();
+
+        dialog.show();
+
+        imageView.setOnClickListener(v -> dialog.dismiss());
     }
 
     private void bindAttendance(ViewHolder holder, String announcementId) {
@@ -148,60 +175,38 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
         FirebaseAnnouncementManager.getAttendanceStatus(announcementId, new AttendanceStatusCallback() {
             @Override
             public void onResult(String currentUserStatus, long attendingCount, long notAttendingCount) {
+                holder.currentStatus = currentUserStatus;
                 holder.attendeeCount.setText(attendingCount + " attending · " + notAttendingCount + " not attending");
                 setButtonStates(holder, currentUserStatus);
             }
 
             @Override
             public void onFailure(String message) {
+                holder.currentStatus = null;
                 holder.attendeeCount.setText("-- attending");
             }
         });
 
         holder.btnConfirmAttendance.setOnClickListener(v -> {
-            holder.btnConfirmAttendance.setEnabled(false);
-            holder.btnWillNotAttend.setEnabled(false);
-
-            FirebaseAnnouncementManager.setAttendanceStatus(announcementId, "attending", "",
-                    homeownerName, block, lot, street, role, lavanyaPhaseType,
-                    new SetAttendanceStatusCallback() {
-                        @Override
-                        public void onSuccess(String newStatus) {
-                            holder.btnConfirmAttendance.setEnabled(true);
-                            holder.btnWillNotAttend.setEnabled(true);
-                            bindAttendance(holder, announcementId);
-                        }
-
-                        @Override
-                        public void onFailure(String message) {
-                            holder.btnConfirmAttendance.setEnabled(true);
-                            holder.btnWillNotAttend.setEnabled(true);
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            if ("attending".equals(holder.currentStatus)) {
+                // tapping again -> undo, no signature needed to cancel your own RSVP
+                undoStatus(holder, announcementId, "attending", homeownerName, block, lot, street, role, lavanyaPhaseType);
+            } else {
+                launchSignatureFlow(announcementId, "attending", "",
+                        homeownerName, block, lot, street, role, lavanyaPhaseType);
+            }
         });
 
         holder.btnWillNotAttend.setOnClickListener(v -> {
-            FirebaseAnnouncementManager.getAttendanceStatus(announcementId, new AttendanceStatusCallback() {
-                @Override
-                public void onResult(String currentUserStatus, long attendingCount, long notAttendingCount) {
-                    if ("not_attending".equals(currentUserStatus)) {
-                        // already not attending -> tapping again just undoes it, no need to re-ask reason
-                        submitNotAttending(holder, announcementId, "", homeownerName, block, lot, street, role, lavanyaPhaseType);
-                    } else {
-                        showReasonDialog(holder, announcementId, homeownerName, block, lot, street, role, lavanyaPhaseType);
-                    }
-                }
-
-                @Override
-                public void onFailure(String message) {
-                    showReasonDialog(holder, announcementId, homeownerName, block, lot, street, role, lavanyaPhaseType);
-                }
-            });
+            if ("not_attending".equals(holder.currentStatus)) {
+                undoStatus(holder, announcementId, "not_attending", homeownerName, block, lot, street, role, lavanyaPhaseType);
+            } else {
+                showReasonDialog(announcementId, homeownerName, block, lot, street, role, lavanyaPhaseType);
+            }
         });
     }
 
-    private void showReasonDialog(ViewHolder holder, String announcementId, String homeownerName,
+    private void showReasonDialog(String announcementId, String homeownerName,
                                   String block, String lot, String street, String role, String lavanyaPhaseType) {
 
         EditText reasonInput = new EditText(context);
@@ -213,20 +218,26 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
                 .setView(reasonInput)
                 .setPositiveButton("Submit", (dialog, which) -> {
                     String reason = reasonInput.getText().toString().trim();
-                    submitNotAttending(holder, announcementId, reason, homeownerName, block, lot, street, role, lavanyaPhaseType);
+                    launchSignatureFlow(announcementId, "not_attending", reason,
+                            homeownerName, block, lot, street, role, lavanyaPhaseType);
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
-    private void submitNotAttending(ViewHolder holder, String announcementId, String reason, String homeownerName,
-                                    String block, String lot, String street, String role, String lavanyaPhaseType) {
+    /**
+     * Undoing your own RSVP doesn't need a fresh signature - just re-submit the
+     * same status, which FirebaseAnnouncementManager treats as a toggle/removal.
+     */
+    private void undoStatus(ViewHolder holder, String announcementId, String status,
+                            String homeownerName, String block, String lot, String street,
+                            String role, String lavanyaPhaseType) {
 
         holder.btnConfirmAttendance.setEnabled(false);
         holder.btnWillNotAttend.setEnabled(false);
 
-        FirebaseAnnouncementManager.setAttendanceStatus(announcementId, "not_attending", reason,
-                homeownerName, block, lot, street, role, lavanyaPhaseType,
+        FirebaseAnnouncementManager.setAttendanceStatus(announcementId, status, "",
+                homeownerName, block, lot, street, role, lavanyaPhaseType, "",
                 new SetAttendanceStatusCallback() {
                     @Override
                     public void onSuccess(String newStatus) {
@@ -242,6 +253,29 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    /**
+     * Opens CreateSignature so the user can sign before their RSVP is recorded.
+     * CreateSignature uploads the signature and writes the attendance record itself;
+     * the realtime listener in FirebaseAnnouncementManager.fetchAnnouncements picks
+     * up the change and refreshes this list automatically.
+     */
+    private void launchSignatureFlow(String announcementId, String status, String reason,
+                                     String homeownerName, String block, String lot, String street,
+                                     String role, String lavanyaPhaseType) {
+
+        Intent intent = new Intent(context, CreateSignature.class);
+        intent.putExtra(CreateSignature.EXTRA_ANNOUNCEMENT_ID, announcementId);
+        intent.putExtra(CreateSignature.EXTRA_STATUS, status);
+        intent.putExtra(CreateSignature.EXTRA_REASON, reason);
+        intent.putExtra(CreateSignature.EXTRA_HOMEOWNER_NAME, homeownerName);
+        intent.putExtra(CreateSignature.EXTRA_BLOCK, block);
+        intent.putExtra(CreateSignature.EXTRA_LOT, lot);
+        intent.putExtra(CreateSignature.EXTRA_STREET, street);
+        intent.putExtra(CreateSignature.EXTRA_ROLE, role);
+        intent.putExtra(CreateSignature.EXTRA_LAVANYA_PHASE_TYPE, lavanyaPhaseType);
+        context.startActivity(intent);
     }
 
     private void setButtonStates(ViewHolder holder, String currentUserStatus) {
@@ -278,8 +312,10 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
         TextView category, title, description, dateAndTime, link, attendeeCount;
         LinearLayout linkLayout;
         ImageView deleteIcon;
+        ImageView ivAnnouncement;
         LinearLayout attendanceLayout;
         Button btnConfirmAttendance, btnWillNotAttend;
+        String currentStatus; // "attending" | "not_attending" | null
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -295,6 +331,7 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
             btnConfirmAttendance = itemView.findViewById(R.id.btnConfirmAttendance);
             btnWillNotAttend = itemView.findViewById(R.id.btnWillNotAttend);
             attendeeCount = itemView.findViewById(R.id.attendeeCount);
+            ivAnnouncement = itemView.findViewById(R.id.ivAnnouncement);
         }
     }
 }

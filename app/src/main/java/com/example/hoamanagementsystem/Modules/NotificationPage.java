@@ -1,6 +1,7 @@
 package com.example.hoamanagementsystem.Modules;
 
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -28,12 +29,18 @@ public class NotificationPage extends AppCompatActivity {
     private NotificationAdapter adapter;
     private List<NotificationModel> notificationList;
     private String userID;
+    private ImageView backBtn;
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_notification_page);
         userID = FirebaseAuthManager.getCurrentUserUid();
+        backBtn = findViewById(R.id.backBtn);
 
         notificationList = new ArrayList<>();
         notificationsRV = findViewById(R.id.notificationsRV);
@@ -56,6 +63,10 @@ public class NotificationPage extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        backBtn.setOnClickListener( s-> {
+            finish();
         });
     }
     private void loadNotifications() {

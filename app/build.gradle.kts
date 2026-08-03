@@ -44,8 +44,13 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+    // image db
     implementation("com.cloudinary:cloudinary-android:3.0.2")
+    // image fetching
     implementation("com.squareup.picasso:picasso:2.8")
+    // circular image
     implementation("de.hdodenhof:circleimageview:3.1.0")
+    // signature pad
+    implementation("com.github.gcacace:signature-pad:1.3.1")
 
 }

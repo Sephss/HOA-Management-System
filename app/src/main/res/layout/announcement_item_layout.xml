@@ -121,7 +121,7 @@
                 android:text="Confirm Attendance"
                 android:textAllCaps="false"
                 android:textSize="12sp"
-                android:backgroundTint="@color/green"
+                android:background="@drawable/rounded_background"
                 android:textColor="@color/white" />
 
             <Button
@@ -133,6 +133,7 @@
                 android:text="Will Not Attend"
                 android:textAllCaps="false"
                 android:textSize="12sp"
+                android:background="@drawable/rounded_background"
                 android:backgroundTint="@color/grey"
                 android:textColor="@color/white" />
 
@@ -150,5 +151,15 @@
             android:textColor="@color/grey" />
 
     </LinearLayout>
+
+    <ImageView
+        android:layout_marginTop="20dp"
+        android:id="@+id/ivAnnouncement"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:clickable="true"
+        android:focusable="true"
+        />
 
 </LinearLayout>

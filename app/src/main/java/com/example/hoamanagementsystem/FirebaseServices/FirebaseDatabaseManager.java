@@ -99,6 +99,10 @@ public class FirebaseDatabaseManager {
             updates.put("street", user.getStreet());
         }
 
+        if (user.getLavanyaPhaseType() != null && !user.getLavanyaPhaseType().trim().isEmpty()) {
+            updates.put("lavanyaPhaseType", user.getLavanyaPhaseType());
+        }
+
         if (user.getImageUrl() != null && !user.getImageUrl().trim().isEmpty()) {
             updates.put("imageUrl", user.getImageUrl());
         }

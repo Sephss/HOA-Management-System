@@ -45,6 +45,7 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
     private ImageView imageDisplay;
     private HomeOwnerRentersModel currentUser;
     private Button submitRequestBtn;
+    private ImageView backBtn;
 
     private TextView routineTV, moderateTV, urgentTV;
 
@@ -52,6 +53,10 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
 
     private Uri imageUri;
     private static final int PICK_IMAGE_REQUEST= 1;
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +67,7 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
         routineBtn = findViewById(R.id.routineBtn);
         moderateBtn = findViewById(R.id.moderateBtn);
         urgentBtn = findViewById(R.id.urgentBtn);
+        backBtn = findViewById(R.id.backBtn);
         maintenanceTitleET = findViewById(R.id.maintenanceTitleET);
         maintenanceDescriptionET = findViewById(R.id.maintenanceDescriptionET);
         maintenanceLocationET = findViewById(R.id.maintenanceLocationET);
@@ -87,6 +93,9 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
 
         imageDisplay.setOnClickListener(g -> {
             choosePhotoFromGallery();
+        });
+        backBtn.setOnClickListener(s -> {
+            finish();
         });
 
         routineBtn.setOnClickListener(d -> {

@@ -88,7 +88,7 @@ public class FirebaseAnnouncementManager {
 
     public static void setAttendanceStatus(String announcementId, String status, String reason,
                                            String homeownerName, String block, String lot, String street,
-                                           String role, String lavanyaPhaseType,
+                                           String role, String lavanyaPhaseType, String signatureUrl,
                                            SetAttendanceStatusCallback callback) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
@@ -121,7 +121,7 @@ public class FirebaseAnnouncementManager {
                 // new response, or switching from one status to the other
                 AttendeeModel attendee = new AttendeeModel(
                         uid, homeownerName, block, lot, street, role, lavanyaPhaseType,
-                        status, reason, System.currentTimeMillis()
+                        status, reason, signatureUrl, System.currentTimeMillis()
                 );
 
                 myAttendanceRef.setValue(attendee)

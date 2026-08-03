@@ -1,13 +1,21 @@
 package com.example.hoamanagementsystem.Model;
 
 public class AttendeeModel {
-    private String homeownerId, homeownerName, block, lot, street, role, lavanyaPhaseType, status, reason;
+    private String homeownerId, homeownerName, block, lot, street, role, lavanyaPhaseType, status, reason, signatureUrl;
     private long timestamp;
 
     public AttendeeModel() { } // required for Firebase deserialization
 
+    public String getSignatureUrl() {
+        return signatureUrl;
+    }
+
+    public void setSignatureUrl(String signatureUrl) {
+        this.signatureUrl = signatureUrl;
+    }
+
     public AttendeeModel(String homeownerId, String homeownerName, String block, String lot, String street,
-                         String role, String lavanyaPhaseType, String status, String reason, long timestamp) {
+                         String role, String lavanyaPhaseType, String status, String reason, String signatureUrl, long timestamp) {
         this.homeownerId = homeownerId;
         this.homeownerName = homeownerName;
         this.block = block;
@@ -17,7 +25,9 @@ public class AttendeeModel {
         this.lavanyaPhaseType = lavanyaPhaseType;
         this.status = status;
         this.reason = reason;
+        this.signatureUrl = signatureUrl;
         this.timestamp = timestamp;
+
     }
 
     public String getHomeownerId() { return homeownerId; }

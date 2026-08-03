@@ -5,9 +5,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -29,6 +31,7 @@ public class EditProfilePage extends AppCompatActivity {
     private ImageView theProfile, backBtn;
     private EditText firstNameET, lastNameET, middleNameET, phoneNumberET, blockET, lotET, streetET;
     private Uri imageUri;
+    private Spinner lavanyaPhaseTypeSpinner;
     private Button saveBtn;
     private static final int PICK_IMAGE_REQUEST= 1;
 
@@ -53,7 +56,7 @@ public class EditProfilePage extends AppCompatActivity {
         backBtn = findViewById(R.id.backBtn);
 
         saveBtn = findViewById(R.id.saveBtn);
-
+        lavanyaPhaseTypeSpinner = findViewById(R.id.lavanyaPhaseTypeSpinner);
 
         theProfile.setOnClickListener(d -> {
             choosePhotoFromGallery();
@@ -68,6 +71,23 @@ public class EditProfilePage extends AppCompatActivity {
         });
 
         populateUserDetails();
+        setUpSpinner();
+    }
+    private void setUpSpinner() {
+        String[] lavanyaPhases = {
+                "3A",
+                "3B",
+                "3C"
+        };
+
+        ArrayAdapter<String> lavanyaPhaseAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                lavanyaPhases
+        );
+
+        lavanyaPhaseAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        lavanyaPhaseTypeSpinner.setAdapter(lavanyaPhaseAdapter);
     }
     private void updateUserDetails() {
         String userID = FirebaseAuthManager.getCurrentUserUid();
@@ -83,6 +103,7 @@ public class EditProfilePage extends AppCompatActivity {
         user.setBlock(blockET.getText().toString().trim());
         user.setLot(lotET.getText().toString().trim());
         user.setStreet(streetET.getText().toString().trim());
+        user.setLavanyaPhaseType(lavanyaPhaseTypeSpinner.getSelectedItem().toString());
 
         // User selected a new image
         if (imageUri != null) {
@@ -184,6 +205,20 @@ public class EditProfilePage extends AppCompatActivity {
         blockET.setText(user.getBlock());
         lotET.setText(user.getLot());
         streetET.setText(user.getStreet());
+
+        // Get value from model
+        String phaseType = user.getLavanyaPhaseType();
+
+        // Select the matching value in the spinner
+        if (phaseType != null && !phaseType.isEmpty()) {
+            if(phaseType.equals("3A")) {
+                lavanyaPhaseTypeSpinner.setSelection(0);
+            } else if(phaseType.equals("3B")) {
+                lavanyaPhaseTypeSpinner.setSelection(1);
+            } else if(phaseType.equals("3C")) {
+                lavanyaPhaseTypeSpinner.setSelection(2);
+            }
+        }
 
         if (!user.getImageUrl().equals("none")) {
             Picasso.get()

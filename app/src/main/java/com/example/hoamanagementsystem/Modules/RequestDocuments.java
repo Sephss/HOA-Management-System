@@ -7,6 +7,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -39,9 +40,13 @@ public class RequestDocuments extends AppCompatActivity {
     private Button submitRequestButton;
     private HomeOwnerRentersModel currentUser;
     private String uid;
+    private ImageView backBtn;
 
     private String theRole, theUid, theFullName, theEmail, theBlock, theLot, theStreet, theLavanyaPhaseType, theImage;
-
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +60,7 @@ public class RequestDocuments extends AppCompatActivity {
         remarksEditText = findViewById(R.id.remarksEditText);
         documentTypeLayout = findViewById(R.id.documentTypeLayout);
         submitRequestButton = findViewById(R.id.submitRequestButton);
+        backBtn = findViewById(R.id.backBtn);
 
         uid = FirebaseAuthManager.getCurrentUserUid();
 
@@ -74,6 +80,10 @@ public class RequestDocuments extends AppCompatActivity {
 
         submitRequestButton.setOnClickListener(g -> {
             submitDocumentRequest();
+        });
+
+        backBtn.setOnClickListener(s -> {
+            finish();
         });
     }
     private void submitDocumentRequest() {

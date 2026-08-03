@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -31,6 +32,7 @@ public class BookFacilityPage extends AppCompatActivity {
     private RecyclerView reservationsRV;
     private BookingsAdapter bookingsAdapter;
     private List<BookingsModel> bookingsList = new ArrayList<>();
+    private ImageView backBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,7 @@ public class BookFacilityPage extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_book_facility_page);
         reservationsRV = findViewById(R.id.reservationsRV);
+        backBtn = findViewById(R.id.backBtn);
         newBookingBtn = findViewById(R.id.newBookingBtn);
         currentUser = UserSession.getInstance().getCurrentUser();
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -57,6 +60,10 @@ public class BookFacilityPage extends AppCompatActivity {
         newBookingBtn.setOnClickListener(s -> {
             Intent intent = new Intent(BookFacilityPage.this, CreateBookingPage.class);
             startActivity(intent);
+        });
+
+        backBtn.setOnClickListener( d -> {
+            finish();
         });
 
         loadMyBookings();

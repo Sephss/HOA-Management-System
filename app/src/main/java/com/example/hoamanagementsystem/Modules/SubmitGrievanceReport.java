@@ -47,11 +47,16 @@ public class SubmitGrievanceReport extends AppCompatActivity {
     private ImageView imageDisplay;
     private HomeOwnerRentersModel currentUser;
     private String currentUserID;
+    private ImageView backBtn;
 
     private Button submitReportBtn;
 
     private Uri imageUri;
     private static final int PICK_IMAGE_REQUEST= 1;
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +66,7 @@ public class SubmitGrievanceReport extends AppCompatActivity {
         incidentTitleET = findViewById(R.id.incidentTitleET);
         incidentDescriptionET = findViewById(R.id.incidentDescriptionET);
         incidentLocationET = findViewById(R.id.incidentLocationET);
+        backBtn = findViewById(R.id.backBtn);
 
         incidentTypeSpinner = findViewById(R.id.incidentTypeSpinner);
         selectImage = findViewById(R.id.selectImage);
@@ -75,7 +81,9 @@ public class SubmitGrievanceReport extends AppCompatActivity {
 
 
         setupSpinner();
-
+        backBtn.setOnClickListener(s-> {
+            finish();
+        });
 
         selectImage.setOnClickListener(f -> {
             choosePhotoFromGallery();

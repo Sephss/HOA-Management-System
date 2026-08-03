@@ -87,12 +87,7 @@ public class HomePage extends AppCompatActivity {
         theLavanyaPhaseType = datas.getStringExtra("lavanyaPhaseType");
         theImage = datas.getStringExtra("image");
 
-        if(theRole.equals("Home Owners") || theRole.equals("Renters")) {
-            getWindow().setFlags(
-                    WindowManager.LayoutParams.FLAG_SECURE,
-                    WindowManager.LayoutParams.FLAG_SECURE
-            );
-        }
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

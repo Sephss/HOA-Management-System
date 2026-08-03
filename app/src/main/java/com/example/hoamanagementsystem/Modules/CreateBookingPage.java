@@ -4,12 +4,14 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -52,6 +54,7 @@ public class CreateBookingPage extends AppCompatActivity {
     private TextView selectedDateText;
     private String selectedDate = "";
     private String selectedSlot = "";
+    private ImageView backBtn;
 
     private final List<String> allSlots = Arrays.asList(
             "8:00 AM - 11:00 AM",
@@ -59,11 +62,14 @@ public class CreateBookingPage extends AppCompatActivity {
             "2:00 PM - 5:00 PM",
             "5:00 PM - 8:00 PM"
     );
-
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_create_booking_page);
         sportCategorySpinner = findViewById(R.id.sportCategorySpinner);
         bookingPurpose = findViewById(R.id.bookingPurpose);
@@ -72,14 +78,13 @@ public class CreateBookingPage extends AppCompatActivity {
         selectedDateText = findViewById(R.id.selectedDateText);
         datePickerField = findViewById(R.id.datePickerField);
         slotsContainer = findViewById(R.id.slotsContainer);
+        backBtn = findViewById(R.id.backBtn);
         currentUser = UserSession.getInstance().getCurrentUser();
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+      
         setupSpinner();
-
+        backBtn.setOnClickListener(d -> {
+            finish();
+        });
         datePickerField.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
 
@@ -134,7 +139,8 @@ public class CreateBookingPage extends AppCompatActivity {
 
             @Override
             public void onFailure(String message) {
-                Toast.makeText(CreateBookingPage.this, "Failed to load availability", Toast.LENGTH_SHORT).show();
+                Log.e("BookingSlots", message);
+                Toast.makeText(CreateBookingPage.this, message, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -317,7 +323,7 @@ public class CreateBookingPage extends AppCompatActivity {
         );
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this, R.layout.spinner_item,
+                this,   android.R.layout.simple_spinner_item,
                 sportsList
         );
 

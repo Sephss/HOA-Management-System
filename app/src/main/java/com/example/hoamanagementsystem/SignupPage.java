@@ -78,9 +78,33 @@ public class SignupPage extends AppCompatActivity {
             phoneNumberET.requestFocus();
             return;
         }
+        if (!phonenumber.matches("^09\\d{9}$")) {
+            phoneNumberET.setError("Enter a valid Philippine mobile number (e.g., 09123456789)");
+            phoneNumberET.requestFocus();
+            return;
+        }
 
         if(email.isEmpty()) {
             emailAddressET.setError("Email address is required");
+            emailAddressET.requestFocus();
+            return;
+        }
+        // Check if it's a valid email format
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailAddressET.setError("Please enter a valid email address");
+            emailAddressET.requestFocus();
+            return;
+        }
+
+// Allow only Gmail addresses
+        if (!email.toLowerCase().endsWith("@gmail.com")) {
+            emailAddressET.setError("Please enter a valid Gmail address");
+            emailAddressET.requestFocus();
+            return;
+        }
+
+        if (!email.matches("^[A-Za-z0-9._%+-]+@gmail\\.com$")) {
+            emailAddressET.setError("Please enter a valid Gmail address");
             emailAddressET.requestFocus();
             return;
         }
