@@ -1,7 +1,7 @@
 package com.example.hoamanagementsystem.Model;
 
 public class HomeOwnerRentersModel {
-    String firstName, middleName, lastName, phoneNumber, email, block, lot, street, role, lavanyaPhaseType, uid, imageUrl, isAccountDisabled, isAccountBanned, isAccountApprovedByAdmin;
+    String firstName, middleName, lastName, phoneNumber, email, block, lot, street, role, lavanyaPhaseType, uid, imageUrl, isAccountDisabled, isAccountBanned, isAccountApprovedByAdmin, isArchived, archivedAt, archivedBy, archivedReason;
     public HomeOwnerRentersModel() {
 
     }
@@ -126,7 +126,39 @@ public class HomeOwnerRentersModel {
         this.isAccountApprovedByAdmin = isAccountApprovedByAdmin;
     }
 
-    public HomeOwnerRentersModel(String firstName, String middleName, String lastName, String phoneNumber, String email, String block, String lot, String street, String role, String lavanyaPhaseType, String uid, String imageUrl, String isAccountDisabled, String isAccountBanned, String isAccountApprovedByAdmin) {
+    public String getIsArchived() {
+        return isArchived;
+    }
+
+    public void setIsArchived(String isArchived) {
+        this.isArchived = isArchived;
+    }
+
+    public String getArchivedAt() {
+        return archivedAt;
+    }
+
+    public void setArchivedAt(String archivedAt) {
+        this.archivedAt = archivedAt;
+    }
+
+    public String getArchivedBy() {
+        return archivedBy;
+    }
+
+    public void setArchivedBy(String archivedBy) {
+        this.archivedBy = archivedBy;
+    }
+
+    public String getArchivedReason() {
+        return archivedReason;
+    }
+
+    public void setArchivedReason(String archivedReason) {
+        this.archivedReason = archivedReason;
+    }
+
+    public HomeOwnerRentersModel(String firstName, String middleName, String lastName, String phoneNumber, String email, String block, String lot, String street, String role, String lavanyaPhaseType, String uid, String imageUrl, String isAccountDisabled, String isAccountBanned, String isAccountApprovedByAdmin, String isArchived, String archivedAt, String archivedBy, String archivedReason) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
@@ -142,5 +174,9 @@ public class HomeOwnerRentersModel {
         this.isAccountDisabled = isAccountDisabled;
         this.isAccountBanned = isAccountBanned;
         this.isAccountApprovedByAdmin = isAccountApprovedByAdmin;
+        this.isArchived = isArchived;
+        this.archivedAt = archivedAt;
+        this.archivedBy = archivedBy;
+        this.archivedReason = archivedReason;
     }
 }

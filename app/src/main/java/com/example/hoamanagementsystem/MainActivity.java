@@ -24,6 +24,7 @@ import com.example.hoamanagementsystem.FirebaseServices.callback.LoginUserCallba
 import com.example.hoamanagementsystem.FirebaseServices.callback.RegisterHomeownerRenterCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.UserDatasCallback;
 import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
+import com.example.hoamanagementsystem.Modules.AccountArchived;
 import com.example.hoamanagementsystem.Modules.HomePage;
 import com.example.hoamanagementsystem.Session.UserSession;
 import com.example.hoamanagementsystem.utls.AppSettingsManager;
@@ -113,6 +114,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(FirebaseUser user, HomeOwnerRentersModel userDetails) {
 
+                if(userDetails.getIsArchived().equals("yes")) {
+                    moveToArchivePage(userDetails.getUid(), userDetails.getArchivedAt(), userDetails.getArchivedReason());
+                    return;
+                }
+
                 if(userDetails.getIsAccountApprovedByAdmin().equals("no")) {
                     setNormalState();
                     showPendingApprovalDialog();
@@ -179,6 +185,11 @@ public class MainActivity extends AppCompatActivity {
         FirebaseDatabaseManager.getUserDatas(uid, new UserDatasCallback() {
             @Override
             public void onSuccess(HomeOwnerRentersModel user) {
+
+                if(user.getIsArchived().equals("yes")) {
+                    moveToArchivePage(user.getUid(), user.getArchivedAt(), user.getArchivedReason());
+                    return;
+                }
 
                 if(user.getIsAccountApprovedByAdmin().equals("no")) {
                     setNormalState();
@@ -389,5 +400,15 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, failed, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    private void moveToArchivePage(String uid, String archivedAt, String reason) {
+        Intent intent = new Intent(MainActivity.this, AccountArchived.class);
+        intent.putExtra("uid", uid);
+        intent.putExtra("archivedAt", archivedAt);
+        intent.putExtra("reason", reason);
+        startActivity(intent);
+        setNormalState();
+        FirebaseAuthManager.logout();
+        finish();
     }
 }
