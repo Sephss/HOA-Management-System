@@ -84,27 +84,16 @@ public class SignupPage extends AppCompatActivity {
             return;
         }
 
-        if(email.isEmpty()) {
+        if (email.isEmpty()) {
             emailAddressET.setError("Email address is required");
             emailAddressET.requestFocus();
             return;
         }
-        // Check if it's a valid email format
+
+        email = email.trim();
+
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             emailAddressET.setError("Please enter a valid email address");
-            emailAddressET.requestFocus();
-            return;
-        }
-
-// Allow only Gmail addresses
-        if (!email.toLowerCase().endsWith("@gmail.com")) {
-            emailAddressET.setError("Please enter a valid Gmail address");
-            emailAddressET.requestFocus();
-            return;
-        }
-
-        if (!email.matches("^[A-Za-z0-9._%+-]+@gmail\\.com$")) {
-            emailAddressET.setError("Please enter a valid Gmail address");
             emailAddressET.requestFocus();
             return;
         }
