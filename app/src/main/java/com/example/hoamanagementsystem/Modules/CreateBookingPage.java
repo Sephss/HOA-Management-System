@@ -259,7 +259,7 @@ public class CreateBookingPage extends AppCompatActivity {
         }
 
         BookingSlotModel slotData = new BookingSlotModel(
-                bookingID, bookerName, sportCategory, selectedDate, selectedSlot, timeIn, timeOut, "pending", "none", "none", "none"
+                bookingID, bookerName, sportCategory, selectedDate, selectedSlot, timeIn, timeOut, "pending", "none", "none", "none", "none"
         );
 
         // Step 1: reserve the slot FIRST (fails fast if someone already took it)
@@ -271,7 +271,7 @@ public class CreateBookingPage extends AppCompatActivity {
                         BookingsModel data = new BookingsModel(
                                 "", currentUser.getUid(), "pending", purpose, remarks,
                                 bookerName, sportCategory, currentDate, currentTime,
-                                selectedDate, timeIn, timeOut, theTimeStamp, "", "", "", "", "none", "none","none"
+                                selectedDate, timeIn, timeOut, theTimeStamp, "", "", "", "", "none", "none","none", "none"
                         );
 
                         // Step 2: slot is secured, now create the Bookings record with the same ID

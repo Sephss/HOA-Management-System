@@ -1,7 +1,7 @@
 package com.example.hoamanagementsystem.Model;
 
 public class BookingSlotModel {
-    private String bookingID, bookerName, bookerSport, slotDate, slot, timeIn, timeOut, bookingStatus, bookingORNumber, bookingAmount, whoUpdatedTheBookingStatus;
+    private String bookingID, bookerName, bookerSport, slotDate, slot, timeIn, timeOut, bookingStatus, bookingORNumber, bookingAmount, whoUpdatedTheBookingStatus, paymentReceivedBy;
 
     public BookingSlotModel() {
         // required empty constructor for Firebase deserialization
@@ -39,7 +39,15 @@ public class BookingSlotModel {
         this.whoUpdatedTheBookingStatus = whoUpdatedTheBookingStatus;
     }
 
-    public BookingSlotModel(String bookingID, String bookerName, String bookerSport, String slotDate, String slot, String timeIn, String timeOut, String bookingStatus, String bookingORNumber, String bookingAmount, String whoUpdatedTheBookingStatus) {
+    public String getPaymentReceivedBy() {
+        return paymentReceivedBy;
+    }
+
+    public void setPaymentReceivedBy(String paymentReceivedBy) {
+        this.paymentReceivedBy = paymentReceivedBy;
+    }
+
+    public BookingSlotModel(String bookingID, String bookerName, String bookerSport, String slotDate, String slot, String timeIn, String timeOut, String bookingStatus, String bookingORNumber, String bookingAmount, String whoUpdatedTheBookingStatus, String paymentReceivedBy) {
         this.bookingID = bookingID;
         this.bookerName = bookerName;
         this.bookerSport = bookerSport;
@@ -51,6 +59,7 @@ public class BookingSlotModel {
         this.bookingORNumber = bookingORNumber;
         this.bookingAmount = bookingAmount;
         this.whoUpdatedTheBookingStatus = whoUpdatedTheBookingStatus;
+        this.paymentReceivedBy = paymentReceivedBy;
     }
 
     public String getBookingID() {
