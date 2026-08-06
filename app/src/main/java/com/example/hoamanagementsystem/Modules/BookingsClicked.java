@@ -25,7 +25,7 @@ import com.example.hoamanagementsystem.Session.UserSession;
 public class BookingsClicked extends AppCompatActivity {
 
     private TextView sportCategory, bookingStatus, bookingDate, bookingTime,
-            adminRemarksText,
+            adminRemarksText, bookingLabel,
             bookingPurpose, remarksLabel, bookingRemarks, bookerName, dateRequested;
     private View statusPill, statusDot, adminRemarksSection, backButton, divider2;
     private Button cancelReservationBtn, cancelReservationBtnAdmin;
@@ -82,6 +82,7 @@ public class BookingsClicked extends AppCompatActivity {
         cancelReservationBtnAdmin = findViewById(R.id.cancelReservationBtnAdmin);
         cancelRemarks = findViewById(R.id.cancelRemarks);
         adminRemarksText = findViewById(R.id.adminRemarksText);
+        bookingLabel = findViewById(R.id.bookingLabel);
 
     }
 
@@ -119,7 +120,7 @@ public class BookingsClicked extends AppCompatActivity {
 
         bookingStatus.setText(capitalize(status));
 
-        if(status.equals("cancelled")) {
+        if(status.equals("cancelled") || status.equals("refunded") || status.equals("denied")) {
             statusPill.setBackgroundResource(R.drawable.status_pill_cancelled);
             statusDot.setBackgroundResource(R.drawable.booking_accent_cancelled);
             bookingStatus.setTextColor(ContextCompat.getColor(this, R.color.grey));
@@ -132,6 +133,20 @@ public class BookingsClicked extends AppCompatActivity {
                 adminRemarksSection.setVisibility(View.VISIBLE);
                 adminRemarksText.setVisibility(View.GONE);
             } else {
+                switch(status) {
+                    case "cancelled":
+                        bookingLabel.setText("Booking Cancelled");
+                        break;
+                    case "refunded":
+                        bookingLabel.setText("Booking Refunded");
+                        break;
+                    case "denied":
+                        bookingLabel.setText("Booking Denied");
+                        break;
+                        default:
+                        bookingLabel.setText("Booking Cancelled");
+                        break;
+                }
                 adminRemarksSection.setVisibility(View.VISIBLE);
                 adminRemarksText.setVisibility(View.VISIBLE);
                 adminRemarksText.setText(adminRemarks);

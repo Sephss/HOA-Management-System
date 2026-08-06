@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -76,8 +77,10 @@ public class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHo
         String status = booking.getBookingStatus();
         holder.bookingStatus.setText(capitalize(status));
 
-        if ("cancelled".equalsIgnoreCase(status)) {
+        if ("cancelled".equalsIgnoreCase(status) || "denied".equalsIgnoreCase(status) || "refunded".equalsIgnoreCase(status)) {
             holder.bookingStatus.setTextColor(ContextCompat.getColor(context, R.color.grey));
+            holder.statusPill.setBackgroundResource(R.drawable.status_pill_cancelled);
+            holder.statusDot.setBackgroundResource(R.drawable.booking_accent_cancelled);
         } else {
             holder.bookingStatus.setTextColor(ContextCompat.getColor(context, R.color.green));
         }
@@ -94,9 +97,9 @@ public class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
+        LinearLayout statusPill;
         TextView sportCategory, bookingStatus, bookingDate, bookingTime, bookingPurpose, bookingRemarks;
-
+        View statusDot;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             sportCategory = itemView.findViewById(R.id.sportCategory);
@@ -105,6 +108,8 @@ public class BookingsAdapter extends RecyclerView.Adapter<BookingsAdapter.ViewHo
             bookingTime = itemView.findViewById(R.id.bookingTime);
             bookingPurpose = itemView.findViewById(R.id.bookingPurpose);
             bookingRemarks = itemView.findViewById(R.id.bookingRemarks);
+            statusDot = itemView.findViewById(R.id.statusDot);
+            statusPill = itemView.findViewById(R.id.statusPill);
         }
     }
 }

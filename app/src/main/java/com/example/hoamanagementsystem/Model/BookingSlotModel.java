@@ -1,13 +1,45 @@
 package com.example.hoamanagementsystem.Model;
 
 public class BookingSlotModel {
-    private String bookingID, bookerName, bookerSport, slotDate, slot, timeIn, timeOut;
+    private String bookingID, bookerName, bookerSport, slotDate, slot, timeIn, timeOut, bookingStatus, bookingORNumber, bookingAmount, whoUpdatedTheBookingStatus;
 
     public BookingSlotModel() {
         // required empty constructor for Firebase deserialization
     }
 
-    public BookingSlotModel(String bookingID, String bookerName, String bookerSport, String slotDate, String slot, String timeIn, String timeOut) {
+    public String getBookingStatus() {
+        return bookingStatus;
+    }
+
+    public void setBookingStatus(String bookingStatus) {
+        this.bookingStatus = bookingStatus;
+    }
+
+    public String getBookingORNumber() {
+        return bookingORNumber;
+    }
+
+    public void setBookingORNumber(String bookingORNumber) {
+        this.bookingORNumber = bookingORNumber;
+    }
+
+    public String getBookingAmount() {
+        return bookingAmount;
+    }
+
+    public void setBookingAmount(String bookingAmount) {
+        this.bookingAmount = bookingAmount;
+    }
+
+    public String getWhoUpdatedTheBookingStatus() {
+        return whoUpdatedTheBookingStatus;
+    }
+
+    public void setWhoUpdatedTheBookingStatus(String whoUpdatedTheBookingStatus) {
+        this.whoUpdatedTheBookingStatus = whoUpdatedTheBookingStatus;
+    }
+
+    public BookingSlotModel(String bookingID, String bookerName, String bookerSport, String slotDate, String slot, String timeIn, String timeOut, String bookingStatus, String bookingORNumber, String bookingAmount, String whoUpdatedTheBookingStatus) {
         this.bookingID = bookingID;
         this.bookerName = bookerName;
         this.bookerSport = bookerSport;
@@ -15,6 +47,10 @@ public class BookingSlotModel {
         this.slot = slot;
         this.timeIn = timeIn;
         this.timeOut = timeOut;
+        this.bookingStatus = bookingStatus;
+        this.bookingORNumber = bookingORNumber;
+        this.bookingAmount = bookingAmount;
+        this.whoUpdatedTheBookingStatus = whoUpdatedTheBookingStatus;
     }
 
     public String getBookingID() {

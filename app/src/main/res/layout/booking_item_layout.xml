@@ -55,8 +55,8 @@
 
                 <View
                     android:id="@+id/statusDot"
-                    android:layout_width="7dp"
-                    android:layout_height="7dp"
+                    android:layout_width="6dp"
+                    android:layout_height="3dp"
                     android:layout_marginEnd="6dp"
                     android:background="@drawable/booking_accent_confirmed" />
 

@@ -1,7 +1,7 @@
 package com.example.hoamanagementsystem.Model;
 
 public class BookingsModel {
-    private String bookingID, bookerID, bookingStatus, bookerPurpose, bookerRemarks, bookerName, bookerSport, dateBooked, timeBooked, requestBookingDate, requestBookingTimeIn, requestBookingsTimeOut, timestamp, adminRemarks, approvedDate, rejectedDate, cancelledDate;
+    private String bookingID, bookerID, bookingStatus, bookerPurpose, bookerRemarks, bookerName, bookerSport, dateBooked, timeBooked, requestBookingDate, requestBookingTimeIn, requestBookingsTimeOut, timestamp, adminRemarks, approvedDate, rejectedDate, cancelledDate, bookingORNumber, bookingAmount, whoUpdatedTheBookingStatus;
     public BookingsModel() {
 
     }
@@ -142,7 +142,31 @@ public class BookingsModel {
         this.cancelledDate = cancelledDate;
     }
 
-    public BookingsModel(String bookingID, String bookerID, String bookingStatus, String bookerPurpose, String bookerRemarks, String bookerName, String bookerSport, String dateBooked, String timeBooked, String requestBookingDate, String requestBookingTimeIn, String requestBookingsTimeOut, String timestamp, String adminRemarks, String approvedDate, String rejectedDate, String cancelledDate) {
+    public String getBookingORNumber() {
+        return bookingORNumber;
+    }
+
+    public void setBookingORNumber(String bookingORNumber) {
+        this.bookingORNumber = bookingORNumber;
+    }
+
+    public String getBookingAmount() {
+        return bookingAmount;
+    }
+
+    public void setBookingAmount(String bookingAmount) {
+        this.bookingAmount = bookingAmount;
+    }
+
+    public String getWhoUpdatedTheBookingStatus() {
+        return whoUpdatedTheBookingStatus;
+    }
+
+    public void setWhoUpdatedTheBookingStatus(String whoUpdatedTheBookingStatus) {
+        this.whoUpdatedTheBookingStatus = whoUpdatedTheBookingStatus;
+    }
+
+    public BookingsModel(String bookingID, String bookerID, String bookingStatus, String bookerPurpose, String bookerRemarks, String bookerName, String bookerSport, String dateBooked, String timeBooked, String requestBookingDate, String requestBookingTimeIn, String requestBookingsTimeOut, String timestamp, String adminRemarks, String approvedDate, String rejectedDate, String cancelledDate, String bookingORNumber, String bookingAmount, String whoUpdatedTheBookingStatus) {
         this.bookingID = bookingID;
         this.bookerID = bookerID;
         this.bookingStatus = bookingStatus;
@@ -160,5 +184,8 @@ public class BookingsModel {
         this.approvedDate = approvedDate;
         this.rejectedDate = rejectedDate;
         this.cancelledDate = cancelledDate;
+        this.bookingORNumber = bookingORNumber;
+        this.bookingAmount = bookingAmount;
+        this.whoUpdatedTheBookingStatus = whoUpdatedTheBookingStatus;
     }
 }
