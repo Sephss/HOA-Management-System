@@ -1,7 +1,7 @@
 package com.example.hoamanagementsystem.Model;
 
 public class BookingsModel {
-    private String bookingID, bookerID, bookingStatus, bookerPurpose, bookerRemarks, bookerName, bookerSport, dateBooked, timeBooked, requestBookingDate, requestBookingTimeIn, requestBookingsTimeOut, timestamp, adminRemarks, approvedDate, rejectedDate, cancelledDate, bookingORNumber, bookingAmount, whoUpdatedTheBookingStatus, paymentReceivedBy;
+    private String bookingID, bookerID, bookingStatus, bookerPurpose, bookerRemarks, bookerName, bookerSport, dateBooked, timeBooked, requestBookingDate, requestBookingTimeIn, requestBookingsTimeOut, timestamp, adminRemarks, approvedDate, rejectedDate, cancelledDate, bookingORNumber, bookingAmount, whoUpdatedTheBookingStatus, paymentReceivedBy, receiptImageUrl;
     public BookingsModel() {
 
     }
@@ -174,7 +174,15 @@ public class BookingsModel {
         this.paymentReceivedBy = paymentReceivedBy;
     }
 
-    public BookingsModel(String bookingID, String bookerID, String bookingStatus, String bookerPurpose, String bookerRemarks, String bookerName, String bookerSport, String dateBooked, String timeBooked, String requestBookingDate, String requestBookingTimeIn, String requestBookingsTimeOut, String timestamp, String adminRemarks, String approvedDate, String rejectedDate, String cancelledDate, String bookingORNumber, String bookingAmount, String whoUpdatedTheBookingStatus, String paymentReceivedBy) {
+    public String getReceiptImageUrl() {
+        return receiptImageUrl;
+    }
+
+    public void setReceiptImageUrl(String receiptImageUrl) {
+        this.receiptImageUrl = receiptImageUrl;
+    }
+
+    public BookingsModel(String bookingID, String bookerID, String bookingStatus, String bookerPurpose, String bookerRemarks, String bookerName, String bookerSport, String dateBooked, String timeBooked, String requestBookingDate, String requestBookingTimeIn, String requestBookingsTimeOut, String timestamp, String adminRemarks, String approvedDate, String rejectedDate, String cancelledDate, String bookingORNumber, String bookingAmount, String whoUpdatedTheBookingStatus, String paymentReceivedBy, String receiptImageUrl) {
         this.bookingID = bookingID;
         this.bookerID = bookerID;
         this.bookingStatus = bookingStatus;
@@ -196,5 +204,6 @@ public class BookingsModel {
         this.bookingAmount = bookingAmount;
         this.whoUpdatedTheBookingStatus = whoUpdatedTheBookingStatus;
         this.paymentReceivedBy = paymentReceivedBy;
+        this.receiptImageUrl = receiptImageUrl;
     }
 }

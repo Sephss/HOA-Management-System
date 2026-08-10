@@ -3,7 +3,9 @@ package com.example.hoamanagementsystem.Modules;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -34,6 +36,7 @@ import com.example.hoamanagementsystem.Model.BookingsModel;
 import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.example.hoamanagementsystem.R;
 import com.example.hoamanagementsystem.Session.UserSession;
+import com.example.hoamanagementsystem.cloudinary.addImage;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
@@ -55,6 +58,11 @@ public class CreateBookingPage extends AppCompatActivity {
     private String selectedDate = "";
     private String selectedSlot = "";
     private ImageView backBtn;
+
+    private LinearLayout selectImage;
+    private ImageView imageDisplay;
+    private Uri imageUri;
+    private static final int PICK_IMAGE_REQUEST= 1;
 
     private final List<String> allSlots = Arrays.asList(
             "8:00 AM - 11:00 AM",
@@ -79,9 +87,17 @@ public class CreateBookingPage extends AppCompatActivity {
         datePickerField = findViewById(R.id.datePickerField);
         slotsContainer = findViewById(R.id.slotsContainer);
         backBtn = findViewById(R.id.backBtn);
+        selectImage = findViewById(R.id.selectImage);
+        imageDisplay = findViewById(R.id.imageDisplay);
         currentUser = UserSession.getInstance().getCurrentUser();
       
         setupSpinner();
+        selectImage.setOnClickListener(d -> {
+            choosePhotoFromGallery();
+        });
+        imageDisplay.setOnClickListener(d -> {
+            choosePhotoFromGallery();
+        });
         backBtn.setOnClickListener(d -> {
             finish();
         });
@@ -268,31 +284,45 @@ public class CreateBookingPage extends AppCompatActivity {
                     @Override
                     public void onSuccess() {
 
-                        BookingsModel data = new BookingsModel(
-                                "", currentUser.getUid(), "pending", purpose, remarks,
-                                bookerName, sportCategory, currentDate, currentTime,
-                                selectedDate, timeIn, timeOut, theTimeStamp, "", "", "", "", "none", "none","none", "none"
-                        );
 
-                        // Step 2: slot is secured, now create the Bookings record with the same ID
-                        FirebaseBookingsManager.createBookingWithId(bookingID, data, new CreateBookingsCallback() {
+                        // Step 2 add image first
+                        addImage.uploadImage(CreateBookingPage.this, imageUri, new addImage.UploadCallback() {
                             @Override
-                            public void onSuccess(String bookingID, String message) {
-                                setNormalState();
-                                navigateTo(BookingRequestSuccess.class);
-                                finish();
+                            public void onSuccess(String imageUrl) {
+
+                                BookingsModel data = new BookingsModel(
+                                        "", currentUser.getUid(), "pending", purpose, remarks,
+                                        bookerName, sportCategory, currentDate, currentTime,
+                                        selectedDate, timeIn, timeOut, theTimeStamp, "", "", "", "", "none", "none","none", "none", imageUrl
+                                );
+
+                                // Step 3 slot is secured, now create the Bookings record with the same ID
+                                FirebaseBookingsManager.createBookingWithId(bookingID, data, new CreateBookingsCallback() {
+                                    @Override
+                                    public void onSuccess(String bookingID, String message) {
+                                        setNormalState();
+                                        navigateTo(BookingRequestSuccess.class);
+                                        finish();
+                                    }
+
+                                    @Override
+                                    public void onFailure(String error) {
+                                        // Slot was reserved but booking record failed to save
+                                        // Roll back the slot reservation so it doesn't stay stuck as "taken"
+                                        FirebaseBookingSlotManager.removeBookingSlot(sportCategory, selectedDate, selectedSlot);
+
+                                        setNormalState();
+                                        Toast.makeText(CreateBookingPage.this,
+                                                "Something went wrong saving your booking. Please try again.",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                });
                             }
 
                             @Override
-                            public void onFailure(String error) {
-                                // Slot was reserved but booking record failed to save
-                                // Roll back the slot reservation so it doesn't stay stuck as "taken"
-                                FirebaseBookingSlotManager.removeBookingSlot(sportCategory, selectedDate, selectedSlot);
-
+                            public void onFailure(Exception e) {
                                 setNormalState();
-                                Toast.makeText(CreateBookingPage.this,
-                                        "Something went wrong saving your booking. Please try again.",
-                                        Toast.LENGTH_LONG).show();
+                                Toast.makeText(CreateBookingPage.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -356,5 +386,22 @@ public class CreateBookingPage extends AppCompatActivity {
     private void navigateTo(Class<?> destination) {
         Intent intent = new Intent(this, destination);
         startActivity(intent);
+    }
+    // method for choosing photo from your gallery
+    public void choosePhotoFromGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+            imageDisplay.setVisibility(View.VISIBLE);
+            selectImage.setVisibility(View.GONE);
+            imageDisplay.setImageURI(imageUri);  // Load the image into the ImageView
+        }
     }
 }
