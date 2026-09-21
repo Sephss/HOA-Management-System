@@ -37,6 +37,7 @@ public class HomePage extends AppCompatActivity {
     private TextView fullName, userRole, userLocation;
     private ImageView notificationIcon;
     private View notificationDot;
+    private LinearLayout hoaRulesLayout, emergencyLayout;
 
     @Override
     protected void onResume() {
@@ -75,6 +76,8 @@ public class HomePage extends AppCompatActivity {
         fullName = findViewById(R.id.fullName);
         userRole = findViewById(R.id.userRole);
         userLocation = findViewById(R.id.userLocation);
+        hoaRulesLayout = findViewById(R.id.hoaRulesLayout);
+        emergencyLayout = findViewById(R.id.emergencyLayout);
 
         Intent datas = getIntent();
         theRole = datas.getStringExtra("role");
@@ -104,6 +107,14 @@ public class HomePage extends AppCompatActivity {
 
         documentsLink.setOnClickListener(f -> {
             navigateToDocumentsPageWithData();
+        });
+
+        hoaRulesLayout.setOnClickListener(d -> {
+            navigateTo(HOADirectoryModule.class);
+        });
+
+        emergencyLayout.setOnClickListener(d -> {
+            navigateTo(EmergencyModule.class);
         });
 
         maintenanceLink.setOnClickListener(s -> {
