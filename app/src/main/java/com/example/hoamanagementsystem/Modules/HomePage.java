@@ -37,7 +37,7 @@ public class HomePage extends AppCompatActivity {
     private TextView fullName, userRole, userLocation;
     private ImageView notificationIcon;
     private View notificationDot;
-    private LinearLayout hoaRulesLayout, emergencyLayout;
+    private LinearLayout hoaRulesLayout, emergencyLayout, errorTicketingLayout;
 
     @Override
     protected void onResume() {
@@ -61,6 +61,7 @@ public class HomePage extends AppCompatActivity {
         grievanceLink = findViewById(R.id.grievanceLink);
         maintenanceLink = findViewById(R.id.maintenanceLink);
         bookingsLink = findViewById(R.id.bookingsLink);
+        errorTicketingLayout = findViewById(R.id.errorTicketingLayout);
 
         notificationDot = findViewById(R.id.notificationDot);
 
@@ -90,8 +91,6 @@ public class HomePage extends AppCompatActivity {
         theLavanyaPhaseType = datas.getStringExtra("lavanyaPhaseType");
         theImage = datas.getStringExtra("image");
 
-
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -115,6 +114,10 @@ public class HomePage extends AppCompatActivity {
 
         emergencyLayout.setOnClickListener(d -> {
             navigateTo(EmergencyModule.class);
+        });
+
+        errorTicketingLayout.setOnClickListener(d -> {
+            navigateTo(ErrorTIcketing.class);
         });
 
         maintenanceLink.setOnClickListener(s -> {

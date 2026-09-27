@@ -74,8 +74,6 @@ public class HOARuleAdapter extends RecyclerView.Adapter<HOARuleAdapter.HOARuleV
             holder.image.setVisibility(View.VISIBLE);
             Picasso.get()
                     .load(imageUrl)
-                    .placeholder(R.drawable.baseline_arrow_back_24) // swap with a real placeholder
-                    .error(R.drawable.baseline_arrow_back_24)       // swap with a real error drawable
                     .into(holder.image);
         } else {
             holder.image.setVisibility(View.GONE);

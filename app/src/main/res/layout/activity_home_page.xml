@@ -183,6 +183,29 @@
                 android:textSize="11sp" />
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/errorTicketingLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_weight="1"
+                android:src="@drawable/ticketing_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Feebacks"
+                android:textColor="@color/green"
+                android:textSize="11sp" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <TextView

@@ -74,8 +74,6 @@ public class EmergencyAdapter extends RecyclerView.Adapter<EmergencyAdapter.Emer
             holder.image.setVisibility(View.VISIBLE);
             Picasso.get()
                     .load(imageUrl)
-                    .placeholder(R.drawable.baseline_arrow_back_24) // replace with a real placeholder drawable
-                    .error(R.drawable.baseline_arrow_back_24)       // replace with a real error drawable
                     .into(holder.image);
         } else {
             holder.image.setVisibility(View.GONE);
