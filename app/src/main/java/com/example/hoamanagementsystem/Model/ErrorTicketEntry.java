@@ -12,6 +12,7 @@ public class ErrorTicketEntry {
     private String dateCreated;
     private String timeCreated;
     private long timestamp;
+    private String adminRemarks;
 
     // Required empty constructor for Firebase
     public ErrorTicketEntry() {
@@ -38,6 +39,9 @@ public class ErrorTicketEntry {
 
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
+
+    public String getAdminRemarks() { return adminRemarks; }
+    public void setAdminRemarks(String adminRemarks) { this.adminRemarks = adminRemarks; }
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }

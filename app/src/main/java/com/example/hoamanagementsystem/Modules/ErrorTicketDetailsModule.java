@@ -163,6 +163,17 @@ public class ErrorTicketDetailsModule extends AppCompatActivity {
         } else {
             detailImage.setVisibility(View.GONE);
         }
+
+        TextView remarksLabel = findViewById(R.id.remarksLabel);
+        TextView detailRemarks = findViewById(R.id.detailRemarks);
+        if (!TextUtils.isEmpty(entry.getAdminRemarks())) {
+            remarksLabel.setVisibility(View.VISIBLE);
+            detailRemarks.setVisibility(View.VISIBLE);
+            detailRemarks.setText(entry.getAdminRemarks());
+        } else {
+            remarksLabel.setVisibility(View.GONE);
+            detailRemarks.setVisibility(View.GONE);
+        }
     }
 
     @Override
