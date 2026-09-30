@@ -118,7 +118,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Solicit"
+                android:text="Solicitation"
                 android:textColor="@color/green"
                 android:textSize="11sp" />
         </LinearLayout>
@@ -222,7 +222,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Feebacks"
+                android:text="Feedbacks"
                 android:textColor="@color/green"
                 android:textSize="11sp" />
         </LinearLayout>
