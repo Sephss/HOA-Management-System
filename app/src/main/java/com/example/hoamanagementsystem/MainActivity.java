@@ -3,6 +3,7 @@ package com.example.hoamanagementsystem;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView createAccountLink, forgotPasswordBtn;
     private EditText emailET, passwordET;
     private Button loginBtn;
+    private TextView projectTeam;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         passwordET = findViewById(R.id.passwordET);
         loginBtn =findViewById(R.id.loginBtn);
         forgotPasswordBtn = findViewById(R.id.forgotPasswordBtn);
+        projectTeam = findViewById(R.id.projectTeam);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
 
@@ -73,7 +76,27 @@ public class MainActivity extends AppCompatActivity {
 
             return insets;
         });
+// Underline the text
+        projectTeam.setPaintFlags(
+                projectTeam.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG
+        );
 
+// Display the officers when clicked
+        projectTeam.setOnClickListener(v -> {
+
+            String approvedBy =
+                    "Curlie N. Concenption - President\n\n" +
+                            "Meldin Abellera - Vice President\n\n" +
+                            "Von Blesler Dianco - Secretary\n\n" +
+                            "Vernalyn Japitana - Treasurer\n\n" +
+                            "Christine Buante - Auditor";
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Approved by")
+                    .setMessage(approvedBy)
+                    .setPositiveButton("Close", (dialog, which) -> dialog.dismiss())
+                    .show();
+        });
 
         createAccountLink.setOnClickListener(s -> {
             navigateTo(SignupPage.class);

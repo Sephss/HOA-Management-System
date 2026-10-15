@@ -10,7 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,7 +35,9 @@ public class SignupPageFinish extends AppCompatActivity {
     private Spinner residentTypeSpinner, lavanyaPhaseTypeSpinner;
     private String firstname, middlename, lastname, phonenumber, email, password;
     private Button signupBtn;
-    private TextView resendEmailVerificationBtn;
+    private TextView resendEmailVerificationBtn, viewPrivacyNoticeLink;
+    private CheckBox privacyConsentCheckbox, privacyConsentCheckboxDisagree;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +51,9 @@ public class SignupPageFinish extends AppCompatActivity {
 
         signupBtn = findViewById(R.id.signupBtn);
         resendEmailVerificationBtn = findViewById(R.id.resendEmailVerificationBtn);
+        viewPrivacyNoticeLink = findViewById(R.id.viewPrivacyNoticeLink);
+        privacyConsentCheckbox = findViewById(R.id.privacyConsentCheckbox);
+        privacyConsentCheckboxDisagree = findViewById(R.id.privacyConsentCheckboxDisagree);
 
         residentTypeSpinner = findViewById(R.id.residentTypeSpinner);
         lavanyaPhaseTypeSpinner = findViewById(R.id.lavanyaPhaseTypeSpinner);
@@ -85,11 +92,19 @@ public class SignupPageFinish extends AppCompatActivity {
             return insets;
         });
         setUpSpinners();
+        setupPrivacyNotice();
+        setupPrivacyConsent();
         backLink.setOnClickListener(s -> {
             finish();
         });
         signupBtn.setOnClickListener(g -> {
             signUpUser();
+        });
+
+        privacyConsentCheckboxDisagree.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                finishAffinity();
+            }
         });
 
         resendEmailVerificationBtn.setOnClickListener(v -> {
@@ -251,4 +266,104 @@ public class SignupPageFinish extends AppCompatActivity {
         signupBtn.setAlpha(1f);
         signupBtn.setText("Signin");
     }
+
+    private void setupPrivacyNotice() {
+        TextView viewPrivacyNoticeLink = findViewById(R.id.viewPrivacyNoticeLink);
+
+        // Underline the clickable text
+        viewPrivacyNoticeLink.setPaintFlags(
+                viewPrivacyNoticeLink.getPaintFlags()
+                        | android.graphics.Paint.UNDERLINE_TEXT_FLAG
+        );
+
+        viewPrivacyNoticeLink.setOnClickListener(v -> {
+            String privacyNotice =
+                    "Lavanya Phase 3 Resident Registration\n\n" +
+                            "DATA PRIVACY NOTICE AND CONSENT\n\n" +
+
+                            "The Lavanya Phase 3 Homeowners Association, Inc. " +
+                            "(LP3HOA) is collecting the personal information provided " +
+                            "in this form solely for the purpose of reconciling and " +
+                            "updating the Association's official Masterlist of Homeowners " +
+                            "and Residents, verifying membership records, facilitating " +
+                            "official HOA communications, administering community services, " +
+                            "and complying with applicable laws, the Association's By-Laws, " +
+                            "and the regulations of the Department of Human Settlements " +
+                            "and Urban Development (DSHUD).\n\n" +
+
+                            "The personal information collected may include your name, " +
+                            "address, contact details, household information, proof of " +
+                            "ownership or occupancy, emergency contact information, and " +
+                            "other information necessary for HOA administration.\n\n" +
+
+                            "Your personal data shall be processed fairly and lawfully, " +
+                            "kept confidential, and protected through appropriate " +
+                            "organizational, physical, and technical security measures. " +
+                            "The Association shall not disclose your personal information " +
+                            "to unauthorized persons or entities except when required " +
+                            "by law or when necessary for the legitimate functions " +
+                            "of the Association.\n\n" +
+
+                            "To comply with data minimization under the Data Privacy Act, " +
+                            "LP3HOA will not be collecting information that is not " +
+                            "necessary for HOA administration, such as:\n\n" +
+
+                            "\u2022 Religion\n" +
+                            "\u2022 Political affiliation\n" +
+                            "\u2022 Employment details (unless needed for a specific HOA program)\n" +
+                            "\u2022 Salary or income\n" +
+                            "\u2022 Tax Identification Number (TIN)\n" +
+                            "\u2022 Social Security System (SSS), GSIS, PhilHealth, " +
+                            "or Pag-IBIG numbers\n" +
+                            "\u2022 Bank account or credit card information\n" +
+                            "\u2022 Medical information (unless voluntarily provided " +
+                            "for emergency purposes)\n\n" +
+
+                            "By completing and submitting this form, you acknowledge " +
+                            "that you have read and understood this Privacy Notice and " +
+                            "voluntarily consent to the collection, use, storage, and " +
+                            "processing of your personal information by the Lavanya Phase 3 " +
+                            "Homeowners Association, Inc. for the purposes stated above, " +
+                            "in accordance with the Data Privacy Act of 2012 " +
+                            "(Republic Act No. 10173) and its implementing rules " +
+                            "and regulations.";
+
+            TextView noticeText = new TextView(this);
+            noticeText.setText(privacyNotice);
+            noticeText.setTextSize(14);
+            noticeText.setTextColor(
+                    androidx.core.content.ContextCompat.getColor(
+                            this, android.R.color.black
+                    )
+            );
+            noticeText.setPadding(40, 20, 40, 20);
+            noticeText.setTextIsSelectable(true);
+            noticeText.setLineSpacing(4, 1.0f);
+
+            ScrollView scrollView = new ScrollView(this);
+            scrollView.setFillViewport(false);
+            scrollView.addView(noticeText);
+
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Data Privacy Notice and Consent")
+                    .setView(scrollView)
+                    .setPositiveButton("Close", (dialog, which) -> dialog.dismiss())
+                    .show();
+        });
+    }
+
+    private void setupPrivacyConsent() {
+        CheckBox privacyConsentCheckbox = findViewById(R.id.privacyConsentCheckbox);
+        Button signupBtn = findViewById(R.id.signupBtn);
+
+        // Initial state: unchecked and disabled
+        signupBtn.setEnabled(false);
+        signupBtn.setAlpha(0.5f);
+
+        privacyConsentCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            signupBtn.setEnabled(isChecked);
+            signupBtn.setAlpha(isChecked ? 1.0f : 0.5f);
+        });
+    }
+
 }

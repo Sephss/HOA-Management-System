@@ -1,8 +1,10 @@
 package com.example.hoamanagementsystem.FirebaseServices;
 
+import com.example.hoamanagementsystem.FirebaseServices.callback.ApprovedConsentCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.LoginUserCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.RegisterHomeownerRenterCallback;
 import com.example.hoamanagementsystem.FirebaseServices.callback.UserDatasCallback;
+import com.example.hoamanagementsystem.Model.ConsentModel;
 import com.example.hoamanagementsystem.Model.HomeOwnerRentersModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -67,31 +69,46 @@ public class FirebaseAuthManager {
 
                     homeOwnerRentersModel.setUid(uid);
 
-                    FirebaseDatabaseManager.saveUser(homeOwnerRentersModel, new RegisterHomeownerRenterCallback() {
+                    String timestamp = String.valueOf(System.currentTimeMillis());
+
+                    ConsentModel consentData = new ConsentModel(homeOwnerRentersModel.getFirstName() + " " + homeOwnerRentersModel.getLastName(), timestamp, "Yes", "Registration", uid, uid);
+
+                    FirebasePrivacyConsentManager.giveConsent(consentData, new ApprovedConsentCallback() {
                         @Override
                         public void onSuccess(String success) {
-                            // Data saved successfully, now send verification email
-                            firebaseUser.sendEmailVerification().addOnCompleteListener(verifyTask -> {
-                                if (verifyTask.isSuccessful()) {
-                                    callback.onSuccess(success);
-                                } else {
-                                    // Account + data exist, but verification email failed to send.
-                                    // Don't roll back the account for this — just let the caller know.
-                                    callback.onFailure("Account created but failed to send verification email: " +
-                                            (verifyTask.getException() != null
-                                                    ? verifyTask.getException().getMessage()
-                                                    : "Unknown error"));
+                            FirebaseDatabaseManager.saveUser(homeOwnerRentersModel, new RegisterHomeownerRenterCallback() {
+                                @Override
+                                public void onSuccess(String success) {
+                                    // Data saved successfully, now send verification email
+                                    firebaseUser.sendEmailVerification().addOnCompleteListener(verifyTask -> {
+                                        if (verifyTask.isSuccessful()) {
+                                            callback.onSuccess(success);
+                                        } else {
+                                            // Account + data exist, but verification email failed to send.
+                                            // Don't roll back the account for this — just let the caller know.
+                                            callback.onFailure("Account created but failed to send verification email: " +
+                                                    (verifyTask.getException() != null
+                                                            ? verifyTask.getException().getMessage()
+                                                            : "Unknown error"));
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onFailure(String failed) {
+                                    firebaseUser.delete().addOnCompleteListener(deleteTask -> {
+                                        callback.onFailure(failed);
+                                    });
                                 }
                             });
                         }
 
                         @Override
                         public void onFailure(String failed) {
-                            firebaseUser.delete().addOnCompleteListener(deleteTask -> {
-                                callback.onFailure(failed);
-                            });
+                            callback.onFailure(failed);
                         }
                     });
+
                 } else {
                     callback.onFailure("Failed to get user UID");
                 }
