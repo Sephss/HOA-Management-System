@@ -37,6 +37,7 @@ public class SignupPageFinish extends AppCompatActivity {
     private Button signupBtn;
     private TextView resendEmailVerificationBtn, viewPrivacyNoticeLink;
     private CheckBox privacyConsentCheckbox, privacyConsentCheckboxDisagree;
+    private boolean isUpdatingCheckboxes = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,11 +102,7 @@ public class SignupPageFinish extends AppCompatActivity {
             signUpUser();
         });
 
-        privacyConsentCheckboxDisagree.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                finishAffinity();
-            }
-        });
+
 
         resendEmailVerificationBtn.setOnClickListener(v -> {
             resendEmailVerificationBtn.setEnabled(false); // prevent spam-clicking
@@ -353,17 +350,78 @@ public class SignupPageFinish extends AppCompatActivity {
     }
 
     private void setupPrivacyConsent() {
-        CheckBox privacyConsentCheckbox = findViewById(R.id.privacyConsentCheckbox);
-        Button signupBtn = findViewById(R.id.signupBtn);
+        privacyConsentCheckbox = findViewById(R.id.privacyConsentCheckbox);
+        privacyConsentCheckboxDisagree =
+                findViewById(R.id.privacyConsentCheckboxDisagree);
+        signupBtn = findViewById(R.id.signupBtn);
 
-        // Initial state: unchecked and disabled
+        // Initial state: signup is disabled
         signupBtn.setEnabled(false);
         signupBtn.setAlpha(0.5f);
 
+        // Agree checkbox
         privacyConsentCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            signupBtn.setEnabled(isChecked);
-            signupBtn.setAlpha(isChecked ? 1.0f : 0.5f);
+            if (isUpdatingCheckboxes) return;
+
+            isUpdatingCheckboxes = true;
+
+            if (isChecked) {
+                privacyConsentCheckboxDisagree.setChecked(false);
+            }
+
+            isUpdatingCheckboxes = false;
+
+            updateSignupButton();
         });
+
+        // Disagree checkbox
+        privacyConsentCheckboxDisagree.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    if (isUpdatingCheckboxes) return;
+
+                    isUpdatingCheckboxes = true;
+
+                    if (isChecked) {
+                        privacyConsentCheckbox.setChecked(false);
+                    }
+
+                    isUpdatingCheckboxes = false;
+
+                    updateSignupButton();
+
+                    if (isChecked) {
+                        showDisagreePrivacyDialog();
+                    }
+                }
+        );
+    }
+
+    private void updateSignupButton() {
+        boolean hasAgreed = privacyConsentCheckbox.isChecked();
+
+        signupBtn.setEnabled(hasAgreed);
+        signupBtn.setAlpha(hasAgreed ? 1.0f : 0.5f);
+    }
+
+    private void showDisagreePrivacyDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Privacy Notice Not Accepted")
+                .setMessage(
+                        "You have selected Disagree to the Data Privacy Notice " +
+                                "and Consent. You cannot proceed with resident " +
+                                "registration without agreeing to the stated terms.\n\n" +
+                                "Would you like to exit registration or return to " +
+                                "the form to change your selection?"
+                )
+                .setCancelable(false)
+                .setNegativeButton("Exit", (dialog, which) -> {
+                  finishAffinity();
+                })
+                .setPositiveButton("Continue", (dialog, which) -> {
+                    // Allow the user to change their selection.
+                    // Disagree remains selected until they change it.
+                })
+                .show();
     }
 
 }
