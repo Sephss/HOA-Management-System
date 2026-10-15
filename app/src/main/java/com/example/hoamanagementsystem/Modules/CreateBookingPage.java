@@ -77,7 +77,7 @@ public class CreateBookingPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_create_booking_page);
         sportCategorySpinner = findViewById(R.id.sportCategorySpinner);
         bookingPurpose = findViewById(R.id.bookingPurpose);
@@ -90,7 +90,30 @@ public class CreateBookingPage extends AppCompatActivity {
         selectImage = findViewById(R.id.selectImage);
         imageDisplay = findViewById(R.id.imageDisplay);
         currentUser = UserSession.getInstance().getCurrentUser();
-      
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+
+            Insets systemBars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+            );
+
+            Insets ime = insets.getInsets(
+                    WindowInsetsCompat.Type.ime()
+            );
+
+            int bottom = Math.max(
+                    systemBars.bottom,
+                    ime.bottom
+            );
+
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top,
+                    systemBars.right,
+                    bottom
+            );
+
+            return insets;
+        });
         setupSpinner();
         selectImage.setOnClickListener(d -> {
             choosePhotoFromGallery();

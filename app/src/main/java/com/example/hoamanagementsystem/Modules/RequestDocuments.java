@@ -50,7 +50,7 @@ public class RequestDocuments extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_request_documents);
 
         currentUser = UserSession.getInstance().getCurrentUser();
@@ -75,6 +75,30 @@ public class RequestDocuments extends AppCompatActivity {
         theLavanyaPhaseType = datas.getStringExtra("lavanyaPhaseType");
         theImage = datas.getStringExtra("image");
 
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+
+            Insets systemBars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+            );
+
+            Insets ime = insets.getInsets(
+                    WindowInsetsCompat.Type.ime()
+            );
+
+            int bottom = Math.max(
+                    systemBars.bottom,
+                    ime.bottom
+            );
+
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top,
+                    systemBars.right,
+                    bottom
+            );
+
+            return insets;
+        });
 
         setUpSpinner();
 

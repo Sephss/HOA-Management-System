@@ -37,7 +37,7 @@ public class SignupPageFinish extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_signup_page_finish);
 
         backLink = findViewById(R.id.backLink);
@@ -60,7 +60,30 @@ public class SignupPageFinish extends AppCompatActivity {
          email = intent.getStringExtra("email");
          password = intent.getStringExtra("password");
 
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
 
+            Insets systemBars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+            );
+
+            Insets ime = insets.getInsets(
+                    WindowInsetsCompat.Type.ime()
+            );
+
+            int bottom = Math.max(
+                    systemBars.bottom,
+                    ime.bottom
+            );
+
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top,
+                    systemBars.right,
+                    bottom
+            );
+
+            return insets;
+        });
         setUpSpinners();
         backLink.setOnClickListener(s -> {
             finish();

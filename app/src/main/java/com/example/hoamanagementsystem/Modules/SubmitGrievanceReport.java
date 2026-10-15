@@ -13,8 +13,12 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseAuthManager;
 import com.example.hoamanagementsystem.FirebaseServices.FirebaseDuplicateGrievanceManager;
@@ -59,7 +63,7 @@ public class SubmitGrievanceReport extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_submit_grievance_report);
         currentUser = UserSession.getInstance().getCurrentUser();
         incidentTitleET = findViewById(R.id.incidentTitleET);
@@ -71,7 +75,30 @@ public class SubmitGrievanceReport extends AppCompatActivity {
         selectImage = findViewById(R.id.selectImage);
         imageDisplay = findViewById(R.id.imageDisplay);
         submitReportBtn = findViewById(R.id.submitReportBtn);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
 
+            Insets systemBars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+            );
+
+            Insets ime = insets.getInsets(
+                    WindowInsetsCompat.Type.ime()
+            );
+
+            int bottom = Math.max(
+                    systemBars.bottom,
+                    ime.bottom
+            );
+
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top,
+                    systemBars.right,
+                    bottom
+            );
+
+            return insets;
+        });
         currentUserID = FirebaseAuthManager.getCurrentUserUid();
 
         setupSpinner();

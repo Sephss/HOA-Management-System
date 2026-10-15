@@ -19,7 +19,7 @@ public class SignupPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_signup_page);
 
         loginLink = findViewById(R.id.loginLink);
@@ -32,7 +32,30 @@ public class SignupPage extends AppCompatActivity {
         passwordET = findViewById(R.id.passwordET);
 
         nextBtn = findViewById(R.id.nextBtn);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
 
+            Insets systemBars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+            );
+
+            Insets ime = insets.getInsets(
+                    WindowInsetsCompat.Type.ime()
+            );
+
+            int bottom = Math.max(
+                    systemBars.bottom,
+                    ime.bottom
+            );
+
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top,
+                    systemBars.right,
+                    bottom
+            );
+
+            return insets;
+        });
 
         loginLink.setOnClickListener(f -> {
             finish();

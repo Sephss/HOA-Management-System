@@ -57,6 +57,44 @@ public class addImage {
     }
 
     /**
+     * Uploads up to two images (e.g. the two document slots) one after the other.
+     * Pass null for a slot that has no new image; its URL comes back as null so the
+     * caller can keep the existing one. If either upload fails, onFailure is called once.
+     * Callbacks run on a background thread, so use runOnUiThread() when touching views.
+     *
+     * @param context   The application context for accessing resources.
+     * @param firstUri  New image for slot 1, or null to skip.
+     * @param secondUri New image for slot 2, or null to skip.
+     * @param callback  Receives the uploaded URLs (null for any skipped slot).
+     */
+    public static void uploadTwoImages(Context context, Uri firstUri, Uri secondUri, TwoImagesCallback callback) {
+        new Thread(() -> {
+            try {
+                String firstUrl = null;
+                String secondUrl = null;
+
+                if (firstUri != null) {
+                    firstUrl = uploadBytes(compressImage(context, firstUri));
+                }
+
+                if (secondUri != null) {
+                    secondUrl = uploadBytes(compressImage(context, secondUri));
+                }
+
+                callback.onSuccess(firstUrl, secondUrl);
+            } catch (Exception e) {
+                Log.e("Cloudinary", "Error uploading two images", e);
+                callback.onFailure(e);
+            }
+        }).start();
+    }
+
+    private static String uploadBytes(byte[] imageBytes) throws Exception {
+        Map uploadResult = cloudinary.uploader().upload(imageBytes, ObjectUtils.emptyMap());
+        return (String) uploadResult.get("url");
+    }
+
+    /**
      * Uploads a Bitmap directly to Cloudinary. Used for content that doesn't come
      * from a file Uri, e.g. the signature pad, which hands back a Bitmap.
      *
@@ -136,6 +174,13 @@ public class addImage {
 
     public interface UploadCallback {
         void onSuccess(String imageUrl);
+
+        void onFailure(Exception e);
+    }
+
+    public interface TwoImagesCallback {
+        /** A URL is null when its slot had no new image to upload. */
+        void onSuccess(String firstUrl, String secondUrl);
 
         void onFailure(Exception e);
     }

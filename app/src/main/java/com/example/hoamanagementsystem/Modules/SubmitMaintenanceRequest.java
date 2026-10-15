@@ -60,7 +60,7 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_submit_maintenance_request);
 
         maintenanceTypeSpinner = findViewById(R.id.maintenanceTypeSpinner);
@@ -80,7 +80,30 @@ public class SubmitMaintenanceRequest extends AppCompatActivity {
         urgentTV = findViewById(R.id.urgentTV);
 
         currentUser = UserSession.getInstance().getCurrentUser();
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
 
+            Insets systemBars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+            );
+
+            Insets ime = insets.getInsets(
+                    WindowInsetsCompat.Type.ime()
+            );
+
+            int bottom = Math.max(
+                    systemBars.bottom,
+                    ime.bottom
+            );
+
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top,
+                    systemBars.right,
+                    bottom
+            );
+
+            return insets;
+        });
 
         setupSpinner();
 
