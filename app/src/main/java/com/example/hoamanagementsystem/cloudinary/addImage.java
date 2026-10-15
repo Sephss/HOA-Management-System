@@ -1,8 +1,11 @@
 package com.example.hoamanagementsystem.cloudinary;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
@@ -18,6 +21,7 @@ public class addImage {
     private static final String CLOUD_NAME = "gmtq06oo";
     private static final String API_KEY = "181487115313841";
     private static final String API_SECRET = "gHG-b3L_82PfrK1nACLrq_p5YZ8";
+    private static final int MAX_SIZE = 1280;
 
     private static final Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
             "cloud_name", CLOUD_NAME,
@@ -185,16 +189,96 @@ public class addImage {
         void onFailure(Exception e);
     }
 
+
+    /** Largest power-of-2 sample size that keeps the result >= the requested size. */
+    private static int calculateInSampleSize(int width, int height, int reqWidth, int reqHeight) {
+        int inSampleSize = 1;
+        while ((width / (inSampleSize * 2)) >= reqWidth && (height / (inSampleSize * 2)) >= reqHeight) {
+            inSampleSize *= 2;
+        }
+        return inSampleSize;
+    }
+
+    private static Bitmap applyExifOrientation(Bitmap bitmap, int orientation) {
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.postRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.postRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.postRotate(270);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.postScale(1, -1);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                matrix.postRotate(90);
+                matrix.postScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                matrix.postRotate(270);
+                matrix.postScale(-1, 1);
+                break;
+            default:
+                return bitmap; // normal / undefined: nothing to do
+        }
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    }
+
     private static byte[] compressImage(Context context, Uri imageUri) throws Exception {
+        ContentResolver resolver = context.getContentResolver();
 
-        InputStream inputStream = context.getContentResolver().openInputStream(imageUri);
+        // 1. Read only the image dimensions (no pixels loaded into memory)
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        try (InputStream in = resolver.openInputStream(imageUri)) {
+            if (in == null) throw new Exception("Unable to open image");
+            BitmapFactory.decodeStream(in, null, bounds);
+        }
+        if (bounds.outWidth <= 0 || bounds.outHeight <= 0) {
+            throw new Exception("Unable to decode image");
+        }
 
-        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+        // 2. Decode a downsampled version (much less RAM than full resolution)
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inSampleSize = calculateInSampleSize(bounds.outWidth, bounds.outHeight, MAX_SIZE, MAX_SIZE);
 
-        if (inputStream != null)
-            inputStream.close();
+        Bitmap bitmap;
+        try (InputStream in = resolver.openInputStream(imageUri)) {
+            if (in == null) throw new Exception("Unable to open image");
+            bitmap = BitmapFactory.decodeStream(in, null, opts);
+        }
+        if (bitmap == null) {
+            throw new Exception("Unable to decode image");
+        }
 
-        return compressBitmap(bitmap, false);
+        // 3. Read EXIF orientation and rotate/flip so the image isn't sideways
+        int orientation = ExifInterface.ORIENTATION_NORMAL;
+        try (InputStream in = resolver.openInputStream(imageUri)) {
+            if (in != null) {
+                orientation = new ExifInterface(in).getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+            }
+        } catch (Exception e) {
+            Log.w("Cloudinary", "Could not read EXIF orientation", e);
+        }
+
+        Bitmap oriented = applyExifOrientation(bitmap, orientation);
+        if (oriented != bitmap) {
+            bitmap.recycle();
+        }
+
+        try {
+            return compressBitmap(oriented, false);
+        } finally {
+            oriented.recycle(); // we created this bitmap, so it's safe to recycle
+        }
     }
 
     /**
@@ -205,37 +289,39 @@ public class addImage {
      *                   line art with transparent backgrounds). If false, compresses
      *                   as JPEG (smaller size, good for photos).
      */
-    private static byte[] compressBitmap(Bitmap bitmap, boolean isLineArt) throws Exception {
 
-        // Resize first
-        int maxWidth = 1280;
-        int maxHeight = 1280;
+    /**
+     * Resizes (if needed) and compresses a bitmap.
+     * Does NOT recycle the bitmap passed in (the caller owns it, e.g. the signature pad).
+     */
+    private static byte[] compressBitmap(Bitmap bitmap, boolean isLineArt) throws Exception {
+        if (bitmap == null) throw new Exception("Bitmap is null");
 
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
 
-        float ratio = Math.min(
-                (float) maxWidth / width,
-                (float) maxHeight / height
-        );
-        // don't upscale images that are already smaller than the max bounds
-        ratio = Math.min(ratio, 1f);
+        float ratio = Math.min((float) MAX_SIZE / width, (float) MAX_SIZE / height);
+        ratio = Math.min(ratio, 1f); // never upscale
 
-        width = Math.round(width * ratio);
-        height = Math.round(height * ratio);
+        int newWidth = Math.max(1, Math.round(width * ratio));
+        int newHeight = Math.max(1, Math.round(height * ratio));
 
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        if (isLineArt) {
-            // PNG: lossless, preserves crisp strokes/transparency (signatures)
-            resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-        } else {
-            // JPEG quality (0-100), smaller file size for photos
-            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 75, outputStream);
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            if (isLineArt) {
+                resizedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            } else {
+                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 75, outputStream);
+            }
+            return outputStream.toByteArray();
+        } finally {
+            // createScaledBitmap returns the same instance when size is unchanged,
+            // so only recycle if it's a new bitmap
+            if (resizedBitmap != bitmap) {
+                resizedBitmap.recycle();
+            }
         }
-
-        return outputStream.toByteArray();
     }
 }
